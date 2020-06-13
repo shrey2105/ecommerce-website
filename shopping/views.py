@@ -120,7 +120,7 @@ def checkout(request):
             'TXN_AMOUNT':str(total_price),
             'CUST_ID':email,
             'INDUSTRY_TYPE_ID':'Retail',
-            'WEBSITE':'WEBSTAGING',
+            'WEBSITE':'DEFAULT',
             'CHANNEL_ID':'WEB',
             'CALLBACK_URL':'https://morning-basin-59040.herokuapp.com/shop/paymentHandle/',
         }
