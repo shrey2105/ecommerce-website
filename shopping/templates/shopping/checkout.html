@@ -1,0 +1,113 @@
+{% extends 'shopping/basic.html' %}
+
+{% block title %}Checkout{% endblock %}
+{% block css %}
+.checkout-total{float:right;}
+{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="col my-4 step1">
+        <h2>Step 1 - Apnakart Checkout - Review Cart Items</h2>
+        <div id="items" class="my-4">
+            <ul class="list-group" id="cart-first-label">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <b>Product Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                    <span class="justify-content-between align-items-center"><b>Price</b></span>
+                    <span class="justify-content-between align-items-center"><b>Quantity</b></span>
+                    <span class="justify-content-between align-items-center"><b>Total Price</b></span>
+                    </li>
+                </ul>
+            <ul class="list-group" id="cart-items">
+            </ul>
+            <button type="button" class="btn btn-primary checkout-total">
+  <b>Total:</b> <span class="badge badge-light" id="total_sum_price"></span>
+</button>
+        </div>
+    </div>
+
+    <div class="col my-4 step2">
+        <h2>Step 2 - Enter Billing Address</h2>
+        <form action="/shop/checkout/" method="post">{% csrf_token %}
+            <input type="hidden" name="itemsjson" id="itemsjson">
+            <input type="hidden" name="total_price" id="total_price">
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputName4">Name</label>s
+                    <input type="text" class="form-control" id="inputName4" name="name" placeholder="Name">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail4">Email</label>
+                    <input type="email" class="form-control" id="inputEmail4" name="email" placeholder="Email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputAddress">Address Line 1</label>
+                <input type="text" class="form-control" id="inputAddress" name="address1" placeholder="1234 Main St">
+            </div>
+            <div class="form-group">
+                <label for="inputAddress2">Address Line 2</label>
+                <input type="text" class="form-control" id="inputAddress2" name="address2" placeholder="Apartment, studio, or floor">
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputCity">City</label>
+                    <input type="text" class="form-control" id="inputCity" name="city" placeholder="City">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="inputState">State</label>
+                    <input type="text" id="inputState" class="form-control" name="state" placeholder="State">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="inputZip">Zip</label>
+                    <input type="text" class="form-control" id="inputZip" name="zip_code" placeholder="Zipcode">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputTel">Mobile Number</label>
+                <input type="tel" class="form-control" id="inputTel" name="mobile_number" placeholder="Mobile Number">
+            </div>
+            <button type="submit" class="btn btn-primary">Place Order</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+var sum = 0
+var total_price = 0
+var total_sum_price = 0
+if (localStorage.getItem('cart') == null){
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+}
+for (item in cart){
+	name = cart[item][0].slice(0,24);
+	quantity = cart[item][1];
+    price = cart[item][2];
+    total_price = quantity * price;
+    total_sum_price = total_sum_price + total_price;
+	sum = sum + quantity;
+	if(quantity > 0){
+	liitem = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    ${name}...
+                    <span class="badge badge-primary badge-pill align-items-center">Rs. ${price}</span>
+                    <span class="badge badge-primary badge-pill align-items-center">${quantity}</span>
+                    <span class="badge badge-primary badge-pill align-items-center">Rs. ${total_price}</span></li>`;
+    $("#cart-items").append(liitem);
+}
+}
+document.getElementById("cart").innerHTML = sum;
+document.getElementById("total_sum_price").innerHTML = total_sum_price;
+
+$("#itemsjson").val(JSON.stringify(cart));
+{% if thanks %}
+localStorage.clear();
+document.location = "/shop/emptyCart";
+{% endif %}
+$("#total_price").val($("#total_sum_price").html())
+</script>
+
+{% endblock %}
