@@ -120,9 +120,9 @@ def checkout(request):
             'TXN_AMOUNT':str(total_price),
             'CUST_ID':email,
             'INDUSTRY_TYPE_ID':'Retail',
-            'WEBSITE':'DEFAULT',
+            'WEBSITE':'WEBSTAGING',
             'CHANNEL_ID':'WEB',
-            'CALLBACK_URL':'https://morning-basin-59040.herokuapp.com/shop/paymentHandle/',
+            'CALLBACK_URL':'https://127.0.0.1:8000/shop/paymentHandle/',
         }
         params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
         return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
