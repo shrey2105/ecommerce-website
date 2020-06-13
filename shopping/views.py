@@ -1,11 +1,16 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Product, Contact, Orders, OrdersUpdate
+from .models import Product, Contact, Orders, OrdersUpdate, PaytmKey
 from math import ceil
 import json
 from django.views.decorators.csrf import csrf_exempt
 from PayTM import Checksum
-MERCHANT_KEY = '4R##wn8R6imYX3TR';
+
+paytm = PaytmKey.objects.values('merchant_id', 'merchant_key')
+for item in paytm:
+    merchant_id = item['merchant_id']
+    merchant_key = item['merchant_key']
+MERCHANT_KEY = merchant_key;
 
 # Create your views here.
 def index(request):
@@ -110,7 +115,7 @@ def checkout(request):
         # return render(request, 'shopping/empty_cart.html', params)
         # After payment, request paytm to transfer amount to our account done by customer
         params_dict = {
-            'MID':'IcghgC60024677085336',
+            'MID':merchant_id,
             'ORDER_ID':str(orders.order_id),
             'TXN_AMOUNT':str(total_price),
             'CUST_ID':email,

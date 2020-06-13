@@ -48,3 +48,11 @@ class OrdersUpdate(models.Model):
 
     def __str__(self):
         return self.update_description[0:7] + "..."
+
+class PaytmKey(models.Model):
+    name = models.CharField(max_length=50, default="")
+    merchant_id = models.CharField(max_length=50, default="")
+    merchant_key = models.CharField(max_length=50, default="")
+
+    def __str__(self):
+        return self.name
