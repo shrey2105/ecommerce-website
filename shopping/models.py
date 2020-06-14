@@ -47,7 +47,7 @@ class OrdersUpdate(models.Model):
     timestamp = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return self.update_description[0:7] + "..."
+        return self.update_description[0:]
 
 class PaytmKey(models.Model):
     name = models.CharField(max_length=50, default="")

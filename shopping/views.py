@@ -6,11 +6,11 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from PayTM import Checksum
 
-paytm = PaytmKey.objects.values('merchant_id', 'merchant_key')
-for item in paytm:
-    merchant_id = item['merchant_id']
-    merchant_key = item['merchant_key']
-MERCHANT_KEY = merchant_key;
+# paytm = PaytmKey.objects.values('merchant_id', 'merchant_key')
+# for item in paytm:
+#     merchant_id = item['merchant_id']
+#     merchant_key = item['merchant_key']
+# MERCHANT_KEY = merchant_key
 
 # Create your views here.
 def index(request):
