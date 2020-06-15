@@ -12,21 +12,25 @@
     <title>{% block title %} {% endblock %}</title>
     <style>
         {% block css %} {% endblock %}
+        .header{background:#000000;}
+        footer.page-footer .footer-copyright{overflow: hidden;color: rgba(255,255,255,0.6);background-color: #000000;}
+        .unique-color-dark{background-color: #1c2331 !important;}
+        footer.page-footer {bottom: 0;color: #fff;}
+        .deep-purple{background-color: #673ab7 !important;}
+        img.bottom-image{width: 231px;height: 110px;}
     </style>
 
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/shop">ApnaKart</a>
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark header">
+    <a class="navbar-brand" href="/shop"><img src="{% static 'shopping/desktop_logo_top.png' %}"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="/shop">Home <span class="sr-only">(current)</span></a>
-            </li>
             <li class="nav-item">
                 <a class="nav-link" href="/shop/about">About Us</a>
             </li>
@@ -46,7 +50,7 @@
         </form>
         <button type="button" id="popcart" class="btn btn-secondary mx-3" title="Shopping Cart" data-container="body" data-toggle="popover" data-html="true" data-placement="bottom" data-content="">
             Cart(<span id="cart">0</span>)
-</button>
+        </button>
         <div>
             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#loginModal">Login</button>
             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#signupModal">SignUp</button>
@@ -55,6 +59,99 @@
 </nav>
 
 {% block body %} {% endblock %}
+<!-- Footer -->
+<footer class="page-footer font-small unique-color-dark mt-4">
+    <!-- Footer Links -->
+    <div class="container text-center text-md-left mt-5">
+
+        <!-- Grid row -->
+        <div class="row mt-3">
+
+            <!-- Grid column -->
+            <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mt-4">
+
+                <!-- Content -->
+                <a href="/shop"><img src="{% static 'shopping/desktop_logo_top.png' %}" class="bottom-image"></a>
+
+            </div>
+            <!-- Grid column -->
+
+            <!-- Grid column -->
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-4">
+
+                <!-- Links -->
+                <h6 class="text-uppercase font-weight-bold">Products</h6>
+                <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+                <p>
+                    <a href="#!">MDBootstrap</a>
+                </p>
+                <p>
+                    <a href="#!">MDWordPress</a>
+                </p>
+                <p>
+                    <a href="#!">BrandFlow</a>
+                </p>
+                <p>
+                    <a href="#!">Bootstrap Angular</a>
+                </p>
+
+            </div>
+            <!-- Grid column -->
+
+            <!-- Grid column -->
+            <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-4">
+
+                <!-- Links -->
+                <h6 class="text-uppercase font-weight-bold">Useful links</h6>
+                <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+                <p>
+                    <a href="#!">Your Account</a>
+                </p>
+                <p>
+                    <a href="#!">Become an Affiliate</a>
+                </p>
+                <p>
+                    <a href="#!">Shipping Rates</a>
+                </p>
+                <p>
+                    <a href="#!">Help</a>
+                </p>
+
+            </div>
+            <!-- Grid column -->
+
+            <!-- Grid column -->
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mt-4">
+
+                <!-- Links -->
+                <h6 class="text-uppercase font-weight-bold">Contact</h6>
+                <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+                <p>
+                    <i class="fas fa-home mr-3"></i> New York, NY 10012, US</p>
+                <p>
+                    <i class="fas fa-envelope mr-3"></i> info@example.com</p>
+                <p>
+                    <i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
+                <p>
+                    <i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
+
+            </div>
+            <!-- Grid column -->
+
+        </div>
+        <!-- Grid row -->
+
+    </div>
+    <!-- Footer Links -->
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+        apnakart.com
+    </div>
+    <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
 
 <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>

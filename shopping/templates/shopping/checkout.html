@@ -6,75 +6,140 @@
 {% endblock %}
 {% block body %}
 <div class="container">
-    <div class="col my-4 step1">
-        <h2>Step 1 - Apnakart Checkout - Review Cart Items</h2>
-        <div id="items" class="my-4">
-            <ul class="list-group" id="cart-first-label">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <b>Product Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-                    <span class="justify-content-between align-items-center"><b>Price</b></span>
-                    <span class="justify-content-between align-items-center"><b>Quantity</b></span>
-                    <span class="justify-content-between align-items-center"><b>Total Price</b></span>
-                    </li>
-                </ul>
-            <ul class="list-group" id="cart-items">
-            </ul>
-            <button type="button" class="btn btn-primary checkout-total">
-  <b>Total:</b> <span class="badge badge-light" id="total_sum_price"></span>
-</button>
+  <div class="py-5 text-center">
+    {% load static %}
+    <img class="d-block mx-auto mb-4" src="{% static 'shopping/checkout_logo.png' %}" alt="" width="300px" height="126px">
+    <h2>Apnakart Checkout - Review Cart Items</h2>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 order-md-2 mb-4">
+      <h4 class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted">Your cart</span>
+        <span class="badge badge-secondary badge-pill"><span id="checkout-cart">0</span></span>
+      </h4>
+      <ul class="list-group mb-3" id="cart-items">
+      </ul>
+      <ul class="list-group mb-3">
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Total Price (Rs.)</span>
+          <strong>Rs. <span id="total_sum_price"></span></strong>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-md-8 order-md-1">
+      <h4 class="mb-3">Billing Address</h4>
+      <form class="needs-validation" novalidate="" action="/shop/checkout/" method="post">{% csrf_token %}
+        <input type="hidden" name="itemsjson" id="itemsjson">
+        <input type="hidden" name="total_price" id="total_price">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="fullName">Full Name</label>
+            <input type="text" class="form-control" id="fullName" name="name" placeholder="Full Name" value="" required="">
+            <div class="invalid-feedback">
+              Valid full name is required.
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="" required="">
+            <div class="invalid-feedback">
+              Please enter a valid email address for shipping updates.
+            </div>
+          </div>
         </div>
-    </div>
 
-    <div class="col my-4 step2">
-        <h2>Step 2 - Enter Billing Address</h2>
-        <form action="/shop/checkout/" method="post">{% csrf_token %}
-            <input type="hidden" name="itemsjson" id="itemsjson">
-            <input type="hidden" name="total_price" id="total_price">
+        <div class="mb-3">
+          <label for="address">Address</label>
+          <input type="text" class="form-control" id="address" name="address1" placeholder="1234 Main St" required="">
+          <div class="invalid-feedback">
+            Please enter your shipping address.
+          </div>
+        </div>
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputName4">Name</label>s
-                    <input type="text" class="form-control" id="inputName4" name="name" placeholder="Name">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="inputEmail4">Email</label>
-                    <input type="email" class="form-control" id="inputEmail4" name="email" placeholder="Email">
-                </div>
+        <div class="mb-3">
+          <label for="address2">Address 2</label>
+          <input type="text" class="form-control" id="address2" name="address2" placeholder="Apartment or suite" required="">
+          <div class="invalid-feedback">
+            Please enter your shipping address.
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-5 mb-3">
+            <label for="city">City</label>
+            <input type="text" class="form-control" name="city" id="city" placeholder="City" required="">
+            <div class="invalid-feedback">
+              Please enter your city.
             </div>
-            <div class="form-group">
-                <label for="inputAddress">Address Line 1</label>
-                <input type="text" class="form-control" id="inputAddress" name="address1" placeholder="1234 Main St">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="state">State</label>
+            <input type="text" class="form-control" name="state" id="state" placeholder="State" required="">
+            <div class="invalid-feedback">
+              Please enter your state.
             </div>
-            <div class="form-group">
-                <label for="inputAddress2">Address Line 2</label>
-                <input type="text" class="form-control" id="inputAddress2" name="address2" placeholder="Apartment, studio, or floor">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="zip">Zip</label>
+            <input type="text" class="form-control" id="zip" name="zip_code" placeholder="Zip" required="">
+            <div class="invalid-feedback">
+              Zip code required.
             </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputCity">City</label>
-                    <input type="text" class="form-control" id="inputCity" name="city" placeholder="City">
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="inputState">State</label>
-                    <input type="text" id="inputState" class="form-control" name="state" placeholder="State">
-                </div>
-                <div class="form-group col-md-2">
-                    <label for="inputZip">Zip</label>
-                    <input type="text" class="form-control" id="inputZip" name="zip_code" placeholder="Zipcode">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputTel">Mobile Number</label>
-                <input type="tel" class="form-control" id="inputTel" name="mobile_number" placeholder="Mobile Number">
-            </div>
-            <button type="submit" class="btn btn-primary">Place Order</button>
-        </form>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="mobile">Mobile Number</label>
+          <input type="tel" class="form-control" id="mobile" name="mobile_number" placeholder="Mobile Number" required="">
+          <div class="invalid-feedback">
+            Please enter your mobile number.
+          </div>
+        </div>
+        <hr class="mb-4">
+        <button class="btn btn-primary btn-lg btn-block" type="submit" style="background:#59606D">Continue to checkout</button>
+      </form>
     </div>
+  </div>
 </div>
+
 {% endblock %}
 
 {% block js %}
 <script>
+(function () {
+  'use strict'
+
+  window.addEventListener('load', function () {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation')
+
+    // Loop over them and prevent submission
+    Array.prototype.filter.call(forms, function (form) {
+      form.addEventListener('submit', function (event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+  }, false)
+}())
+
+// $("#promo_check").submit(function(event){
+// 		var formData = {
+// 			"promo":$("input[name=user_promo]").val(),
+// 			"csrfmiddlewaretoken":$("input[name=csrfmiddlewaretoken]").val()
+// 		};
+// 		$.ajax({
+// 			type:"POST",
+// 			url:"/shop/promoRule/",
+// 			data:formData,
+// 			encode:true
+// 		})
+// 		});
+
 var sum = 0
 var total_price = 0
 var total_sum_price = 0
@@ -91,15 +156,16 @@ for (item in cart){
     total_sum_price = total_sum_price + total_price;
 	sum = sum + quantity;
 	if(quantity > 0){
-	liitem = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    ${name}...
-                    <span class="badge badge-primary badge-pill align-items-center">Rs. ${price}</span>
-                    <span class="badge badge-primary badge-pill align-items-center">${quantity}</span>
-                    <span class="badge badge-primary badge-pill align-items-center">Rs. ${total_price}</span></li>`;
+	liitem = `<li class="list-group-item d-flex justify-content-between lh-condensed">
+          <div>
+            <h6 class="my-0">${name}...</h6>
+          </div>
+          <span class="text-muted">Rs. ${total_price}</span></li>`;
     $("#cart-items").append(liitem);
 }
 }
 document.getElementById("cart").innerHTML = sum;
+document.getElementById("checkout-cart").innerHTML = sum;
 document.getElementById("total_sum_price").innerHTML = total_sum_price;
 
 $("#itemsjson").val(JSON.stringify(cart));
