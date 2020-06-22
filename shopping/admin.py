@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Product, Contact, Orders, OrdersUpdate, PaytmKey
+from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey
 
 admin.site.register(Product)
 admin.site.register(Contact)

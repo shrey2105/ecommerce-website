@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from .models import Product, Contact, Orders, OrdersUpdate, PaytmKey
+from django.http import HttpResponse, HttpResponseRedirect
+from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey
+from django.contrib import messages
 from math import ceil
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -29,16 +30,21 @@ def about(request):
     return render(request, 'shopping/about.html')
 
 def contact(request):
-    thanks = False
     if request.method == 'POST':
-        name = request.POST.get("name", default="")
-        email = request.POST.get("email", default="")
-        mobile = request.POST.get("mobile", default="")
-        query_message = request.POST.get("query_message", default="")
-        contact = Contact(name=name, email=email, mobile=mobile, query_message=query_message)
-        contact.save()
-        thanks = True
-    return render(request, 'shopping/contact.html', {"thanks":thanks})
+        try:
+            name = request.POST.get("name", default="")
+            email = request.POST.get("email", default="")
+            mobile = request.POST.get("mobile", default="")
+            query_message = request.POST.get("query_message", default="")
+            contact = Contact(name=name, email=email, mobile=mobile, query_message=query_message)
+            contact.save()
+            response = json.dumps({"status": "success"})
+            return HttpResponse(response)
+        # messages.success(request, "Your response has been successfully recorded.")
+        except Exception as e:
+            response = json.dumps({"status": "failure"})
+            return HttpResponse(response)
+    return render(request, 'shopping/contact.html')
 
 def tracker(request):
     if request.method == 'POST':

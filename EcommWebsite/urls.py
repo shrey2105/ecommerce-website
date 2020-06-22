@@ -19,9 +19,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 
+admin.site.site_header = "Apnakart Admin"
+admin.site.site_title = "Apnakart Admin Panel"
+admin.site.index_title = "Welcome to Apnakart Admin Panel"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('shop/', include('shopping.urls')),
-    path('blog/', include('blog.urls')),
+    path('blog/', include('home.urls')),
+    path('blog/blog/', include('blog.urls')),
     path('', views.index)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

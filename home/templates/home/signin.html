@@ -1,0 +1,121 @@
+{% extends 'home/base.html' %}
+{% block title %}Log In{% endblock title %}
+{% block css %}
+.form-signin {
+    width: 100%;
+    max-width: 495px;
+    padding: 15px;
+    margin: auto;
+}
+.form-signin .text-center {
+    text-align: center!important;
+}
+.form-signin .mb-4, .form-signin .my-4 {
+    margin-bottom: 1.5rem!important;
+}
+.form-signin img{
+    vertical-align: middle;
+    border-style: none;
+}
+.form-signin .font-weight-normal {
+    font-weight: 400!important;
+}
+.form-signin .text-center p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+.form-signin .form-label-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+.form-signin .form-label-group > input, .form-label-group > label {
+    height: 3.125rem;
+    padding: .75rem;
+}
+.form-signin .form-control {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.form-signin .form-label-group > label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    margin-bottom: 0;
+    line-height: 1.5;
+    color: #495057;
+    pointer-events: none;
+    cursor: text;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    transition: all .1s ease-in-out;
+}
+.form-signin .form-label-group input::-webkit-input-placeholder {
+  color: transparent;
+}
+
+.form-signin .form-label-group input:-ms-input-placeholder {
+  color: transparent;
+}
+
+.form-signin .form-label-group input::-ms-input-placeholder {
+  color: transparent;
+}
+
+.form-signin .form-label-group input::-moz-placeholder {
+  color: transparent;
+}
+
+.form-signin .form-label-group input::placeholder {
+  color: transparent;
+}
+
+.form-signin .form-label-group input:not(:placeholder-shown) {
+  padding-top: 1.25rem;
+  padding-bottom: .25rem;
+}
+
+.form-signin .form-label-group input:not(:placeholder-shown) ~ label {
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+  font-size: 12px;
+  color: #777;
+}
+{% endblock css %}
+
+{% block body %}
+<div class="container">
+<form class="form-signin" id="signin-form" action="/blog/signin" method="post" novalidate="">{% csrf_token %}
+  <div class="text-center mb-4">
+    {% comment %} <img class="mb-4" src="/docs/4.5/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72"> {% endcomment %}
+    <h1 class="my-3">Already Registered!</h1>
+    <h1 class="h3 mb-3 font-weight-normal">Please Log In</h1>
+  </div>
+
+  <div class="form-label-group">
+    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required="" autofocus="">
+    <label for="username">Username</label>
+  </div>
+
+  <div class="form-label-group">
+    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required="">
+    <label for="password">Password</label>
+  </div>
+
+    <button id="submit-button-login" class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
+
+  </form>
+  </div>
+  {% endblock body %}

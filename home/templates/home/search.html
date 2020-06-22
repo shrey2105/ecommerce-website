@@ -1,11 +1,19 @@
-{% extends 'blog/basic.html' %}
+{% extends 'home/base.html' %}
 
-{% block title %} Apnakart {% endblock %}
+{% block title %}Search Results{% endblock %}
+{% block css %}
+.display-box {position: relative;width: 100%;max-width: 500px;background-color: #fff;border: 4px solid #000;padding: 40px 20px;margin: 50px auto;line-height: 30px;display: block;clear: both;}
+.display-box p a {color: #000; font-weight: 600; text-decoration: underline;}
+.display-box h2 {color: #000; font-size: 22px; text-align: center; margin-bottom: 20px; display: block; font-weight: 600;text-transform: uppercase;font-family: lato;}
+.display-box p {color: #000;font-size: 14px;text-align: center;display: block;}
+{% endblock css %}
 {% block body %}
 
 <div class="container mt-3">
+{% if message|length == 0 %}
+<h2>Search Results:</h2>
   <div class="row my-2">
-  {% for blogpost in blogposts %}
+  {% for blogpost in all_posts %}
     <div class="col-md-6">
       <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
@@ -13,7 +21,7 @@
           <h3 class="mb-0">{{blogpost.title}}</h3>
           <div class="mb-1 text-muted">{{blogpost.pub_date}}</div>
           <p class="card-text mb-auto">{{blogpost.content_heading1|truncatechars:150}}</p>
-          <a href="blogPost/{{blogpost.post_id}}" class="stretched-link">Continue reading</a>
+          <a href="blog/blogPost/{{blogpost.post_id}}" class="stretched-link">Continue reading</a>
         </div>
         <div class="col-auto d-none d-lg-block">
           <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><defs><clipPath id="myRectangle"><rect width="200" height="250" fill="#55595c" /></clipPath></defs><image xlink:href="/media/{{blogpost.thumbnail}}" height="250px" width="200px" clip-path="url(#myRectangle)"/></svg>
@@ -25,5 +33,14 @@
   {% endif %}
   {% endfor %}
 </div>
+{% else %}
+<div class="result mt-4">
+        <div class="display-box">
+            <h2>Sorry!!</h2>
+            <p>No Results Found</p>
+            <p>Please check the spelling or try searching for something else</p>
+        </div>
+    </div>
+{% endif %}
 </div>
 {% endblock %}

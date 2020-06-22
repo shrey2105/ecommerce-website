@@ -1,36 +1,137 @@
 {% extends 'shopping/basic.html' %}
 
 {% block title %}Contact Us{% endblock %}
+{% block css %}
+.contact-form {
+    width: 100%;
+    max-width: 495px;
+    padding: 15px;
+    margin: auto;
+}
+.contact-form .text-center {
+    text-align: center!important;
+}
+.contact-form .mb-4, .contact-form .my-4 {
+    margin-bottom: 1.5rem!important;
+}
+.contact-form img{
+    vertical-align: middle;
+    border-style: none;
+}
+.contact-form .font-weight-normal {
+    font-weight: 400!important;
+}
+.contact-form .text-center p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+.contact-form .form-label-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+.contact-form .form-label-group > input, .form-label-group > label {
+    height: 3.125rem;
+    padding: .75rem;
+}
+.contact-form .form-label-group > textarea{
+    height: 6.125rem;
+    padding: .75rem;
+}
+.contact-form .form-control {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.contact-form .form-label-group > label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    margin-bottom: 0;
+    line-height: 1.5;
+    color: #495057;
+    pointer-events: none;
+    cursor: text;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    transition: all .1s ease-in-out;
+}
+.contact-form .form-label-group input::-webkit-input-placeholder, .contact-form .form-label-group textarea::-webkit-input-placeholder {
+  color: transparent;
+}
+.contact-form .form-label-group input:-ms-input-placeholder, .contact-form .form-label-group textarea:-ms-input-placeholder {
+  color: transparent;
+}
+.contact-form .form-label-group input::-ms-input-placeholder, .contact-form .form-label-group textarea::-ms-input-placeholder {
+  color: transparent;
+}
+.contact-form .form-label-group input::-moz-placeholder, .contact-form .form-label-group textarea::-moz-placeholder {
+  color: transparent;
+}
+.contact-form .form-label-group input::placeholder, .contact-form .form-label-group textarea::placeholder {
+  color: transparent;
+}
+.contact-form .form-label-group input:not(:placeholder-shown), .contact-form .form-label-group textarea:not(:placeholder-shown) {
+  padding-top: 1.25rem;
+  padding-bottom: .25rem;
+}
+.contact-form .form-label-group input:not(:placeholder-shown) ~ label, .contact-form .form-label-group textarea:not(:placeholder-shown) ~ label {
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+  font-size: 12px;
+  color: #777;
+}
+{% endblock css %}
 {% block body %}
-{% if thanks %}
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    <strong>Success!</strong> Your response has been successfully recorded.
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-{% endif %}
-<div class="container my-3">
-    <h3>Contact Us!! If you have any query</h3>
-    <form action="/shop/contact/" method="post">{% csrf_token %}
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name">
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email">
-        </div>
-        <div class="form-group">
-            <label for="mobile">Mobile Number</label>
-            <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="Enter your mobile number">
-        </div>
-        <div class="form-group">
-            <label for="query_message">Example textarea</label>
-            <textarea class="form-control" id="query_message" rows="3" name="query_message" placeholder="Enter your query"></textarea>
-        </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+<div class="container my-3">
+    <h1>For any Queries, Please Contact</h1>
+  <form action="#" method="post" class="contact-form" id="form-contact" novalidate="">{% csrf_token %}
+    <div class="form-label-group">
+      <input type="text" class="form-control" pattern="" id="name" name="name" placeholder="Full Name"
+        required="">
+      <label for="name">Full Name</label>
+      <span class="error_name"></span>
+    </div>
+    <div class="form-label-group">
+      <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required="">
+      <label for="email">Email address</label>
+      <span class="error_email"></span>
+    </div>
+    <div class="form-label-group">
+      <input type="tel" class="form-control" pattern="" id="mobile" name="mobile" placeholder="Mobile Number"
+        required="">
+      <label for="mobile">Mobile Number</label>
+      <span class="error_mobile"></span>
+    </div>
+    <div class="form-label-group">
+      <textarea class="form-control" id="query_message" rows="3" name="query_message" placeholder="Enter your query"
+        required=""></textarea>
+      <label for="query_message">Message</label>
+      <span class="error_message"></span>
+    </div>
+    <div id="contact-message" class="my-2"></div>
+    <button type="submit" name="submit" id="submit-button" class="btn btn-primary">Submit</button>
+  </form>
 </div>
 {% endblock %}
+
+{% block js %}
+{% load static %}
+<script src="{% static 'shopping/js/contact-form.js' %}"></script>
+<script>
+    contact_form_shop_validation();
+
+</script>
+{% endblock js %}

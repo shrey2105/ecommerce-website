@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -8,59 +8,79 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
-    <title>{% block title %} {% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
     <style>
-        {% block css %} {% endblock %}
+    {% block css %}
+    {% endblock css %}
     </style>
-
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/shop">ApnaKart</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="/shop">Home <span class="sr-only">(current)</span></a>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">Devastator</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item {% block homeactive %}
+            {% endblock homeactive %}">
+              <a class="nav-link" href="/blog/blog">Home <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/shop/about">About Us</a>
+            <li class="nav-item" {% block aboutactive %}
+            {% endblock aboutactive %}>
+              <a class="nav-link" href="/blog/about">About</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/shop/tracker">Tracker</a>
+            <li class="nav-item {% block shopactive %}
+            {% endblock shopactive %}">
+              <a class="nav-link" href="/shop">Shop</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/blog">Blog</a>
+            <li class="nav-item {% block contactactive %}
+            {% endblock contactactive %}">
+              <a class="nav-link" href="/blog/contact">Contact</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/shop/contact">Contact Us</a>
-            </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0 mr-3">
+          </ul>
+          <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
-        <button type="button" id="popcart" class="btn btn-secondary mx-3" title="Shopping Cart" data-container="body" data-toggle="popover" data-html="true" data-placement="bottom" data-content="">
-            Cart(<span id="cart">0</span>)
-</button>
-        <div>
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#loginModal">Login</button>
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#signupModal">SignUp</button>
+          </form>
+          {% if user.is_authenticated %}
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Welcome: {{request.user}}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="#">Profile</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="/blog/signout">Logout</a>
         </div>
-    </div>
-</nav>
+      </div>
+      {% else %}
+      <a href="/blog/signin"><button type="button" id="signin" class="btn btn-light mx-2">Log In</button>
+      <a href="/blog/signup"><button type="button" id="signup" class="btn btn-light">Sign Up</button></a>
+      {% endif %}
+        </div>
+      </nav>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+  <strong>Message:</strong> {{message}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endfor %}
+{% endif %}
+      {% block body %}
+      {% endblock body %}
 
-{% block body %} {% endblock %}
-
-<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 
 {% block js %} {% endblock %}
 
-</body>
+  </body>
 </html>
