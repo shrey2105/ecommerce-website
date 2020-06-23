@@ -51,10 +51,21 @@
         <button type="button" id="popcart" class="btn btn-secondary mx-3" title="Shopping Cart" data-container="body" data-toggle="popover" data-html="true" data-placement="bottom" data-content="">
             Cart(<span id="cart">0</span>)
         </button>
-        <div>
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#loginModal">Login</button>
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#signupModal">SignUp</button>
+        {% if user.is_authenticated %}
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Welcome: {{request.user}}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="#">Profile</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="/home/signout">Logout</a>
         </div>
+      </div>
+      {% else %}
+      <a href="/home/signin"><button type="button" id="signin" class="btn btn-light mx-2">Log In</button>
+      <a href="/home/signup"><button type="button" id="signup" class="btn btn-light">Sign Up</button></a>
+      {% endif %}
     </div>
 </nav>
 {% if messages %}

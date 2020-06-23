@@ -25,7 +25,7 @@
           <ul class="navbar-nav mr-auto">
             <li class="nav-item {% block homeactive %}
             {% endblock homeactive %}">
-              <a class="nav-link" href="/blog/blog">Home <span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="/blog/">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item" {% block aboutactive %}
             {% endblock aboutactive %}>
@@ -52,12 +52,12 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" href="#">Profile</a>
           <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="/blog/signout">Logout</a>
+          <a class="dropdown-item" href="/home/signout">Logout</a>
         </div>
       </div>
       {% else %}
-      <a href="/blog/signin"><button type="button" id="signin" class="btn btn-light mx-2">Log In</button>
-      <a href="/blog/signup"><button type="button" id="signup" class="btn btn-light">Sign Up</button></a>
+      <a href="/home/signin"><button type="button" id="signin" class="btn btn-light mx-2">Log In</button>
+      <a href="/home/signup"><button type="button" id="signup" class="btn btn-light">Sign Up</button></a>
       {% endif %}
         </div>
       </nav>

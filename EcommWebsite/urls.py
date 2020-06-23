@@ -26,7 +26,7 @@ admin.site.index_title = "Welcome to Apnakart Admin Panel"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('shop/', include('shopping.urls')),
-    path('blog/', include('home.urls')),
-    path('blog/blog/', include('blog.urls')),
+    path('home/', include('home.urls')),
+    path('blog/', include('blog.urls')),
     path('', views.index)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

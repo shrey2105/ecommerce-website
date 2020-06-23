@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
-from blog.models import BlogPost, BlogComment
+from blog.models import BlogPost, BlogComment, Contact
 from django.contrib import messages
 import json
 from django.contrib.humanize.templatetags.humanize import naturaltime
@@ -11,6 +11,9 @@ def index(request):
 	blogposts = BlogPost.objects.all()
 	params = {'blogposts':blogposts}
 	return render(request, 'blog/index.html', params)
+
+def about(request):
+    return render(request, "blog/about.html")
 
 def blogpost(request, id):
 	blogpost = BlogPost.objects.filter(post_id=id)
@@ -52,21 +55,22 @@ def postComment(request):
 			# response = "False"
 			# messages.success(request, "Your comment has been posted successfully")
 		# return HttpResponse('%s' % response)
-	return redirect(f"/blog/blog/blogPost/{post_id}")
+	return redirect(f"/blog/blogPost/{post_id}")
 	# return render(request, 'blog/blogpost.html')
 
-# def loadComment(request):
-# 	if request.method == "POST":
-# 		post_id = request.POST.get("post_id")
-# 		blogpost = BlogPost.objects.filter(post_id=post_id)
-# 		comments = BlogComment.objects.filter(post=blogpost[0])
-# 		if len(comments) > 0:
-# 			updates = []
-# 			for data in comments:
-# 				updates.append({"user":data.user, "comment":data.comment, "comment_id":data.comment_id, "timestamp":naturaltime(data.timestamp)})
-# 				response = json.dumps({"status":"success", "updates":updates}, default=str)
-# 			return HttpResponse(response)
-# 		else:
-# 			response = json.dumps({"status":"noitem"})
-# 			return HttpResponse(response)
-# 	return HttpResponse(request)
+def contact(request):
+    if request.method == "POST":
+        try:
+            name = request.POST.get("name")
+            email = request.POST.get("email")
+            mobile = request.POST.get("mobile")
+            message = request.POST.get("message")
+            contact = Contact(name=name, email=email, mobile=mobile, message=message)
+            contact.save()
+            response = json.dumps({"status": "success"})
+            return HttpResponse(response)
+        except Exception as e:
+            response = json.dumps({"status": "failure"})
+            return HttpResponse(response)
+        # messages.success(request, "Your response has been successfully recorded."
+    return render(request, "blog/contact.html")
