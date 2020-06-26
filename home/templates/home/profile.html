@@ -1,0 +1,110 @@
+{% extends 'home/base.html' %}
+{% block title %}Profile{% endblock title %}
+{% block css %}
+img.profile-image-logo {
+border-radius: 90px;
+}
+{% endblock css %}
+
+{% block body %}
+{% load static %}
+<div class="container">
+    <div class="col-lg-12 my-2 mx-2">
+        <h1 class="my-3">Update Profile</h1>
+        <form method="post" action="/home/profile" enctype="multipart/form-data">{% csrf_token %}
+            <input type="hidden" name="user_id" value="{{request.user.id}}">
+            <div class="row my-3">
+                <div class="col-md-4">
+                    <div class="row">
+                        <img class="profile-image-logo" src="{{MEDIA_URL}}{{request.user.profile.image}}" width="180"
+                            height="180">
+                    </div>
+                    <div class="row">
+                        <label for="image"><b>Profile Pic</b></label>
+                        <input type="file" class="form-control-file" id="upload_image" name="upload_image">
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="name"><b>Name</b></label>
+                            <input type="text" name="name" value="{{request.user.first_name}}" class="form-control"
+                                id="name" placeholder="">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="email"><b>Email</b></label>
+                            <input type="email" name="email" class="form-control" value="{{request.user.email}}"
+                                id="email" placeholder="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="mobile"><b>Mobile Number</b></label>
+                            <input type="tel" name="mobile" class="form-control" id="mobile"
+                                value="{{request.user.profile.mobile_number}}" placeholder="Mobile Number">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="gender"><b>Gender</b></label>
+                            <div class="">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="male" value="M"
+                                        {% if request.user.profile.gender == "M" %} checked {% endif %}>
+                                    <label class="form-check-label" for="male">Male</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="female" value="F"
+                                        {% if request.user.profile.gender == "F" %} checked {% endif %}>
+                                    <label class="form-check-label" for="female">Female</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-auto">
+                            <label for="day"><b>Date of Birth</b></label>
+                            <input type="text" class="form-control mb-2" id="day" name="day" placeholder="Day"
+                                value="{{request.user.profile.birth_day}}">
+                        </div>
+                        <div class="form-group col-auto">
+                            <label for="month"></label>
+                            <input type="text" class="form-control mt-2" id="month" name="month" placeholder="Month"
+                                value="{{request.user.profile.birth_month}}">
+                        </div>
+                        <div class="form-group col-auto">
+                            <label for="year"></label>
+                            <input type="text" class="form-control mt-2" id="year" name="year" placeholder="Year"
+                                value="{{request.user.profile.birth_year}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn btn-dark">Update</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-lg-12 my-2">
+        <h1 class="my-4">Change Password</h1>
+        <form method="post" action="/home/changePassword">{% csrf_token %}
+            <input type="hidden" name="user_id" value="{{request.user.id}}">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="current_password"><b>Current Password</b></label>
+                    <input type="password" name="current_password" class="form-control" id="current_password" value=""
+                        placeholder="Current Password">
+                </div>
+                <div class="col-md-6">
+                    <label for="password1"><b>New Password</b></label>
+                    <input type="password" name="password1" class="form-control" id="password1" value=""
+                        placeholder="New Password">
+                    <label for="password2" class="mt-2"><b>Confirm Password</b></label>
+                    <input type="password" name="password2" class="form-control" id="password2" value=""
+                        placeholder="Confirm Password">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-dark my-3">Change Password</button>
+        </form>
+    </div>
+</div>
+{% endblock body %}

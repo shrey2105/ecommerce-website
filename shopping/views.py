@@ -158,4 +158,7 @@ def paymentHandle(request):
         print("Order Unsuccessful Because" + response_dict['RESPMSG'])
     return render(request, 'shopping/paytm_status.html', {'response':response_dict})
 
+def orderDetails(request):
+    return render(request, 'shopping/order_details.html')
+
 

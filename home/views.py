@@ -4,7 +4,9 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from blog.models import BlogPost
+from home.models import Profile
 import json
+from django.core.files.storage import FileSystemStorage
 
 # Create your views here.
 def home(request):
@@ -75,3 +77,41 @@ def signin(request):
 def signout(request):
     logout(request)
     return render(request, "home/signout.html")
+
+def profile(request):
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        user = User.objects.get(pk=user_id)
+        user.first_name = request.POST.get("name")
+        user.email = request.POST.get("email")
+        user.profile.mobile_number = request.POST.get("mobile")
+        user.profile.gender = request.POST.get("gender", False)
+        user.profile.birth_day = request.POST.get("day")
+        user.profile.birth_month = request.POST.get("month")
+        user.profile.birth_year = request.POST.get("year")
+        image = request.FILES.get("upload_image", "home/images/no-profile-pic.png")
+        user.profile.image = image
+        user.save()
+        return HttpResponseRedirect("/home/profile")
+    return render(request, "home/profile.html")
+
+def changePassword(request):
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        user = User.objects.get(pk=user_id)
+        current_password_input = request.POST.get("current_password")
+        verify_user = authenticate(username=user.username, password=current_password_input)
+        if verify_user is not None:
+            password1 = request.POST.get("password1")
+            password2 = request.POST.get("password2")
+            if password1 == password2:
+                user.set_password(password1)
+                user.save()
+                messages.success(request, "Password changed successfully. Kindly login again with your new password.")
+            else:
+                messages.error(request, "Something went wrong. Kindly check if both passwords are matching.")
+        else:
+            messages.error(request, "Something went wrong. Kindly check if your old password is correct.")
+        return HttpResponseRedirect("/home/signin")
+    return render(request, "home/profile.html")
+
