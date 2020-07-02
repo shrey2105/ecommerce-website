@@ -15,7 +15,7 @@
             <h2>Thank You</h2>
             <p>You have been successfully logged out.</p>
             <p>Kindly please visit again.</p>
-            <p>Note: The page will automatically redirect in 10 seconds.</p>
+            <p>Note: The page will automatically redirect in <span id="count">3</span> seconds.</p>
         </div>
     </div>
 </div>
@@ -23,11 +23,30 @@
 
 {% block js %}
 <script>
-    $(document).ready(function () {
-                 setTimeout(function(){
-                 localStorage.clear();
-                   document.location = "/home/";
-                 }, 10000);
-             });
+window.onload = function () {
+
+            (function () {
+                var counter = 3;
+
+                setInterval(function () {
+                    counter--;
+                    if (counter >= 0) {
+                        span = document.getElementById("count");
+                        span.innerHTML = counter;
+                    }
+                    // Display 'counter' wherever you want to display it.
+                    if (counter === 0) {
+                        //    alert('this is where it happens');
+                        clearInterval(counter);
+                    }
+
+                }, 1000);
+
+            })();
+
+        }
+    setTimeout(function () {
+            document.location = "/home";
+        }, 3000);
 </script>
 {% endblock %}

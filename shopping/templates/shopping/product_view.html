@@ -1,16 +1,27 @@
 {% extends 'shopping/basic.html' %}
 
 {% block title %}{{product.product_name}} Detail{% endblock %}
+{% block css %}
+input[type="number"] {
+width:50px;
+}
+{% endblock css %}
 {% block body %}
 <div class="container">
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-md-4">
             <div class="row">
-                <img src="/media/{{product.image}}" class="card-img-top" alt="...">
+                <img src="/media/{{product.image}}" class="card-img-top my-3" height=300 alt="...">
             </div>
             <div class="row">
-                <button class="btn btn-primary cart">Buy Now</button>
-                <button class="btn btn-primary cart mx-2">Add to Cart</button>
+                <a href="{% url 'buy_now' product.id %}"><button class="btn btn-primary cart">Buy Now</button></a>
+                <form class="form pull-right" method="post" action="{% url 'add_to_cart' product.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-primary mx-2" type="submit">Add to Cart</button>
+                    <input type="number" name="qty" value='1' size="3">
+                </form>
+                {% comment %} <a href="{% url "update_cart" product.id %}?qty=12"><button
+                        class="btn btn-primary cart mx-2">Add to Cart</button></a> {% endcomment %}
             </div>
         </div>
 

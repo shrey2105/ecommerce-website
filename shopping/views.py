@@ -1,11 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey
+from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey, Cart, CartItem, Order, Buy, BuyItem
 from django.contrib import messages
+from django.contrib.auth.models import User
 from math import ceil
 import json
 from django.views.decorators.csrf import csrf_exempt
 from PayTM import Checksum
+from django.urls import reverse
+from .utils import orderid_generator
+import ast
 
 paytm = PaytmKey.objects.values('merchant_id', 'merchant_key')
 for item in paytm:
@@ -52,7 +56,7 @@ def tracker(request):
         email = request.POST.get("email", default="")
         
         try:
-            order = Orders.objects.filter(order_id=orderid, email=email)
+            order = Orders.objects.filter(order_id=orderid)
             if len(order) > 0:
                 update = OrdersUpdate.objects.filter(order_id=orderid)
                 updates = []
@@ -67,6 +71,27 @@ def tracker(request):
             return HttpResponse('{"status":"error"}')
 
     return render(request, 'shopping/tracker.html')
+
+def orderTracker(request):
+    if request.method == 'POST':
+        orderid = request.POST.get("orderid", default="")
+        
+        try:
+            order = Order.objects.filter(order_id=orderid, user=request.user)
+            if len(order) > 0:
+                update = OrdersUpdate.objects.filter(order_id=orderid)
+                updates = []
+                for item in update:
+                    updates.append({'text':item.update_description, 'time':item.timestamp})
+                    response = json.dumps({"status":"success", "updates":updates, "items_json":order[0].cartproduct_items}, default=str)
+                return HttpResponse(response)
+            else:
+                return HttpResponse('{"status":"noitem"}')
+
+        except Exception as e:
+            return HttpResponse('{"status":"error"}')
+
+    return render(request, 'shopping/new_tracker.html')
 
 def searchMatch(query, item):
     if query in item.product_name.lower() or query in item.category.lower() or query in item.description.lower():
@@ -96,6 +121,134 @@ def productView(request, id):
     product = Product.objects.filter(id = id)
     params = {'product':product[0]}
     return render(request, 'shopping/product_view.html', params)
+
+def cartCheckout(request):
+    thanks = request.POST.get("buy_thanks")
+    if thanks:
+        try:
+            user = request.user
+            buy = Buy.objects.get(user=user)
+            buy_item = BuyItem.objects.filter(buy=buy.id)
+            
+            items = []
+            for item in buy_item:
+                items.append([item.product.product_name, item.quantity])
+        except:
+            return HttpResponseRedirect(reverse("new_checkout"))
+        
+        if request.method == "POST":
+            name = request.POST.get("name", default="")
+            email = request.POST.get("email", default="")
+            address1 = request.POST.get("address1", default="")
+            address2 = request.POST.get("address2", default="")
+            city = request.POST.get("city", default="")
+            state = request.POST.get("state", default="")
+            zip_code = request.POST.get("zip_code", default="")
+            mobile_number = request.POST.get("mobile_number", default="")
+
+            try:
+                new_order = Order.objects.get(buy=buy)
+            except Order.DoesNotExist:
+                new_order = Order()
+                new_order.buy = buy
+                new_order.Cart = None
+                new_order.user = request.user
+                new_order.order_id = orderid_generator()
+                new_order.cartproduct_items = items
+                new_order.final_total = buy.total_price
+                new_order.name = name
+                new_order.email = email
+                new_order.address1 = address1
+                new_order.address2 = address2
+                new_order.city = city
+                new_order.state = state
+                new_order.zip_code = zip_code
+                new_order.mobile_number = mobile_number
+                new_order.save()
+            except:
+                return HttpResponseRedirect(reverse("new_checkout"))
+
+            orders_update = OrdersUpdate(order_id=new_order.order_id, update_description="Your order has been placed") 
+            orders_update.save()
+
+            # After payment, request paytm to transfer amount to our account done by customer
+            params_dict = {
+                'MID':merchant_id,
+                'ORDER_ID':new_order.order_id,
+                'TXN_AMOUNT':str(buy.total_price),
+                'CUST_ID':email,
+                'INDUSTRY_TYPE_ID':'Retail',
+                'WEBSITE':'WEBSTAGING',
+                'CHANNEL_ID':'WEB',
+                'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandleBuy/',
+                'MERC_UNQ_REF':str(user.id),
+            }
+            params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
+            return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
+        return render(request, "shopping/new_checkout.html", {'buy_item':buy_item, 'buy_total':buy.total_price})
+
+    else:
+        try:
+            user = request.user
+            cart = Cart.objects.get(user=user)
+            cart_item = CartItem.objects.filter(cart=cart.id)
+            items = []
+            for item in cart_item:
+                items.append([item.product.product_name, item.quantity])
+        except:
+            return HttpResponseRedirect(reverse("cartView"))
+
+        if request.method == "POST":
+            name = request.POST.get("name", default="")
+            email = request.POST.get("email", default="")
+            address1 = request.POST.get("address1", default="")
+            address2 = request.POST.get("address2", default="")
+            city = request.POST.get("city", default="")
+            state = request.POST.get("state", default="")
+            zip_code = request.POST.get("zip_code", default="")
+            mobile_number = request.POST.get("mobile_number", default="")
+
+            try:
+                new_order = Order.objects.get(cart=cart)
+            except Order.DoesNotExist:
+                new_order = Order()
+                new_order.cart = cart
+                new_order.buy = None
+                new_order.user = request.user
+                new_order.order_id = orderid_generator()
+                new_order.cartproduct_items = items
+                new_order.final_total = cart.total_price
+                new_order.name = name
+                new_order.email = email
+                new_order.address1 = address1
+                new_order.address2 = address2
+                new_order.city = city
+                new_order.state = state
+                new_order.zip_code = zip_code
+                new_order.mobile_number = mobile_number
+                new_order.save()
+            except:
+                return HttpResponseRedirect(reverse("cartview"))
+
+            orders_update = OrdersUpdate(order_id=new_order.order_id, update_description="Your order has been placed") 
+            orders_update.save()
+            
+            # After payment, request paytm to transfer amount to our account done by customer
+            params_dict = {
+                'MID':merchant_id,
+                'ORDER_ID':new_order.order_id,
+                'TXN_AMOUNT':str(cart.total_price),
+                'CUST_ID':email,
+                'INDUSTRY_TYPE_ID':'Retail',
+                'WEBSITE':'WEBSTAGING',
+                'CHANNEL_ID':'WEB',
+                'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandle/',
+                'MERC_UNQ_REF':str(user.id),
+            }
+            params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
+            return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
+        return render(request, "shopping/new_checkout.html", {'cart_item':cart_item, 'cart_total':cart.total_price})
+    return render(request, "shopping/new_checkout.html")
 
 def checkout(request):
     if request.method == 'POST':
@@ -134,12 +287,39 @@ def checkout(request):
         return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
     return render(request, 'shopping/checkout.html')
 
-def emptyCart(request):
-    return render(request, 'shopping/empty_cart.html')
-
 @csrf_exempt
 def paymentHandle(request):
     # PayTM will send us the post request here
+    
+    form = request.POST
+    print(form)
+    response_dict = {}
+    for i in form.keys():
+        response_dict[i]=form[i]
+        if i == "CHECKSUMHASH":
+            checksum = form[i]
+
+    verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
+    cart = Cart.objects.get(user=form['MERC_UNQ_REF'])
+    print(cart)
+    new_order = Order.objects.get(cart=cart)
+    new_order.status = "Finished"
+    new_order.save()
+
+    if verify:
+        if response_dict['RESPCODE'] == '01':
+            print("Order Successful")
+        else:
+            new_order.delete()
+            print("Order Unsuccessful Because" + response_dict['RESPMSG'])
+    else: 
+        print("Order Unsuccessful Because" + response_dict['RESPMSG'])
+    return render(request, 'shopping/paytm_status.html', {'response':response_dict})
+
+@csrf_exempt
+def paymentHandleBuy(request):
+    # PayTM will send us the post request here
+    
     form = request.POST
     response_dict = {}
     for i in form.keys():
@@ -148,17 +328,161 @@ def paymentHandle(request):
             checksum = form[i]
 
     verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
-    print(verify)
+    buy = Buy.objects.get(user=form['MERC_UNQ_REF'])
+    new_order = Order.objects.get(buy=buy)
+    new_order.status = "Finished"
+    new_order.save()
+
     if verify:
         if response_dict['RESPCODE'] == '01':
             print("Order Successful")
         else:
+            new_order.delete()
             print("Order Unsuccessful Because" + response_dict['RESPMSG'])
     else: 
         print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    return render(request, 'shopping/paytm_status.html', {'response':response_dict})
+    return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'buy_thanks':True})
 
 def orderDetails(request):
-    return render(request, 'shopping/order_details.html')
+    user = request.user
+    new_order = Order.objects.filter(user=user)
+    return render(request, 'shopping/order_details.html', {'order':new_order})
 
+def cartView(request):
+    try:
+        user = request.user
+        cart = Cart.objects.get(user=user)
+        cart_id = cart.id
+    except:
+        cart_id = None
+
+    if cart_id:
+        cart = Cart.objects.get(id=cart_id)
+        new_total = 0.00
+        for item in cart.cartitem_set.all():
+            line_total = float(item.product.price) * item.quantity
+            new_total = new_total + line_total
+        
+        cart.total_price = new_total
+        cart.save()
+
+        # empty_message = "Your cart is empty. Please keep shopping."
+        params = {"cart":cart, 'cart_count':cart.cartitem_set.count()}
+    else:
+        # empty_message = "Your cart is empty. Please keep shopping."
+        params = {'empty':True}
+    return render(request, "shopping/cartView.html", params)
+
+def remove_from_cart(request, id):
+    try:
+        user = request.user
+        cart = Cart.objects.get(user=user)
+    except:
+        return HttpResponseRedirect(reverse("cartView"))
+    
+    cartitem = CartItem.objects.get(id=id)
+    cartitem.delete()
+    request.session['items_total'] = cart.cartitem_set.count()
+    # cartitem.cart = None
+    # cartitem.save()
+    return HttpResponseRedirect(reverse("cartView"))
+        
+
+def add_to_cart(request, id):
+    if request.user.is_authenticated:
+        try:
+            user = request.user
+            cart = Cart.objects.get(user=user)
+        except Cart.DoesNotExist:
+            cart = Cart()
+            cart.user = request.user
+            cart.save()
+        
+        cart = Cart.objects.get(id=cart.id)
+
+        try:
+            product = Product.objects.get(id=id)
+        except Product.DoesNotExist:
+            pass
+        except: 
+            pass
+
+        if request.method == "POST":
+            try:
+                qty = int(request.POST['qty'])
+                cart_item = CartItem.objects.get(cart=cart, product=product)
+                cart_item.quantity += qty
+                cart_item.save()
+            except CartItem.DoesNotExist:
+                qty = request.POST['qty']
+                cart_item = CartItem.objects.create(cart=cart, product=product)
+                cart_item.quantity = qty
+                cart_item.save()
+            request.session['items_total'] = cart.cartitem_set.count()
+            return HttpResponseRedirect(f"/shop/productView/{id}")
+    else:
+        return HttpResponseRedirect(reverse("cartView"))
+
+    return HttpResponseRedirect(reverse("cartView"))
+
+def buy_now(request, id):
+    if request.user.is_authenticated:
+        buy = Buy.objects.filter(user=request.user)
+        buy.delete()
+        try:
+            user = request.user
+            buy = Buy.objects.get(user=user)
+        except Buy.DoesNotExist:
+            buy = Buy()
+            buy.user = request.user
+            buy.save()
+        
+        buy = Buy.objects.get(id=buy.id)
+
+        try:
+            product = Product.objects.get(id=id)
+        except Product.DoesNotExist:
+            pass
+        except: 
+            pass
+
+        buy.total_price = product.price
+        buy.save()
+
+        try:
+            buy_item = BuyItem.objects.get(buy=buy, product=product)
+            buy_item.save()
+        except BuyItem.DoesNotExist:
+            buy_item = BuyItem.objects.create(buy=buy, product=product)
+            buy_item.save()
+        return render(request, "shopping/new_checkout.html", {'buy':buy, 'buy_item':buy_item, 'thanks':True})
+    else:
+        return HttpResponseRedirect(reverse("cartView"))
+    return render(request, "shopping/new_checkout.html")
+
+def cart_item_count(request):
+    try:
+        user = request.user
+        cart = Cart.objects.get(user=user)
+        new_order = Order.objects.get(cart=cart)
+        if new_order.status == "Finished":
+            del request.session['items_total']
+            cart.delete()
+            request.session['items_total'] = 0 
+            return HttpResponseRedirect(reverse("shoppingHome"))
+    except Order.DoesNotExist:
+        return HttpResponseRedirect(reverse("cartView"))
+    return HttpResponseRedirect(reverse("shoppingHome"))
+
+def buy_item_count(request):
+    try:
+        user = request.user
+        buy = Buy.objects.get(user=user)
+        new_order = Order.objects.get(buy=buy)
+        if new_order.status == "Finished":
+            buy.delete()
+            return HttpResponseRedirect(reverse("shoppingHome"))
+    except Order.DoesNotExist:
+        return HttpResponseRedirect(reverse("cartView"))
+    return HttpResponseRedirect(reverse("shoppingHome"))
 

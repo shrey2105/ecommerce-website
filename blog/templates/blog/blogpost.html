@@ -60,7 +60,7 @@ img.profile-image {overflow: visible;}
 
   <h2 class="comments mt-4">Comments({{comments.count}})</h2>
   {% if user.is_authenticated %}
-  <form class="post-comment mt-3" id="comment-form" action="/blog/blog/postComment" method="post">{% csrf_token %}
+  <form class="post-comment mt-3" id="comment-form" action="/blog/postComment" method="post">{% csrf_token %}
     <div class="form-group">
       <h5><label for="comment">Post Comment</label></h5>
       <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Enter your comment"></textarea>
@@ -98,7 +98,7 @@ img.profile-image {overflow: visible;}
           {% endif %}
           <div class="collapse" id="reply-box{{comment.comment_id}}">
             <div class="card card-body my-2">
-              <form class="post-comment mt-3" id="comment-form" action="/blog/blog/postComment" method="post">
+              <form class="post-comment mt-3" id="comment-form" action="/blog/postComment" method="post">
                 {% csrf_token %}
                 <div class="form-group">
                   <h5><label for="comment">Post a Reply</label></h5>

@@ -2,7 +2,40 @@
 
 {% block title %}Order Details{% endblock %}
 {% block body %}
-<div class="container">
-    
+{% load literal_eval %}
+<div class="container mt-3">
+<h1 class="order-detail-title">Order Details</h1>
+    <table class="table">
+        <thead>
+            <th>Order ID</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Date/Time</th>
+            <th></th>
+        </thead>
+        {% for item in order %}
+        
+        {% comment %} {% for qty in product %} {% endcomment %}
+        {% comment %} {{product.0}} {% endcomment %}
+        {% comment %} {% endfor %} {% endcomment %}
+        
+        <tr>
+            <td>{{item.order_id}}</td>
+            <td>
+            {% for product in item.cartproduct_items|literal_eval %}
+            {{forloop.counter}}. {{product.0}}<br>
+            {% endfor %}
+            </td>
+            <td>
+             {% for quantity in item.cartproduct_items|literal_eval %}
+            {{quantity.1}}<br>
+            {% endfor %}
+            </td>
+            <td>{{item.final_total}}</td>
+            <td>{{item.timestamp}}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
 {% endblock body %}

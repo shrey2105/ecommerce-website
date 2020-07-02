@@ -1,0 +1,54 @@
+{% extends 'shopping/basic.html' %}
+
+{% block title %}Cart{% endblock %}
+{% block css %}
+.result {display: block; clear: both; vertical-align: middle; position: relative;}
+.display-box {position: relative;width: 100%;max-width: 500px;background-color: #fff;border: 4px solid #000;padding:
+40px 20px;margin: 50px auto;line-height: 30px;display: block;clear: both;
+}
+.display-box p a {color: #000; font-weight: 600; text-decoration: underline;
+}
+{% endblock %}
+{% block body %}
+<div class="container">
+
+    {% if empty or cart_count == 0 %}
+
+    <div class="result">
+        <div class="display-box">
+            <h2>SHOPPING CART IS EMPTY</h2>
+            <p>You have no items in your shopping cart.</p>
+            <p>Click <a href="/shop/">here</a> to continue shopping.</p>
+        </div>
+    </div>
+
+    {% else %}
+    <table class="table">
+        <thead>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th></th>
+        </thead>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td><b>Total:</b> Rs. {{cart.total_price}}</td>
+            </tr>
+        </tfoot>
+        {% for item in cart.cartitem_set.all %}
+        <tr>
+            <td>{{item.product}}</td>
+            <td>{{item.product.price}}</td>
+            <td>{{item.quantity}}</td>
+            <td><a href="{% url 'remove_from_cart' item.id %}"><i class='fa fa-trash-o'></i></a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <hr>
+    <a href="{% url 'new_checkout' %}"><button class="btn btn-dark">Checkout</button></a>
+    {% endif %}
+</div>
+{% endblock body %}

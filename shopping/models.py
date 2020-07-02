@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Product(models.Model):
@@ -14,6 +15,54 @@ class Product(models.Model):
     def __str__(self):
         return self.product_name
 
+class CartItem(models.Model):
+    cart = models.ForeignKey('Cart', on_delete=models.CASCADE, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    line_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        try:
+            return f"{self.cart.id}"
+        except:
+            return self.product.product_name
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    total_price = models.DecimalField(max_digits=100, decimal_places=2, default=0.00)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Cart id: {self.id}"
+
+class BuyItem(models.Model):
+    buy = models.ForeignKey('Buy', on_delete=models.CASCADE, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    line_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        try:
+            return f"{self.buy.id}"
+        except:
+            return self.product.product_name
+
+class Buy(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    total_price = models.DecimalField(max_digits=100, decimal_places=2, default=0.00)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Buy id: {self.id}"
+    
 class Contact(models.Model):
     query_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
@@ -23,6 +72,35 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.name
+
+STATUS_CHOICES = (
+    ("Started", "Started"),
+    ("Abandoned", "Abandoned"),
+    ("Finished", "Finished"),
+)
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    order_id = models.CharField(max_length=120, default='ABC', unique=True)
+    cartproduct_items = models.CharField(max_length=5000, null=True, blank=True, default="")
+    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True)
+    buy = models.ForeignKey(Buy, on_delete=models.SET_NULL, null=True)
+    status = models.CharField(max_length=120, choices=STATUS_CHOICES, default="Started")
+    sub_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
+    final_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
+    name = models.CharField(max_length=100, default="")
+    email = models.CharField(max_length=100, default="")
+    address1 = models.CharField(max_length=100, default="")
+    address2 = models.CharField(max_length=100, default="")
+    city = models.CharField(max_length=100, default="")
+    state = models.CharField(max_length=100, default="")
+    zip_code = models.CharField(max_length=100, default="")
+    mobile_number = models.CharField(max_length=50, default="")
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return str(self.order_id)
 
 class Orders(models.Model):
     order_id = models.AutoField(primary_key=True)
@@ -42,7 +120,7 @@ class Orders(models.Model):
 
 class OrdersUpdate(models.Model):
     update_id = models.AutoField(primary_key=True)
-    order_id = models.IntegerField(default="")
+    order_id = models.CharField(max_length=20, default="")
     update_description = models.CharField(max_length=5000)
     timestamp = models.DateField(auto_now_add=True)
 
@@ -56,3 +134,6 @@ class PaytmKey(models.Model):
 
     def __str__(self):
         return self.name
+
+
+

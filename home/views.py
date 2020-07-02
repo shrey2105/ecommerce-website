@@ -5,10 +5,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from blog.models import BlogPost
 from home.models import Profile
+from shopping.models import Cart
 import json
 from django.core.files.storage import FileSystemStorage
 
 # Create your views here.
+def error_404_view(request, exception):
+    return render(request, "home/404_not_found.html")
+
 def home(request):
 	return render(request, "home/home.html")
 
@@ -66,6 +70,12 @@ def signin(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
+            try:
+                user = request.user
+                cart = Cart.objects.get(user=user)
+                request.session['items_total'] = cart.cartitem_set.count()
+            except Cart.DoesNotExist:
+                request.session['items_total'] = 0
             messages.success(request, "Welcome to Devastator Blogs! You have been logged in successfully")
             return redirect("/home/")
         else:

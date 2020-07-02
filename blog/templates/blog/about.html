@@ -1,6 +1,42 @@
 {% extends 'blog/basic.html' %}
 {% block title %}About{% endblock title %}
 
+{% block aboutactive %}active{% endblock aboutactive %}
 {% block body %}
+<main role="main">
 
+  <!-- Main jumbotron for a primary marketing message or call to action -->
+  <div class="jumbotron">
+    <div class="container">
+      <h1 class="display-3">Devastator Blogs</h1>
+      <p>A place where you can give your views in form of blogs and can publish them for sharing your ideas with others.</p>
+      <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more »</a></p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Business</h2>
+        <p>Businesses saw a good way to improve the customer’s level of satisfaction. Through blogging, companies keep clients and customers up to date. The more people visit your blog, the more exposure and trust your brand gets. </p>
+        {% comment %} <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p> {% endcomment %}
+      </div>
+      <div class="col-md-4">
+        <h2>Personal</h2>
+        <p>Personal and niche bloggers, saw the potential to reach more people interested in specific topics. Through a blog, visitors can comment and interact with you or your brand which helps you create a network of loyal followers. </p>
+        {% comment %} <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p> {% endcomment %}
+      </div>
+      <div class="col-md-4">
+        <h2>Blogger</h2>
+        <p>A blogger is someone who runs and controls a blog. He or she shares his or her opinion on different topics for a target audience.</p>
+        {% comment %} <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p> {% endcomment %}
+      </div>
+    </div>
+
+    <hr>
+
+  </div> <!-- /container -->
+
+</main>
 {% endblock body %}

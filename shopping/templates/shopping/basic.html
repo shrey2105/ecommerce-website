@@ -16,6 +16,7 @@
         footer.page-footer .footer-copyright{overflow: hidden;color: rgba(255,255,255,0.6);background-color: #000000;}
         .unique-color-dark{background-color: #1c2331 !important;}
         footer.page-footer {bottom: 0;color: #fff;}
+        footer.page-footer a{color: #fff;}
         .deep-purple{background-color: #673ab7 !important;}
         img.bottom-image{width: 231px;height: 110px;}
     </style>
@@ -32,15 +33,21 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
+              <a class="nav-link" href="/home">Home</a>
+            </li>
+            <li class="nav-item {% block aboutactive %}
+            {% endblock aboutactive %}">
                 <a class="nav-link" href="/shop/about">About Us</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/shop/tracker">Tracker</a>
+            <li class="nav-item {% block trackeractive %}
+            {% endblock trackeractive %}">
+                <a class="nav-link" href="/shop/orderTracker">Tracker</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/blog">Blog</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {% block contactactive %}
+            {% endblock contactactive %}">
                 <a class="nav-link" href="/shop/contact">Contact Us</a>
             </li>
         </ul>
@@ -48,12 +55,15 @@
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
-        <button type="button" id="popcart" class="btn btn-secondary mx-3" title="Shopping Cart" data-container="body" data-toggle="popover" data-html="true" data-placement="bottom" data-content="">
+        {% comment %} <button type="button" id="popcart" class="btn btn-secondary mx-3" title="Shopping Cart" data-container="body" data-toggle="popover" data-html="true" data-placement="bottom" data-content="">
             Cart(<span id="cart">0</span>)
-        </button>
+        </button> {% endcomment %}
+        <a href="/shop/cartView"><button type="button" class="btn btn-secondary mx-3"><i class='fa fa-shopping-cart'></i>
+            Cart <span class="badge badge-dark">{{request.session.items_total}}</span>
+        </button></a>
         {% if user.is_authenticated %}
       <div class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle btn btn-dark" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Welcome: {{request.user}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -104,16 +114,7 @@
                 <h6 class="text-uppercase font-weight-bold">Products</h6>
                 <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
                 <p>
-                    <a href="#!">MDBootstrap</a>
-                </p>
-                <p>
-                    <a href="#!">MDWordPress</a>
-                </p>
-                <p>
-                    <a href="#!">BrandFlow</a>
-                </p>
-                <p>
-                    <a href="#!">Bootstrap Angular</a>
+                    <a href="/blog">Devastator Blogs</a>
                 </p>
 
             </div>
@@ -123,19 +124,10 @@
             <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-4">
 
                 <!-- Links -->
-                <h6 class="text-uppercase font-weight-bold">Useful links</h6>
+                <h6 class="text-uppercase font-weight-bold">Query</h6>
                 <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
                 <p>
-                    <a href="#!">Your Account</a>
-                </p>
-                <p>
-                    <a href="#!">Become an Affiliate</a>
-                </p>
-                <p>
-                    <a href="#!">Shipping Rates</a>
-                </p>
-                <p>
-                    <a href="#!">Help</a>
+                    <a href="/shop/contact/">Help</a>
                 </p>
 
             </div>
@@ -148,13 +140,9 @@
                 <h6 class="text-uppercase font-weight-bold">Contact</h6>
                 <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
                 <p>
-                    <i class="fas fa-home mr-3"></i> New York, NY 10012, US</p>
+                    <i class="fas fa-home mr-3"></i> Pune, India</p>
                 <p>
-                    <i class="fas fa-envelope mr-3"></i> info@example.com</p>
-                <p>
-                    <i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
-                <p>
-                    <i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
+                    <i class="fas fa-envelope mr-3"></i>info@example.com</p>
 
             </div>
             <!-- Grid column -->
@@ -167,12 +155,11 @@
 
     <!-- Copyright -->
     <div class="footer-copyright text-center py-3">© 2020 Copyright:
-        apnakart.com
+        shopnblog
     </div>
     <!-- Copyright -->
 
 </footer>
-<!-- Footer -->
 
 <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>

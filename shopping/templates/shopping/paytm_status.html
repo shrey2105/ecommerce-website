@@ -1,57 +1,258 @@
-{% extends 'shopping/basic.html' %}
+<!doctype html>
+<html lang="en">
 
-{% block title %}Transaction Status{% endblock %}
-{% block css %}
-.result {display: block; clear: both; vertical-align: middle; position: relative;}
-.display-box {position: relative;width: 100%;max-width: 500px;background-color: #fff;border: 4px solid #000;padding: 40px 20px;margin: 50px auto;line-height: 30px;display: block;clear: both;}
-.display-box p a {color: #000; font-weight: 600; text-decoration: underline;}
-.display-box h2 {color: #000; font-size: 22px; text-align: center; margin-bottom: 20px; display: block; font-weight: 600;text-transform: uppercase;font-family: lato;}
-.display-box p {color: #000;font-size: 14px;text-align: center;display: block;}
-{% endblock %}
-{% block body %}
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <title></title>
+    <style>
+        .result {
+            display: block;
+            clear: both;
+            position: relative;
+        }
+
+        .display-box {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            background-color: #fff;
+            border: 4px solid #000;
+            padding: 40px 20px;
+            margin: 50px auto;
+            line-height: 30px;
+            display: block;
+            clear: both;
+        }
+
+        .display-box p a {
+            color: #000;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .display-box h2 {
+            color: #000;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: block;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-family: lato;
+        }
+
+        .display-box p {
+            color: #000;
+            font-size: 14px;
+            text-align: center;
+            display: block;
+        }
+
+        .header {
+            background: #000000;
+        }
+
+        footer.page-footer .footer-copyright {
+            overflow: hidden;
+            color: rgba(255, 255, 255, 0.6);
+            background-color: #000000;
+        }
+
+        .unique-color-dark {
+            background-color: #1c2331 !important;
+        }
+
+        footer.page-footer {
+            bottom: 0;
+            color: #fff;
+        }
+
+        .deep-purple {
+            background-color: #673ab7 !important;
+        }
+
+        img.bottom-image {
+            width: 231px;
+            height: 110px;
+        }
+    </style>
+
+</head>
+
+<body>
+    {% load static %}
+    <nav class="navbar navbar-expand-lg navbar-dark header">
+        <a class="navbar-brand" href="#"><img src="{% static 'shopping/desktop_logo_top.png' %}"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
     {% if response.RESPCODE == '01' %}
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    <strong>Contratulations!</strong> Your Order has been successfully placed. Use this Order ID: {{response.ORDERID}} to track your order.
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-<div class="container">
-    <div class="alert alert-success" role="alert">
-        <h4 class="alert-heading">{% if response.RESPMSG == 'Txn Success' %}Your Payment is Successful{% endif %}</h4>
-        <p><b>Transaction Amount: </b>{{response.TXNAMOUNT}} {{response.CURRENCY}}</p>
-        <p><b>Status: </b>{% if response.STATUS == 'TXN_SUCCESS' %}Transaction Successful{% endif %}</p>
-        <p><b>Transaction ID: </b>{{response.TXNID}}</p>
-        <p><b>Date: </b>{{response.TXNDATE}}</p>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Contratulations!</strong> Your Order has been successfully placed. Use this Order ID:
+        {{response.ORDERID}} to track your order.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
-    <div class="result mt-4">
-        <div class="display-box">
-            <h2>Thank You</h2>
-            <p>For Shopping With Us</p>
-            <p>Kindly Please Visit Again</p>
-            <p>Click <a href="/shop/">Here</a> to Continue Shopping</p>
+    <div class="container">
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">{% if response.RESPMSG == 'Txn Success' %}Your Payment is
+                Successful{% endif %}</h4>
+            <p><b>Transaction Amount: </b>{{response.TXNAMOUNT}} {{response.CURRENCY}}</p>
+            <p><b>Status: </b>{% if response.STATUS == 'TXN_SUCCESS' %}Transaction Successful{% endif %}</p>
+            <p><b>Transaction ID: </b>{{response.TXNID}}</p>
+            <p><b>Date: </b>{{response.TXNDATE}}</p>
         </div>
-    </div>
-    {% else %}
-    <div class="alert alert-danger" role="alert">
-        {{response.RESPMSG}}
-    </div>
-    <div class="result mt-4">
-        <div class="display-box">
-            <h2>Order Placement was not Successful</h2>
-            <p>Please Kindly Check</p>
-            <p>Please Visit Again</p>
-            <p>Click <a href="/shop/">Here</a> to Continue Shopping</p>
-        </div>
-    </div>
-    {% endif %}   
-</div>
-{% endblock %}
+        <div class="result mt-4">
+            <div class="display-box">
+                <h2>Thank You</h2>
+                <p>For Shopping With Us</p>
+                <p>Kindly Please Visit Again</p>
+                <p>Note: The page will automatically redirect in <span id="count">3</span> seconds</p>
 
-{% block js %}
-<script>
-    $(document).ready(function () {
-                 localStorage.clear();
-             });
-</script>
-{% endblock %}
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            {{response.RESPMSG}}
+        </div>
+        <div class="result mt-4">
+            <div class="display-box">
+                <h2>Order Placement was not Successful</h2>
+                <p>Please Kindly Check</p>
+                <p>Please Visit Again</p>
+                <p>Note: The page will automatically redirect in <span id="count">3</span> seconds</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <!-- Footer -->
+    <footer class="page-footer font-small unique-color-dark mt-4">
+        <!-- Footer Links -->
+        <div class="container text-center text-md-left mt-5">
+
+            <!-- Grid row -->
+            <div class="row mt-3">
+
+                <!-- Grid column -->
+                <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mt-4">
+
+                    <!-- Content -->
+                    <a href="#"><img src="{% static 'shopping/desktop_logo_top.png' %}" class="bottom-image"></a>
+
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-4">
+
+                    <!-- Links -->
+                    <h6 class="text-uppercase font-weight-bold">Products</h6>
+                    <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+                    <p>
+                        <a href="#">Devastator Blogs</a>
+                    </p>
+
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-4">
+
+                    <!-- Links -->
+                    <h6 class="text-uppercase font-weight-bold">Query</h6>
+                    <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+                    <p>
+                        <a href="#">Help</a>
+                    </p>
+
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mt-4">
+
+                    <!-- Links -->
+                    <h6 class="text-uppercase font-weight-bold">Contact</h6>
+                    <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+                    <p>
+                        <i class="fas fa-home mr-3"></i> Pune, India</p>
+                    <p>
+                        <i class="fas fa-envelope mr-3"></i>info@example.com</p>
+
+                </div>
+                <!-- Grid column -->
+
+            </div>
+            <!-- Grid row -->
+
+        </div>
+        <!-- Footer Links -->
+
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">© 2020 Copyright:
+            shopnblog
+        </div>
+        <!-- Copyright -->
+
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+    <script>
+        window.onload = function () {
+
+            (function () {
+                var counter = 3;
+
+                setInterval(function () {
+                    counter--;
+                    if (counter >= 0) {
+                        span = document.getElementById("count");
+                        span.innerHTML = counter;
+                    }
+                    // Display 'counter' wherever you want to display it.
+                    if (counter === 0) {
+                        //    alert('this is where it happens');
+                        clearInterval(counter);
+                    }
+
+                }, 1000);
+
+            })();
+
+        }
+        </script>
+        {% if buy_thanks %}
+        <script>
+        setTimeout(function () {
+            document.location = "/shop/buy_item_count";
+        }, 3000);
+        </script>
+        {% else %}
+        <script>
+        setTimeout(function () {
+            document.location = "/shop/cart_item_count";
+        }, 3000);
+        </script>
+        {% endif %}
+    
+</body>
+
+</html>
