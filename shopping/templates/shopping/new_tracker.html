@@ -5,22 +5,23 @@
 {% block body %}
 <div class="container">
     <div class="col my-4">
-        <h2>Enter Order Id to track order</h2>
+        <h2 class="mt-3">Enter Order Id to track order:</h2>
         <form action="#" id="tracker-update" method="post">{% csrf_token %}
-            <div class="form-row">
-                <div class="form-group col-md-6">
+            <div class="form-row mt-2">
+                <div class="form-group col-md-6 mt-2">
                     <label for="inputOrderId4">Order Id</label>
                     <input type="text" class="form-control" id="inputOrderId4" name="orderid" placeholder="Order Id">
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Track Order</button>
+            <button type="submit" class="btn btn-primary mt-2">Track Order</button>
         </form>
     </div>
 
     <div class="col my-4">
-        <h2>Order Status</h2>
-        <div class="my-4">
-            <ul class="list-group" id="ordered-items">
+        <h2 class="mt-4">Order Status</h2>
+        <h3 class="mt-4">Your Order status will be displayed below. Please provide correct Order Id:
+        <div class="mt-4">
+            <ul class="list-group mt-2" id="ordered-items">
             </ul>
         </div>
     </div>

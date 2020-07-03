@@ -18,7 +18,9 @@
         <div class="display-box">
             <h2>SHOPPING CART IS EMPTY</h2>
             <p>You have no items in your shopping cart.</p>
+            <p>You need to be logged in to add items to your cart.</p>
             <p>Click <a href="/shop/">here</a> to continue shopping.</p>
+            <p>Note: The page will automatically redirect in <span id="count">3</span> seconds.</p>
         </div>
     </div>
 
@@ -52,3 +54,33 @@
     {% endif %}
 </div>
 {% endblock body %}
+
+{% block js %}
+<script>
+window.onload = function () {
+
+            (function () {
+                var counter = 3;
+
+                setInterval(function () {
+                    counter--;
+                    if (counter >= 0) {
+                        span = document.getElementById("count");
+                        span.innerHTML = counter;
+                    }
+                    // Display 'counter' wherever you want to display it.
+                    if (counter === 0) {
+                        //    alert('this is where it happens');
+                        clearInterval(counter);
+                    }
+
+                }, 1000);
+
+            })();
+
+        }
+    setTimeout(function () {
+            document.location = "/shop/";
+        }, 3000);
+</script>
+{% endblock %}
