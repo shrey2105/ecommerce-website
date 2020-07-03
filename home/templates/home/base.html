@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <!-- Bootstrap CSS -->
+   {% load static %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'home/img/favicon.png' %}"/>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
@@ -29,7 +31,7 @@
 {% load static %}
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark header">
-    <a class="navbar-brand" href="/"><img src="{% static 'home/img/home-logo.png' %}"></a>
+    <a class="navbar-brand" href="/home"><img src="{% static 'home/img/home-logo.png' %}"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -39,6 +41,21 @@
       <ul class="navbar-nav mr-auto">
       </ul>
     </div>
+    {% if user.is_authenticated %}
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle btn btn-dark mx-2" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Welcome: {{request.user}}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="/home/profile">Profile</a>
+          <a class="dropdown-item" href="/home/signout">Logout</a>
+        </div>
+      </div>
+      {% else %}
+      <a href="/home/signin"><button type="button" id="signin" class="btn btn-light mx-2">Log In</button>
+      <a href="/home/signup"><button type="button" id="signup" class="btn btn-light">Sign Up</button></a>
+      {% endif %}
+        </div>
   </nav>
   {% if messages %}
   {% for message in messages %}

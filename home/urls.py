@@ -10,4 +10,5 @@ urlpatterns = [
     path("signout", views.signout, name="signout"),
     path("profile", views.profile, name="profile"),
     path("changePassword", views.changePassword, name="changePassword"),
+    path("cannot_access", views.cannot_access, name="cannot_access"),
 ]

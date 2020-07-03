@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 
 # Create your models here.
+
+PUBLISH_STATUS_CHOICES = (
+    ("Published", "Published"),
+    ("Unpublished", "Unpublished"),
+    ("Featured", "Featured"),
+)
+
 class BlogPost(models.Model):
     post_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
@@ -12,9 +19,10 @@ class BlogPost(models.Model):
     content_heading2 = models.CharField(max_length=5000, default="")
     sub_heading = models.CharField(max_length=500, default="")
     sub_heading_content = models.CharField(max_length=5000, default="")
-    pub_date = models.DateField()
+    pub_date = models.DateField(blank=True, null=True)
     author = models.CharField(max_length=30, default="")
-    thumbnail = models.ImageField(upload_to="blog/images", default="")
+    thumbnail = models.ImageField(upload_to="blog/images", default="", null=True, blank=True)
+    status = models.CharField(max_length=120, choices=PUBLISH_STATUS_CHOICES, default="Unpublished")
 
     def __str__(self):
         return self.title

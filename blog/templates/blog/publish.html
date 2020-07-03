@@ -1,0 +1,219 @@
+{% extends 'blog/basic.html' %}
+{% block title %}Publish Blog{% endblock title %}
+{% block css %}
+.form-publish {
+width: 100%;
+max-width: 495px;
+padding: 15px;
+margin: auto;
+}
+.form-publish .text-center {
+text-align: center!important;
+}
+.form-publish .mb-4, .form-publish .my-4 {
+margin-bottom: 1.5rem!important;
+}
+.form-publish img{
+vertical-align: middle;
+border-style: none;
+}
+.form-publish .font-weight-normal {
+font-weight: 400!important;
+}
+.form-publish .text-center p {
+margin-top: 0;
+margin-bottom: 1rem;
+}
+.form-publish .form-label-group {
+position: relative;
+margin-bottom: 1rem;
+}
+.form-publish .form-label-group > input, .form-label-group > label {
+height: 3.125rem;
+padding: .75rem;
+}
+.form-publish .form-control {
+display: block;
+width: 100%;
+height: calc(1.5em + .75rem + 2px);
+padding: .375rem .75rem;
+font-size: 1rem;
+font-weight: 400;
+line-height: 1.5;
+color: #495057;
+background-color: #fff;
+background-clip: padding-box;
+border: 1px solid #ced4da;
+border-radius: .25rem;
+transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.form-publish .form-label-group > label {
+position: absolute;
+top: 0;
+left: 0;
+display: block;
+width: 100%;
+margin-bottom: 0;
+line-height: 1.5;
+color: #495057;
+pointer-events: none;
+cursor: text;
+border: 1px solid transparent;
+border-radius: .25rem;
+transition: all .1s ease-in-out;
+}
+.form-publish .form-label-group input::-webkit-input-placeholder {
+color: transparent;
+}
+
+.form-publish .form-label-group input:-ms-input-placeholder {
+color: transparent;
+}
+
+.form-publish .form-label-group input::-ms-input-placeholder {
+color: transparent;
+}
+
+.form-publish .form-label-group input::-moz-placeholder {
+color: transparent;
+}
+
+.form-publish .form-label-group input::placeholder {
+color: transparent;
+}
+
+.form-publish .form-label-group input:not(:placeholder-shown) {
+padding-top: 1.25rem;
+padding-bottom: .25rem;
+}
+
+.form-publish .form-label-group input:not(:placeholder-shown) ~ label {
+padding-top: .25rem;
+padding-bottom: .25rem;
+font-size: 12px;
+color: #777;
+}
+.form-publish .form-label-group > textarea{
+height: 6.125rem;
+padding: .75rem;
+}
+.form-publish .form-label-group
+textarea::-webkit-input-placeholder {
+color: transparent;
+}
+.form-publish .form-label-group
+textarea:-ms-input-placeholder {
+color: transparent;
+}
+.form-publish .form-label-group
+textarea::-ms-input-placeholder {
+color: transparent;
+}
+.form-publish .form-label-group textarea::-moz-placeholder {
+color: transparent;
+}
+.form-publish .form-label-group textarea::placeholder {
+color: transparent;
+}
+.form-publish .form-label-group
+textarea:not(:placeholder-shown) {
+padding-top: 1.25rem;
+padding-bottom: .25rem;
+}
+.form-publish .form-label-group
+textarea:not(:placeholder-shown) ~ label {
+padding-top: .25rem;
+padding-bottom: .25rem;
+font-size: 12px;
+color: #777;
+}
+{% endblock css %}
+
+{% block body %}
+<div class="container">
+  <form class="form-publish" id="publish-form" action="/blog/publish" method="post" novalidate="">{% csrf_token %}
+    <div class="text-center mb-4">
+      <h1 class="my-3">Want to publish your blog? No Problem!</h1>
+      <h1 class="h3 mb-3 font-weight-normal"> Fill your content</h1>
+    </div>
+
+    <div class="form-label-group">
+      <input type="text" class="form-control" id="title"
+        name="title" placeholder="Title" required="" autofocus="">
+      <label for="title">Title</label>
+      <span class="error_title"></span>
+    </div>
+
+    <div class="form-label-group">
+      <input type="text" class="form-control" id="first_heading" name="first_heading" placeholder="First Heading" required="">
+      <label for="first_heading">First Heading</label>
+      <span class="error_first_heading"></span>
+    </div>
+
+    <div class="form-label-group">
+      <textarea class="form-control" id="first_content" rows="3" name="first_content" placeholder="Enter your first heading content" required=""></textarea>
+      <label for="first_content">First Heading Content</label>
+      <span id="remaining_first_content"></span>
+      <span class="error_first_content"></span>
+    </div>
+
+    <div class="form-label-group">
+      <input type="text" class="form-control" id="second_heading" name="second_heading" placeholder="Second Heading" required="">
+      <label for="second_heading">Second Heading</label>
+      <span class="error_second_heading"></span>
+    </div>
+
+    <div class="form-label-group">
+      <textarea class="form-control" id="second_content" rows="3" name="second_content" placeholder="Enter your second heading content" required=""></textarea>
+      <label for="second_content">Second Heading Content</label>
+      <span id="remaining_second_content"></span>
+      <span class="error_second_content"></span>
+    </div>
+
+    <div class="form-label-group">
+      <input type="text" class="form-control" id="sub_heading" name="sub_heading" placeholder="Sub Heading" required="">
+      <label for="sub_heading">Sub Heading</label>
+      <span class="error_sub_heading"></span>
+    </div>
+
+    <div class="form-label-group">
+      <textarea class="form-control" id="sub_content" rows="3" name="sub_content" placeholder="Enter your sub heading content" required=""></textarea>
+      <label for="sub_content">Sub Heading Content</label>
+      <span id='remaining_sub_content'></span>
+      <span class="error_sub_content"></span>
+    </div>
+
+    <button id="submit-button" name="submit" class="btn btn-lg btn-dark btn-block" type="submit">Submit</button>
+  </form>
+</div>
+{% endblock body %}
+
+{% block js %}
+{% load static %}
+<script src="{% static 'blog/js/publish-blog.js' %}"></script>
+<script>
+    publish_blog_validation();
+
+
+    $('textarea[name=first_content]').keypress(function(){
+    if(this.value.length > 160){
+        return true;
+    }
+    $("#remaining_first_content").html("<span style='font-size: 80%; color: #dc3545;'>Min characters: " + (160 - this.value.length) + "</span>");
+});
+
+    $('textarea[name=second_content]').keypress(function(){
+    if(this.value.length > 160){
+        return true;
+    }
+    $("#remaining_second_content").html("<span style='font-size: 80%; color: #dc3545;'>Min characters: " + (160 - this.value.length) + "</span>");
+});
+
+    $('textarea[name=sub_content]').keypress(function(){
+    if(this.value.length > 160){
+        return true;
+    }
+    $("#remaining_sub_content").html("<span style='font-size: 80%; color: #dc3545;'>Min characters: " + (160 - this.value.length) + "</span>");
+});
+</script>
+{% endblock %}

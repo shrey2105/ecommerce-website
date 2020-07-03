@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
 from blog.models import BlogPost, BlogComment, Contact
 from django.contrib import messages
 import json
@@ -74,3 +74,22 @@ def contact(request):
             return HttpResponse(response)
         # messages.success(request, "Your response has been successfully recorded."
     return render(request, "blog/contact.html")
+
+def publish(request):
+	if request.user.is_authenticated:
+		if request.method == "POST":
+			title = request.POST.get("title")
+			first_heading = request.POST.get("first_heading")
+			first_content = request.POST.get("first_content")
+			second_heading = request.POST.get("second_heading")
+			second_content = request.POST.get("second_content")
+			sub_heading = request.POST.get("sub_heading")
+			sub_content = request.POST.get("sub_content")
+			
+			publish = BlogPost(title=title, heading1=first_heading, content_heading1=first_content, heading2=second_heading, content_heading2=second_content, sub_heading=sub_heading, sub_heading_content=sub_content, author=request.user.first_name)
+			publish.save()
+			messages.success(request, "Your content has been submitted successfully for review. Your content will be published after successful review.")
+			return HttpResponseRedirect("/blog/publish")
+	else:
+		return HttpResponseRedirect("/home/cannot_access")
+	return render(request, "blog/publish.html")

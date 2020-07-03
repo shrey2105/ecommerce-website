@@ -46,63 +46,75 @@ def signupcheck(request):
     return render(request)
 
 def signup(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        firstname= request.POST.get("firstname")
-        lastname= request.POST.get("lastname")
-        email = request.POST.get("email")
-        password1 = request.POST.get("password1")
-        password2 = request.POST.get("password2")
-            
-        user = User.objects.create_user(username, email, password1)
-        user.first_name = firstname
-        user.last_name = lastname
-        user.save()
-        messages.success(request, "You have been successfully registered with us")
-        return redirect('/home/')
+    if not request.user.is_authenticated:
+        if request.method == "POST":
+            username = request.POST.get("username")
+            firstname= request.POST.get("firstname")
+            lastname= request.POST.get("lastname")
+            email = request.POST.get("email")
+            password1 = request.POST.get("password1")
+            password2 = request.POST.get("password2")
+                
+            user = User.objects.create_user(username, email, password1)
+            user.first_name = firstname
+            user.last_name = lastname
+            user.save()
+            messages.success(request, "You have been successfully registered with us. Now, You can Log In")
+            return redirect('/home/')
+    else:
+        return HttpResponseRedirect("/home")
     return render(request, "home/signup.html")
 
 def signin(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
+    if not request.user.is_authenticated:
+        if request.method == "POST":
+            username = request.POST["username"]
+            password = request.POST["password"]
 
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            try:
-                user = request.user
-                cart = Cart.objects.get(user=user)
-                request.session['items_total'] = cart.cartitem_set.count()
-            except Cart.DoesNotExist:
-                request.session['items_total'] = 0
-            messages.success(request, "Welcome to Devastator Blogs! You have been logged in successfully")
-            return redirect("/home/")
-        else:
-            messages.error(request, "Login Failed! Kindly check your Username or Password")
-            return redirect("/home/signin")
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                try:
+                    user = request.user
+                    cart = Cart.objects.get(user=user)
+                    request.session['items_total'] = cart.cartitem_set.count()
+                except Cart.DoesNotExist:
+                    request.session['items_total'] = 0
+                messages.success(request, "Welcome to Shop N Blog! You have been logged in successfully.")
+                return redirect("/home/")
+            else:
+                messages.error(request, "Login Failed! Kindly check your Username or Password")
+                return redirect("/home/signin")
+    else:
+        return HttpResponseRedirect("/home")
     return render(request, "home/signin.html")
 
 
 def signout(request):
-    logout(request)
+    if request.user.is_authenticated:
+        logout(request)
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
     return render(request, "home/signout.html")
 
 def profile(request):
-    if request.method == "POST":
-        user_id = request.POST.get("user_id")
-        user = User.objects.get(pk=user_id)
-        user.first_name = request.POST.get("name")
-        user.email = request.POST.get("email")
-        user.profile.mobile_number = request.POST.get("mobile")
-        user.profile.gender = request.POST.get("gender", False)
-        user.profile.birth_day = request.POST.get("day")
-        user.profile.birth_month = request.POST.get("month")
-        user.profile.birth_year = request.POST.get("year")
-        image = request.FILES.get("upload_image", "home/images/no-profile-pic.png")
-        user.profile.image = image
-        user.save()
-        return HttpResponseRedirect("/home/profile")
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user_id = request.POST.get("user_id")
+            user = User.objects.get(pk=user_id)
+            user.first_name = request.POST.get("name")
+            user.email = request.POST.get("email")
+            user.profile.mobile_number = request.POST.get("mobile")
+            user.profile.gender = request.POST.get("gender", False)
+            user.profile.birth_day = request.POST.get("day")
+            user.profile.birth_month = request.POST.get("month")
+            user.profile.birth_year = request.POST.get("year")
+            image = request.FILES.get("upload_image", "home/images/no-profile-pic.png")
+            user.profile.image = image
+            user.save()
+            return HttpResponseRedirect("/home/profile")
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
     return render(request, "home/profile.html")
 
 def changePassword(request):
@@ -124,4 +136,7 @@ def changePassword(request):
             messages.error(request, "Something went wrong. Kindly check if your old password is correct.")
         return HttpResponseRedirect("/home/signin")
     return render(request, "home/profile.html")
+
+def cannot_access(request):
+    return render(request, "home/cannot_access.html")
 
