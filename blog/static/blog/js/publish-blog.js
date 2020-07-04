@@ -2,9 +2,9 @@ function publish_blog_validation() {
     $("form#publish-form button[name=submit]").on("click", function () {
 
         var validation_holder = 0;
-        var title_regex = /^[A-Za-z. ]{5,25}$/;
-        var heading_regex = /^[A-Za-z. ]{20,40}$/;
-        var content_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{150,}$/;
+        var title_regex = /^.{10,}$/;
+        var heading_regex = /^.{20,}$/;
+        var content_regex = /^.{160,}$/;
   
         var title = $("form#publish-form input[name=title]").val(); 
         var first_heading = $("form#publish-form input[name=first_heading]").val();
@@ -21,7 +21,7 @@ function publish_blog_validation() {
           validation_holder = 1;
         } else {
           if (!title_regex.test(title)) {
-            $("span.error_title").html("<span style='font-size: 80%; color: #dc3545;'>Min: 5 characters and Max: 25 characters. No numerics allowed.</span>").addClass('validate');
+            $("span.error_title").html("<span style='font-size: 80%; color: #dc3545;'>Min: 10 characters required.</span>").addClass('validate');
             $("input[name=title]").focus();
             $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
             validation_holder = 1;
@@ -39,7 +39,7 @@ function publish_blog_validation() {
           validation_holder = 1;
         } else {
           if (!heading_regex.test(first_heading)) {
-            $("span.error_first_heading").html("<span style='font-size: 80%; color: #dc3545;'>Min: 20 characters and Max: 40 characters. No numerics allowed.</span>").addClass('validate');
+            $("span.error_first_heading").html("<span style='font-size: 80%; color: #dc3545;'>Min: 20 characters required.</span>").addClass('validate');
             $("input[name=first_heading]").focus();
             $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
             validation_holder = 1;
@@ -57,7 +57,7 @@ function publish_blog_validation() {
           validation_holder = 1;
         } else {
           if (!content_regex.test(first_content)) {
-            $("span.error_first_content").html("<span style='font-size: 80%; color: #dc3545;'>Min: 160 characters. Atleast one uppercase, one lowercase and one numeric digit. Special Characters allowed.</span>").addClass('validate');
+            $("span.error_first_content").html("<span style='font-size: 80%; color: #dc3545;'>Min: 160 characters required.</span>").addClass('validate');
             $("textarea[name=first_content]").focus();
             $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
             validation_holder = 1;
@@ -75,7 +75,7 @@ function publish_blog_validation() {
           validation_holder = 1;
         } else {
           if (!heading_regex.test(second_heading)) {
-            $("span.error_second_heading").html("<span style='font-size: 80%; color: #dc3545;'>Min: 20 characters and Max: 40 characters. No numerics allowed.</span>").addClass('validate');
+            $("span.error_second_heading").html("<span style='font-size: 80%; color: #dc3545;'>Min: 20 characters required.</span>").addClass('validate');
             $("input[name=second_heading]").focus();
             $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
             validation_holder = 1;
@@ -93,7 +93,7 @@ function publish_blog_validation() {
           validation_holder = 1;
         } else {
           if (!content_regex.test(second_content)) {
-            $("span.error_second_content").html("<span style='font-size: 80%; color: #dc3545;'>Min: 160 characters. Atleast one uppercase, one lowercase and one numeric digit. Special Characters allowed.</span>").addClass('validate');
+            $("span.error_second_content").html("<span style='font-size: 80%; color: #dc3545;'>Min: 160 characters required.</span>").addClass('validate');
             $("textarea[name=second_content]").focus();
             $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
             validation_holder = 1;
@@ -111,7 +111,7 @@ function publish_blog_validation() {
           validation_holder = 1;
         } else {
           if (!heading_regex.test(sub_heading)) {
-            $("span.error_sub_heading").html("<span style='font-size: 80%; color: #dc3545;'>Min: 20 characters and Max: 40 characters. No numerics allowed.</span>").addClass('validate');
+            $("span.error_sub_heading").html("<span style='font-size: 80%; color: #dc3545;'>Min: 20 characters required.</span>").addClass('validate');
             $("input[name=sub_heading]").focus();
             $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
             validation_holder = 1;
@@ -129,7 +129,7 @@ function publish_blog_validation() {
           validation_holder = 1;
         } else {
           if (!content_regex.test(sub_content)) {
-            $("span.error_sub_content").html("<span style='font-size: 80%; color: #dc3545;'>Min: 20 characters and Max: 40 characters. No numerics allowed.</span>").addClass('validate');
+            $("span.error_sub_content").html("<span style='font-size: 80%; color: #dc3545;'>Min: 160 characters required.</span>").addClass('validate');
             $("textarea[name=sub_content]").focus();
             $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
             validation_holder = 1;

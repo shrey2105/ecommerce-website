@@ -7,28 +7,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <!-- Bootstrap CSS -->
-   {% load static %}
-    <link rel="shortcut icon" type="image/png" href="{% static 'home/img/favicon.png' %}"/>
+  {% load static %}
+  <link rel="shortcut icon" type="image/png" href="{% static 'home/img/favicon.png' %}" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
   <title>{% block title %}{% endblock title %}</title>
   <style>
     {% block css %}{% endblock css %}
-    #search-form{margin-left: 40em;}
+
+    #search-form {
+      margin-left: 40em;
+    }
+
     a#navbarDropdownMenuLink {
-      color:white;
-}
-        .header{background:#000000;}
-        footer.page-footer .footer-copyright{overflow: hidden;color: rgba(255,255,255,0.6);background-color: #000000;}
-        .unique-color-dark{background-color: #1c2331 !important;}
-        footer.page-footer {bottom: 0;color: #fff;}
-        footer.page-footer a{color: #fff;}
-        .deep-purple{background-color: #673ab7 !important;}
-        img.bottom-image{width: 231px;height: 110px;}
+      color: white;
+    }
+
+    .header {
+      background: #000000;
+    }
+
+    footer.page-footer .footer-copyright {
+      overflow: hidden;
+      color: rgba(255, 255, 255, 0.6);
+      background-color: #000000;
+    }
+
+    .unique-color-dark {
+      background-color: #1c2331 !important;
+    }
+
+    footer.page-footer {
+      bottom: 0;
+      color: #fff;
+    }
+
+    footer.page-footer a {
+      color: #fff;
+    }
+
+    .deep-purple {
+      background-color: #673ab7 !important;
+    }
+
+    img.bottom-image {
+      width: 231px;
+      height: 110px;
+    }
   </style>
 </head>
 {% load static %}
+
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark header">
     <a class="navbar-brand" href="/home"><img src="{% static 'home/img/home-logo.png' %}"></a>
@@ -40,22 +70,22 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
       </ul>
-    </div>
     {% if user.is_authenticated %}
-      <div class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle btn btn-dark mx-2" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Welcome: {{request.user}}
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="/home/profile">Profile</a>
-          <a class="dropdown-item" href="/home/signout">Logout</a>
-        </div>
+    <div class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle btn btn-dark mx-2" href="#" id="navbarDropdownMenuLink" role="button"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Welcome: {{request.user}}
+      </a>
+      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+        <a class="dropdown-item" href="/home/profile">Profile</a>
+        <a class="dropdown-item" href="/home/signout">Logout</a>
       </div>
-      {% else %}
-      <a href="/home/signin"><button type="button" id="signin" class="btn btn-light mx-2">Log In</button>
+    </div>
+    {% else %}
+    <a href="/home/signin"><button type="button" id="signin" class="btn btn-light mx-2">Log In</button>
       <a href="/home/signup"><button type="button" id="signup" class="btn btn-light">Sign Up</button></a>
       {% endif %}
-        </div>
+      </div>
   </nav>
   {% if messages %}
   {% for message in messages %}
@@ -70,86 +100,92 @@
 
   {% block body %}
   {% endblock body %}
-<!-- Footer -->
-<footer class="page-footer font-small unique-color-dark mt-4">
+  <!-- Footer -->
+  <footer class="page-footer font-small unique-color-dark mt-4">
     <!-- Footer Links -->
     <div class="container text-center text-md-left mt-5">
 
-        <!-- Grid row -->
-        <div class="row mt-3">
+      <!-- Grid row -->
+      <div class="row mt-3">
 
-            <!-- Grid column -->
-            <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mt-4">
+        <!-- Grid column -->
+        <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mt-4">
 
-                <!-- Content -->
-                <a href="/shop"><img src="{% static 'home/img/home-logo.png' %}" class="bottom-image"></a>
-
-            </div>
-            <!-- Grid column -->
-
-            <!-- Grid column -->
-            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-4">
-
-                <!-- Links -->
-                <h6 class="text-uppercase font-weight-bold">Products</h6>
-                <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
-                <p>
-                    <a href="/shop/">Apnakart</a>
-                </p>
-                <p>
-                    <a href="/blog">Devastator Blogs</a>
-                </p>
-
-            </div>
-            <!-- Grid column -->
-
-            <!-- Grid column -->
-            <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-4">
-
-                <!-- Links -->
-                <h6 class="text-uppercase font-weight-bold">Query</h6>
-                <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
-                <p>
-                    <a href="/home/contact/">Help</a>
-                </p>
-
-            </div>
-            <!-- Grid column -->
-
-            <!-- Grid column -->
-            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mt-4">
-
-                <!-- Links -->
-                <h6 class="text-uppercase font-weight-bold">Contact</h6>
-                <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
-                <p>
-                    <i class="fas fa-home mr-3"></i> Pune, India</p>
-                <p>
-                    <i class="fas fa-envelope mr-3"></i>info@example.com</p>
-
-            </div>
-            <!-- Grid column -->
+          <!-- Content -->
+          <a href="/shop"><img src="{% static 'home/img/home-logo.png' %}" class="bottom-image"></a>
 
         </div>
-        <!-- Grid row -->
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-4">
+
+          <!-- Links -->
+          <h6 class="text-uppercase font-weight-bold">Products</h6>
+          <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+          <p>
+            <a href="/shop/">Apnakart</a>
+          </p>
+          <p>
+            <a href="/blog">Devastator Blogs</a>
+          </p>
+
+        </div>
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-4">
+
+          <!-- Links -->
+          <h6 class="text-uppercase font-weight-bold">Query</h6>
+          <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+          <p>
+            <a href="/home/contact/">Help</a>
+          </p>
+
+        </div>
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mt-4">
+
+          <!-- Links -->
+          <h6 class="text-uppercase font-weight-bold">Contact</h6>
+          <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+          <p>
+            <i class="fas fa-home mr-3"></i> Pune, India</p>
+          <p>
+            <i class="fas fa-envelope mr-3"></i>info@example.com</p>
+
+        </div>
+        <!-- Grid column -->
+
+      </div>
+      <!-- Grid row -->
 
     </div>
     <!-- Footer Links -->
 
     <!-- Copyright -->
     <div class="footer-copyright text-center py-3">© 2020 Copyright:
-        shopnblog
+      shopnblog
     </div>
     <!-- Copyright -->
 
-</footer>
+  </footer>
 
-<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.9/typed.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.9/typed.min.js"></script>
 
-{% block js %} {% endblock %}
+  {% block js %} {% endblock %}
 
 </body>
+
 </html>

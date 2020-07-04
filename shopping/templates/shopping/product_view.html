@@ -11,7 +11,7 @@ width:50px;
     <div class="row mt-4">
         <div class="col-md-4">
             <div class="row">
-                <img src="/media/{{product.image}}" class="card-img-top my-3" height=300 alt="...">
+                <img src="{{MEDIA_URL}}{{product.image}}" class="card-img-top my-3" height=300 alt="...">
             </div>
             <div class="row">
                 <a href="{% url 'buy_now' product.id %}"><button class="btn btn-primary cart">Buy Now</button></a>
