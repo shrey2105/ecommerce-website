@@ -94,81 +94,104 @@ font-size: 12px;
 color: #777;
 }
 {% endblock css %}
+{% block homeactive %}active{% endblock homeactive %}
+
 
 {% block body %}
+{% load static %}
 <div class="container">
-  <form class="form-signup" id="signup-form" action="/home/signup" method="post" novalidate="">{% csrf_token %}
-    <div class="text-center mb-4">
-      {% comment %} <img class="mb-4" src="/docs/4.5/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-      {% endcomment %}
-      <h1 class="my-3">New to Apnakart &amp; Devastator Blogs!</h1>
-      <h1 class="h3 mb-3 font-weight-normal">Please Sign Up</h1>
-    </div>
+  <div class="text-center my-3">
+    <img class="d-block mx-auto my-4" src="{% static 'shopping/img/home-logo.png' %}" alt="">
+    <h1 class="my-4">New to Apnakart &amp; Devastator Blogs!</h1>
+    <h1 class="h3 mb-3 font-weight-normal">Please Sign Up</h1>
+  </div>
+  <form class="form-signup" id="signup-form" action="/home/signup" method="post" novalidate="">
+    {% csrf_token %}
+
 
     <div class="form-label-group">
-      <input type="text" class="form-control" pattern="^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$" id="username"
-        name="username" placeholder="Username" required="" autofocus="">
+      <input type="text" class="form-control" id="username" name="username" required="" placeholder="Username"
+        autofocus="">
       <label for="username">Username</label>
-      <!-- <div class="valid-feedback" id="username_valid" style="display:none">Username Available</div> -->
-      <!-- <div class="invalid-feedback" id="username_response" style="display:none">Username Unavailable</div> -->
-      <div class="invalid-feedback">
-        Username invalid. Should contain: altleast 1 alphabet and 1 numeric
-      </div>
       <span class="error_username"></span>
+      <div class="valid-feedback" id="username_valid" style="display:none">Username Available</div>
+      <div class="invalid-feedback" id="username_response" style="display:none">Username Unavailable. Should contain: altleast 1 alphabet and 1 numeric</div>
+      <div class="invalid-feedback">This is a required field.</div>
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" pattern="^[A-Za-z. ]{3,20}$" id="firstname" name="firstname"
-        placeholder="First Name" required="">
+      <input type="text" class="form-control" pattern="^[A-Za-z. ]{3,20}$" id="firstname" name="firstname" placeholder="First Name" required="">
       <label for="firstname">First Name</label>
-      <div class="valid-feedback">Done</div>
-      <div class="invalid-feedback">
-        First name invalid. Should contain: atleast 3 albhabets. No numeric allowed
-      </div>
       <span class="error_fname"></span>
+      <div class="invalid-feedback">Should contain: atleast 3 albhabets. No numeric allowed</div>
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" pattern="^[A-Za-z. ]{3,20}$" id="lastname" name="lastname"
-        placeholder="Last Name" required="">
+      <input type="text" class="form-control" id="lastname" pattern="^[A-Za-z. ]{3,20}$" name="lastname" placeholder="Last Name" required="">
       <label for="lastname">Last Name</label>
-      <div class="valid-feedback">Done</div>
-      <div class="invalid-feedback">
-        Last name invalid. Should contain: atleast 3 albhabets. No numeric allowed
-      </div>
       <span class="error_lname"></span>
+      <div class="invalid-feedback">Should contain: atleast 3 albhabets. No numeric allowed</div>
     </div>
 
     <div class="form-label-group">
-      <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required="">
+      <input type="email" class="form-control" id="email" pattern="^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$" name="email" placeholder="Email Address" required="">
       <label for="email">Email Address</label>
-      <div class="valid-feedback">Done</div>
-      <div class="invalid-feedback">
-        Email invalid. Should contain atleast 3 characters.
-      </div>
       <span class="error_email"></span>
+      <div class="invalid-feedback">Email should be in the format abc@domain.tld.</div>
     </div>
 
     <div class="form-label-group">
-      <input type="password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" class="form-control pwds" id="password1"
-        name="password1" placeholder="Password" required="">
+      <input type="password" class="form-control pwds" id="password1" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" name="password1" placeholder="Password"
+        required="">
       <label for="password1">Password</label>
-      <div class="valid-feedback">Done</div>
-      <div class="invalid-feedback" id="pwd1invalid">
-        Password invalid. Should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed
-      </div>
       <span class="error_password1"></span>
+      <div class="invalid-feedback">Should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed.</div>
     </div>
 
     <div class="form-label-group">
-      <input type="password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" class="form-control pwds" id="password2"
-        name="password2" placeholder="Confirm Password" required="">
+      <input type="password" class="form-control pwds" id="password2" placeholder="Confirm Password" name="password2"
+        required="">
       <label for="password2">Confirm Password</label>
-      <div id="pwd2valid" class="valid-feedback">Password Matched</div>
-      <div id="pwd2invalid" class="invalid-feedback">
-        Password Didn't Matched
-      </div>
       <span class="error_password2"></span>
+      <div class="invalid-feedback">This is a required field.</div>
+    </div>
+
+    <div class="form-label-group">
+      <input type="text" class="form-control" id="day" pattern="^[0-9].{1,1}$" name="day" placeholder="Day of Birth" required="">
+      <label for="day">Day of Birth</label>
+      <span class="error_day"></span>
+      <div class="invalid-feedback">Should contain day in the format dd say 01</div>
+    </div>
+
+    <div class="form-label-group">
+      <input type="text" class="form-control" id="month" pattern="^[0-9].{1,1}$" name="month" placeholder="Month of Birth" required="">
+      <label for="month">Month of Birth</label>
+      <div class="invalid-feedback">Should contain month in the format mm say 01</div>
+      <span class="error_month"></span>
+    </div>
+
+    <div class="form-label-group">
+      <input type="text" class="form-control" id="year" pattern="^[0-9].{3,3}$" name="year" placeholder="Year of Birth" required="">
+      <label for="year">Year of Birth</label>
+      <span class="error_year"></span>
+      <div class="invalid-feedback">Should contain year in the format yyyy say 1995</div>
+    </div>
+
+    <div class="form-group">
+      <div class="gender mx-3">
+        <label for="gender">Gender</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input mx-3" type="radio" name="gender" id="male" value="M"
+            {% if request.user.profile.gender == "M" %} checked {% endif %} required="">
+          <label class="form-check-label" for="male">Male</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="gender" id="female" value="F"
+            {% if request.user.profile.gender == "F" %} checked {% endif %} required="">
+          <label class="form-check-label" for="female">Female</label>
+        </div>
+      </div>
+      <div class="invalid-feedback">This is a required field.</div>
     </div>
 
     <button id="submit-button" name="submit" class="btn btn-lg btn-dark btn-block" type="submit">Sign Up</button>
@@ -178,172 +201,66 @@ color: #777;
 
 {% block js %}
 <script>
-  $(document).ready(function () {
-    $("form#signup-form button[name=submit]").on("click", function () {
-
-      var validation_holder = 0;
-      var username = $("form#signup-form input[name='username']").val();
-      var username_regex = /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/;
-      var fname = $("form#signup-form input[name='firstname']").val();
-      var fname_regex = /^[A-Za-z. ]{5,20}$/;
-      var lname = $("form#signup-form input[name='lastname']").val();
-      var lname_regex = /^[A-Za-z. ]{5,20}$/;
-      var email = $("form#signup-form input[name='email']").val();
-      var email_regex = /^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$/;
-      var password1 = $("form#signup-form input[name='password1']").val();
-      var password1_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-      var password2 = $("form#signup-form input[name='password2']").val();
-      var password2_regex = /^[ A-Za-z0-9_@.\#&+-]{20,}$/;
-
-      if (username == "") {
-        $("span.error_username").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=username]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-        $("#username").val("");
-      } else {
-        if (!username_regex.test(username)) {
-          $("span.error_username").html("<span style='font-size: 80%; color: #dc3545;'>Username invalid. Should contain: altleast 1 alphabet and 1 numeric.</span>").addClass('validate');
-          $("input[name=username]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-          $("#username").val("");
-        } else {
-
-          $.ajax({
+    $(document).ready(function(){
+  $("#username").on("blur", function(){
+  var formData = {
+              "username": $("#username").val(),
+              "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
+            };
+  $.ajax({
             url: '/home/signupcheck',
             type: 'post',
-            data: {
-              "username": username,
-              "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
-            },
+            data: formData,
             success: function (msg) {
-              if ((msg != "OK")) {
-                $("span.error_username").html("<span style='font-size: 80%; color: #dc3545;'>Username unavailable.</span>").addClass('validate');
-                $("input[name=username]").focus();
-                $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-                $("#username").val("");
-                validation_holder = 1;
-              }
-              else {
-                $("span.error_username").html("<span style='font-size: 80%; color: #28a745;'>Username available.</span>");
-                $("input[name=username]").focus();
-                $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-              }
-            }
-            
+              var hasNumber = /\d/;
+              if((msg == "OK") && ((formData.username).length > 4) && (hasNumber.test(formData.username)))
+        {
+            $("#username_valid").show()
+            $("#username_response").hide()
+        }
+        else
+        {
+             $("#username_valid").hide()
+            $("#username_response").show()
+            $("#username").val("");    
+        }
+    }
+
           });
-        }
-      }
+        });
 
-      if (fname == "") {
-        $("span.error_fname").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=firstname]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-        $("#firstname").val("");
-      } else {
-        if (!fname_regex.test(fname)) {
-          $("span.error_fname").html("<span style='font-size: 80%; color: #dc3545;'>First name invalid. Should contain: atleast 3 albhabets. No numeric allowed.</span>").addClass('validate');
-          $("input[name=firstname]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-          $("#firstname").val("");
-        } else {
-          $("span.error_fname").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=firstname]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
+        $('#password1, #password2').on('blur', function () {
+          if ($('#password1').val() != '' && $('#password2').val() != '' && $('#password1').val() == $('#password2').val()) {
+            $('.error_password2').html('Password Matching').css({'font-size': '80%', 'color': '#28a745'});
+            } else {
+            $('.error_password2').html('Password Not Matching').css({'font-size': '80%', 'color': '#dc3545'});
+            $("#password2").val("");
+            }
+            });
 
-      if (lname == "") {
-        $("span.error_lname").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=lastname]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-        $("#lastname").val("");
-      } else {
-        if (!lname_regex.test(lname)) {
-          $("span.error_lname").html("<span style='font-size: 80%; color: #dc3545;'>Last name invalid. Should contain: atleast 3 albhabets. No numeric allowed.</span>").addClass('validate');
-          $("input[name=lastname]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-          $("#lastname").val("");
-        } else {
-          $("span.error_lname").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=lastname]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
+        let currForm1 = document.getElementById('signup-form');
+        // Validate on submit:
+        currForm1.addEventListener('submit', function(event) {
+          if (currForm1.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          currForm1.classList.add('was-validated');
+        }, false);
+        // Validate on input:
+        currForm1.querySelectorAll('.form-control').forEach(input => {
+          input.addEventListener(('input'), () => {
+            if (input.checkValidity()) {
+              input.classList.remove('is-invalid')
+              input.classList.add('is-valid');
+            } else {
+              input.classList.remove('is-valid')
+              input.classList.add('is-invalid');
+            }
 
-      if (email == "") {
-        $("span.error_email").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=email]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-        $("#email").val("");
-      } else {
-        if (!email_regex.test(email)) {
-          $("span.error_email").html("<span style='font-size: 80%; color: #dc3545;'>Please enter a valid email address.</span>").addClass('validate');
-          $("input[name=email]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-          $("#email").val("");
-        } else {
-          $("span.error_email").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=email]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
-
-      if (password1 == "") {
-        $("span.error_password1").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=password1]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-        $("#password1").val("");
-      } else {
-        if (!password1_regex.test(password1)) {
-          $("span.error_password1").html("<span style='font-size: 80%; color: #dc3545;'>Password invalid. Should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed.</span>").addClass('validate');
-          $("input[name=password1]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-          $("#password1").val("");
-        } else {
-          $("span.error_password1").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=password1]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
-
-      if (password2 == "") {
-        $("span.error_password2").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=password2]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-        $("#password2").val("");
-      } else {
-        if (password1 != password2) {
-          $("span.error_password2").html("<span style='font-size: 80%; color: #dc3545;'>Password dosen't match.</span>").addClass('validate');
-          $("input[name=password2]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-          $("#password2").val("");
-        } else {
-          $("span.error_password2").html("<span style='font-size: 80%; color: #28a745;'>Password matched.</span>");
-          $("input[name=password2]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
-
-      if (validation_holder == 1) {
-        return false;
-      } validation_holder = 0;
-
-    });
-  });
-
-
+          });
+        });
+      });
 
 </script>
 {% endblock %}

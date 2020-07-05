@@ -8,7 +8,7 @@ class Product(models.Model):
     category = models.CharField(max_length=50, default="")
     subcategory = models.CharField(max_length=50, default="")
     price = models.IntegerField(default="0")
-    description = models.CharField(max_length=300)
+    description = models.TextField()
     pub_date = models.DateField()
     image = models.ImageField(upload_to="shopping/images", default="")
 
@@ -128,12 +128,27 @@ class OrdersUpdate(models.Model):
         return self.update_description[0:]
 
 class PaytmKey(models.Model):
-    name = models.CharField(max_length=50, default="")
-    merchant_id = models.CharField(max_length=50, default="")
-    merchant_key = models.CharField(max_length=50, default="")
+    name = models.CharField(max_length=50, default="", blank=True, null=True)
+    merchant_id = models.CharField(max_length=50, default="", blank=True, null=True)
+    merchant_key = models.CharField(max_length=50, default="", blank=True, null=True)
 
     def __str__(self):
         return self.name
+
+class BannerImage(models.Model):
+    image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)
+    second_image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)
+    third_image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)
+
+    def __str__(self):
+        return f"Banner Image id:{self.id}"
+
+class YoutubeLink(models.Model):
+    youtube_video_link = models.CharField(max_length=1000, blank=True, null=True)
+
+    def __str__(self):
+        return f"Youtube Link id:{self.id}"
+    
 
 
 

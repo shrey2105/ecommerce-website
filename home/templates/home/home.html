@@ -3,6 +3,8 @@
 {% block css %}
 .jumbotron.home{background-color:#424E5A;}
 {% endblock css %}
+
+{% block homeactive %}active{% endblock homeactive %}
 {% block body %}
 {% load static %}
 <main role="main">
@@ -15,7 +17,7 @@
                     <span id="typed" style="color: white;"></span>
                 </h1>
                 <p style="color: white;">It is combined platform for E-commerce and Blogs. You can enjoy online shopping as well as blogging
-                    by visiting two different panels on the website, i.e., Apnakart &amp; Devastator Blogs</p>
+                    by visiting two different panels on the website, i.e., Shopping &amp; Blogging</p>
             </section>
         </div>
     </div>
@@ -25,10 +27,10 @@
             <div class="card mx-auto my-2 p-2 align-items-center" style="width: 18rem;">
                 <img src="{% static 'home/img/online-cart.jpg' %}" class="padded card-img-top" alt="...">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Apnakart</h5>
+                    <h5 class="card-title text-center">Shop</h5>
                     <p class="card-text text-center">The place where you can explore for your desirable items, buy them
                         and can try them. A better place for Online Shoping.</p>
-                    <a href="/shop/" class="btn btn-danger d-block">Apnakart</a>
+                    <a href="/shop/" class="btn btn-danger d-block">Shop</a>
                 </div>
             </div>
             <div class="card mx-auto my-2 p-2 align-items-center" style="width: 18rem;">
@@ -44,11 +46,11 @@
             <div class="card mx-auto my-2 p-2 align-items-center" style="width: 18rem;">
                 <img src="{% static 'home/img/home-blogs.jpg' %}" class="padded card-img-top" alt="...">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Devastator Blogs</h5>
+                    <h5 class="card-title text-center">Blog</h5>
                     <p class="card-text text-center">A place where you can give your views in form of blogs and can
                         publish them for
                         sharing your ideas with others.</p>
-                    <a href="/blog" class="btn btn-success d-block">Devastator Blogs</a>
+                    <a href="/blog" class="btn btn-success d-block">Blog</a>
                 </div>
             </div>
         </div>

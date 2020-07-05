@@ -61,7 +61,7 @@
 
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark header">
-    <a class="navbar-brand" href="/home"><img src="{% static 'home/img/home-logo.png' %}"></a>
+    <a class="navbar-brand" href="/"><img src="{% static 'home/img/home-logo-header.png' %}"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -69,16 +69,42 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
+        <li class="nav-item {% block homeactive %}
+            {% endblock homeactive %}">
+          <a class="nav-link" href="/home">Home</a>
+        </li>
+        <li class="nav-item {% block shopactive %}
+            {% endblock shopactive %}">
+          <a class="nav-link" href="/shop/">Shop</a>
+        </li>
+        <li class="nav-item {% block blogactive %}
+            {% endblock blogactive %}">
+          <a class="nav-link" href="/blog">Blog</a>
+        </li>
+        <li class="nav-item {% block aboutactive %}
+            {% endblock aboutactive %}">
+          <a class="nav-link" href="/home/about">About</a>
+        </li>
+        <li class="nav-item {% block contactactive %}
+            {% endblock contactactive %}">
+          <a class="nav-link" href="/home/contact">Contact</a>
+        </li>
       </ul>
+      <a href="/shop/cartView"><button type="button" class="btn btn-secondary my-2 mr-3"><img src="{% static 'shopping/img/cart.png' %}">
+            Cart <span class="badge badge-dark">{{request.session.items_total}}</span>
+        </button></a>
     {% if user.is_authenticated %}
     <div class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle btn btn-dark mx-2" href="#" id="navbarDropdownMenuLink" role="button"
+      <a class="nav-link dropdown-toggle btn btn-dark mr-3 my-2" href="#" id="navbarDropdownMenuLink" role="button"
         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Welcome: {{request.user}}
       </a>
       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-        <a class="dropdown-item" href="/home/profile">Profile</a>
-        <a class="dropdown-item" href="/home/signout">Logout</a>
+          <a class="dropdown-item" href="/home/profile">Profile</a>
+          <a class="dropdown-item" href="/shop/orderDetails">Order Details</a>
+          <a class="dropdown-item" href="/shop/orderTracker">Order Tracker</a>
+          <a class="dropdown-item" href="/blog/publish">Publish Blog</a>
+          <a class="dropdown-item" href="/home/signout">Logout</a>
       </div>
     </div>
     {% else %}
@@ -112,7 +138,7 @@
         <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mt-4">
 
           <!-- Content -->
-          <a href="/shop"><img src="{% static 'home/img/home-logo.png' %}" class="bottom-image"></a>
+          <a href="/"><img src="{% static 'home/img/home-logo.png' %}" class="bottom-image"></a>
 
         </div>
         <!-- Grid column -->
@@ -124,10 +150,13 @@
           <h6 class="text-uppercase font-weight-bold">Products</h6>
           <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
           <p>
-            <a href="/shop/">Apnakart</a>
+            <a href="/shop/">Shop</a>
           </p>
           <p>
-            <a href="/blog">Devastator Blogs</a>
+            <a href="/home">Home</a>
+          </p>
+          <p>
+            <a href="/blog">Blog</a>
           </p>
 
         </div>
@@ -140,7 +169,13 @@
           <h6 class="text-uppercase font-weight-bold">Query</h6>
           <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
           <p>
-            <a href="/home/contact/">Help</a>
+            <a href="/shop/contact/">Help - Shop</a>
+          </p>
+          <p>
+            <a href="/home/contact">Help - Home</a>
+          </p>
+          <p>
+            <a href="/blog/contact">Help - Blog</a>
           </p>
 
         </div>

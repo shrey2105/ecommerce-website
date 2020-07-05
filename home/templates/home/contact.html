@@ -1,4 +1,4 @@
-{% extends 'blog/basic.html' %}
+{% extends 'home/base.html' %}
 {% block title %}Contact{% endblock title %}
 {% block css %}
 .contact-form {
@@ -103,8 +103,8 @@ color: #777;
 <div class="container my-3">
 <div class="text-center">
 {% load static %}
-<img class="d-block mx-auto my-4" src="{% static 'blog/img/home-logo.png' %}" alt="">
-  <h1>For BLOG related queries, please contact:</h1>
+<img class="d-block mx-auto my-4" src="{% static 'home/img/home-logo.png' %}" alt="">
+  <h1 class="mt-3">For HOME related queries, please contact:</h1>
   </div>
   <form action="#" method="post" class="contact-form" id="form-contact" novalidate="">{% csrf_token %}
     <div class="form-label-group">
@@ -138,9 +138,9 @@ color: #777;
 
 {% block js %}
 {% load static %}
-<script src="{% static 'blog/js/contact-form.js' %}"></script>
+<script src="{% static 'home/js/contact-form.js' %}"></script>
 <script>
-    contact_form_validation()
+    contact_form_home_validation()
 
 </script>
 {% endblock js %}

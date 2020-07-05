@@ -1,4 +1,4 @@
-{% extends 'home/base.html' %}
+{% extends 'blog/basic.html' %}
 
 {% block title %}Search Results{% endblock %}
 {% block css %}
@@ -7,27 +7,35 @@
 .display-box h2 {color: #000; font-size: 22px; text-align: center; margin-bottom: 20px; display: block; font-weight: 600;text-transform: uppercase;font-family: lato;}
 .display-box p {color: #000;font-size: 14px;text-align: center;display: block;}
 {% endblock css %}
-{% block body %}
+{% block blogactive %}active{% endblock blogactive %}
 
+{% block body %}
 <div class="container mt-3">
 {% if message|length == 0 %}
-<h2>Search Results:</h2>
-  <div class="row my-2">
+<h2 class="results mt-4">Search Results:</h2>
+  <div class="row mt-4">
   {% for blogpost in all_posts %}
+  {% if blogpost.status == "Published" or blogpost.status == "Featured" %}
     <div class="col-md-6">
       <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
-          <strong class="d-inline-block mb-2 text-primary">Article by: {{blogpost.author}}</strong>
+          {% if blogpost.status == "Published" %}
+        <span class="badge badge-success">{{blogpost.status}}</span>
+        {% else %}
+        <span class="badge badge-info">{{blogpost.status}}</span>
+        {% endif %}
+          <strong class="d-inline-block mt-2 mb-2 text-primary">Article by: {{blogpost.author}}</strong>
           <h3 class="mb-0">{{blogpost.title}}</h3>
           <div class="mb-1 text-muted">{{blogpost.pub_date}}</div>
-          <p class="card-text mb-auto">{{blogpost.content_heading1|truncatechars:150}}</p>
-          <a href="blog/blogPost/{{blogpost.post_id}}" class="stretched-link">Continue reading</a>
+          <p class="card-text mb-auto">{{blogpost.content_heading1|truncatechars:50}}</p>
+          <a href="blog/blogPost/{{blogpost.post_id}}" class="stretched-link mt-2">Continue reading</a>
         </div>
         <div class="col-auto d-none d-lg-block">
-          <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><defs><clipPath id="myRectangle"><rect width="200" height="250" fill="#55595c" /></clipPath></defs><image xlink:href="/media/{{blogpost.thumbnail}}" height="250px" width="200px" clip-path="url(#myRectangle)"/></svg>
+          <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><defs><clipPath id="myRectangle"><rect width="200" height="250" fill="#55595c" /></clipPath></defs><image xlink:href="{{MEDIA_URL}}{{blogpost.thumbnail}}" height="250px" width="200px" clip-path="url(#myRectangle)"/></svg>
         </div>
       </div>
     </div>
+    {% endif %}
     {% if forloop.counter|divisibleby:2 %}
   </div><div class="row my-2">
   {% endif %}
@@ -39,8 +47,10 @@
             <h2>Sorry!!</h2>
             <p>No Results Found</p>
             <p>Please check the spelling or try searching for something else</p>
+            <p>In order to search something, your search query should be correct or match</p>
         </div>
     </div>
 {% endif %}
 </div>
 {% endblock %}
+

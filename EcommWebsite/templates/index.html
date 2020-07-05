@@ -18,20 +18,10 @@
 
 		<!-- Header -->
 			<header id="header" class="alt">
-				<div class="logo"><a href="/">Shop N Blog <span></span></a></div>
+				<div class="logo"><a href="/"><img src="{% static 'images/home-logo-header.png' %}"><span></span></a></div>
 				{% comment %} <a href="#menu" class="toggle"><span>Menu</span></a> {% endcomment %}
 			</header>
 
-		<!-- Nav -->
-			{% comment %} <nav id="menu">
-				<ul class="links">
-					<li><a href="index.html">Home</a></li>
-					<li><a href="generic.html">Generic</a></li>
-					<li><a href="elements.html">Elements</a></li>
-				</ul>
-			</nav> {% endcomment %}
-
-		<!-- Banner -->
 		<!--
 			To use a video as your background, set data-video to the name of your video without
 			its extension (eg. images/banner). Your video must be available in both .mp4 and .webm
@@ -39,10 +29,11 @@
 		-->
 			<section id="banner" data-video="images/banner">
 				<div class="inner">
-					<h1>Shop N Blog</h1>
+					<img src="{% static 'images/home-logo.png' %}">
 					<p>A common platform, for your shopping as well as Blogging<br />
-					where you can <a href="https://templated.co/">Shop</a> your things and write <a href="https://templated.co/license">Blogs</a> about your experiences.</p>
-					<a href="#one" class="button special scrolly">Get Started</a>
+					where you can <a href="#">Shop</a> your things and write <a href="#">Blogs</a> about your experiences.</p>
+					<a href="#one" class="button special scrolly" style="background-color: transparent;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);">Get Started</a>
 				</div>
 			</section>
 
@@ -74,7 +65,7 @@
 					<div id="flexgrid">
 						<div>
 							<header>
-								<h3>Apnakart</h3>
+								<h3>Shop</h3>
 							</header>
 							<p>Platform for online shopping.</p>
 							<ul class="actions">
@@ -92,7 +83,7 @@
 						</div>
 						<div>
 							<header>
-								<h3>Devastator Blogs</h3>
+								<h3>Blog</h3>
 							</header>
 							<p>Platfrom for writing blogs.</p>
 							<ul class="actions">
@@ -115,7 +106,7 @@
 								</div>
 								<div class="content">
 									<header class="align-center">
-										<h2>Apnakart</h2>
+										<h2>Shop</h2>
 										<p>Online Shopping Platform</p>
 									</header>
 									<hr />
@@ -131,7 +122,7 @@
 								</div>
 								<div class="content">
 									<header class="align-center">
-										<h2>Devastator Blogs</h2>
+										<h2>Blog</h2>
 										<p>Blogging Platform</p>
 									</header>
 									<hr />

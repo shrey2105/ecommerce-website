@@ -1,6 +1,6 @@
 {% extends 'blog/basic.html' %}
 
-{% block title %} Apnakart {% endblock %}
+{% block title %}Blog Details{% endblock %}
 {% block css %}
 img.profile-image {display: inline-block;margin: 0 auto;vertical-align: middle;width: 70px !important;height: 70px
 !important;-webkit-border-radius: 50%;-moz-border-radius: 50%;-ms-border-radius: 50%;
@@ -10,6 +10,8 @@ cover;box-sizing: border-box;
 display: inline-block;position: relative;border:2px solid #fff;}
 img.profile-image {overflow: visible;}
 {% endblock css %}
+{% block blogactive %}active{% endblock blogactive %}
+
 {% block body %}
 {% load humanize %}
 {% load get_dict %}

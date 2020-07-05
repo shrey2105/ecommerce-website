@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey, Cart, CartItem, Order, Buy, BuyItem
+from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey, Cart, CartItem, Order, Buy, BuyItem, BannerImage, YoutubeLink
 from django.contrib import messages
 from django.contrib.auth.models import User
 from math import ceil
@@ -27,11 +27,11 @@ def index(request):
         n = len(prod)
         no_slides = n // 4 + ceil((n / 4) - (n // 4))
         all_products.append([prod, range(1, no_slides), no_slides])
-    params = {'all_products':all_products}
-    return render(request, 'shopping/index.html', params)
 
-def about(request):
-    return render(request, 'shopping/about.html')
+    banner_image = BannerImage.objects.all()
+    youtube_link = YoutubeLink.objects.all()[0]
+    params = {'all_products':all_products, 'banner':banner_image, 'youtube':youtube_link}
+    return render(request, 'shopping/index.html', params)
 
 def contact(request):
     if request.method == 'POST':
@@ -73,24 +73,26 @@ def tracker(request):
     return render(request, 'shopping/tracker.html')
 
 def orderTracker(request):
-    if request.method == 'POST':
-        orderid = request.POST.get("orderid", default="")
-        
-        try:
-            order = Order.objects.filter(order_id=orderid, user=request.user)
-            if len(order) > 0:
-                update = OrdersUpdate.objects.filter(order_id=orderid)
-                updates = []
-                for item in update:
-                    updates.append({'text':item.update_description, 'time':item.timestamp})
-                    response = json.dumps({"status":"success", "updates":updates, "items_json":order[0].cartproduct_items}, default=str)
-                return HttpResponse(response)
-            else:
-                return HttpResponse('{"status":"noitem"}')
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            orderid = request.POST.get("orderid", default="")
+            
+            try:
+                order = Order.objects.filter(order_id=orderid, user=request.user)
+                if len(order) > 0:
+                    update = OrdersUpdate.objects.filter(order_id=orderid)
+                    updates = []
+                    for item in update:
+                        updates.append({'text':item.update_description, 'time':item.timestamp})
+                        response = json.dumps({"status":"success", "updates":updates, "items_json":order[0].cartproduct_items}, default=str)
+                    return HttpResponse(response)
+                else:
+                    return HttpResponse('{"status":"noitem"}')
 
-        except Exception as e:
-            return HttpResponse('{"status":"error"}')
-
+            except Exception as e:
+                return HttpResponse('{"status":"error"}')
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
     return render(request, 'shopping/new_tracker.html')
 
 def searchMatch(query, item):
@@ -349,28 +351,29 @@ def orderDetails(request):
     return render(request, 'shopping/order_details.html', {'order':new_order})
 
 def cartView(request):
-    try:
-        user = request.user
-        cart = Cart.objects.get(user=user)
-        cart_id = cart.id
-    except:
-        cart_id = None
+    if request.user.is_authenticated:
+        try:
+            user = request.user
+            cart = Cart.objects.get(user=user)
+            cart_id = cart.id
+        except:
+            cart_id = None
 
-    if cart_id:
-        cart = Cart.objects.get(id=cart_id)
-        new_total = 0.00
-        for item in cart.cartitem_set.all():
-            line_total = float(item.product.price) * item.quantity
-            new_total = new_total + line_total
-        
-        cart.total_price = new_total
-        cart.save()
+        if cart_id:
+            cart = Cart.objects.get(id=cart_id)
+            new_total = 0.00
+            for item in cart.cartitem_set.all():
+                line_total = float(item.product.price) * item.quantity
+                new_total = new_total + line_total
+            
+            cart.total_price = new_total
+            cart.save()
 
-        # empty_message = "Your cart is empty. Please keep shopping."
-        params = {"cart":cart, 'cart_count':cart.cartitem_set.count()}
+            params = {"cart":cart, 'cart_count':cart.cartitem_set.count()}
+        else:
+            params = {'empty':True}
     else:
-        # empty_message = "Your cart is empty. Please keep shopping."
-        params = {'empty':True}
+        return HttpResponseRedirect("/home/cannot_access")
     return render(request, "shopping/cartView.html", params)
 
 def remove_from_cart(request, id):
@@ -382,12 +385,11 @@ def remove_from_cart(request, id):
     
     cartitem = CartItem.objects.get(id=id)
     cartitem.delete()
+    messages.error(request, "Item removed from your cart.")
     request.session['items_total'] = cart.cartitem_set.count()
-    # cartitem.cart = None
-    # cartitem.save()
+
     return HttpResponseRedirect(reverse("cartView"))
         
-
 def add_to_cart(request, id):
     if request.user.is_authenticated:
         try:
@@ -419,9 +421,10 @@ def add_to_cart(request, id):
                 cart_item.quantity = qty
                 cart_item.save()
             request.session['items_total'] = cart.cartitem_set.count()
+            messages.success(request, "Item added to your cart.")
             return HttpResponseRedirect(f"/shop/productView/{id}")
     else:
-        return HttpResponseRedirect(reverse("cartView"))
+        return HttpResponseRedirect("/home/cannot_access")
 
     return HttpResponseRedirect(reverse("cartView"))
 
@@ -457,7 +460,7 @@ def buy_now(request, id):
             buy_item.save()
         return render(request, "shopping/new_checkout.html", {'buy':buy, 'buy_item':buy_item, 'thanks':True})
     else:
-        return HttpResponseRedirect(reverse("cartView"))
+        return HttpResponseRedirect("/home/cannot_access")
     return render(request, "shopping/new_checkout.html")
 
 def cart_item_count(request):

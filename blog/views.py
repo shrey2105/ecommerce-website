@@ -12,9 +12,6 @@ def index(request):
 	params = {'blogposts':blogposts}
 	return render(request, 'blog/index.html', params)
 
-def about(request):
-    return render(request, "blog/about.html")
-
 def blogpost(request, id):
 	blogpost = BlogPost.objects.filter(post_id=id)
 	comments = BlogComment.objects.filter(post=blogpost[0], parent=None)
@@ -57,6 +54,20 @@ def postComment(request):
 		# return HttpResponse('%s' % response)
 	return redirect(f"/blog/blogPost/{post_id}")
 	# return render(request, 'blog/blogpost.html')
+
+def search(request):
+	print("hello")
+	query = request.GET.get("query")
+	if len(query) > 60:
+		all_posts = BlogPost.objects.none()
+	else:
+		all_posts_title = BlogPost.objects.filter(title__icontains=query)
+		all_posts_content = BlogPost.objects.filter(content_heading1__icontains=query)
+		all_posts = all_posts_title.union(all_posts_content)
+	params = {'all_posts':all_posts, 'message':''}
+	if len(all_posts) == 0 or len(query) <= 1:
+		params = {'message':'Search Not Found, Search again...'}
+	return render(request, "blog/search.html", params)
 
 def contact(request):
     if request.method == "POST":

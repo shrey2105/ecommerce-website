@@ -94,17 +94,17 @@ font-size: 12px;
 color: #777;
 }
 {% endblock css %}
+{% block homeactive %}active{% endblock homeactive %}
 
+{% load static %}
 {% block body %}
 <div class="container">
-  <form class="form-signin" id="signin-form" action="/home/signin" method="post" novalidate="">{% csrf_token %}
-    <div class="text-center mb-4">
-      {% comment %} <img class="mb-4" src="/docs/4.5/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-      {% endcomment %}
+    <div class="text-center my-4">
+      <img class="d-block mx-auto my-4" src="{% static 'home/img/home-logo.png' %}" alt="">
       <h1 class="my-3">Already Registered!</h1>
       <h1 class="h3 mb-3 font-weight-normal">Please Log In</h1>
     </div>
-
+  <form class="form-signin" id="signin-form" action="/home/signin" method="post" novalidate="">{% csrf_token %}
     <div class="form-label-group">
       <input type="text" class="form-control" id="username" name="username" placeholder="Username" required=""
         autofocus="">

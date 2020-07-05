@@ -6,6 +6,9 @@ input[type="number"] {
 width:50px;
 }
 {% endblock css %}
+{% block shopactive %}active{% endblock shopactive %}
+
+{% load static %}
 {% block body %}
 <div class="container">
     <div class="row mt-4">
@@ -14,10 +17,10 @@ width:50px;
                 <img src="{{MEDIA_URL}}{{product.image}}" class="card-img-top my-3" height=300 alt="...">
             </div>
             <div class="row">
-                <a href="{% url 'buy_now' product.id %}"><button class="btn btn-primary cart">Buy Now</button></a>
+                <a href="{% url 'buy_now' product.id %}"><button class="btn cart" style="background-color:#dbd5d5">Buy Now<img src="{% static 'shopping/img/buynow.png' %}"></button></a>
                 <form class="form pull-right" method="post" action="{% url 'add_to_cart' product.id %}">
                     {% csrf_token %}
-                    <button class="btn btn-primary mx-2" type="submit">Add to Cart</button>
+                    <button class="btn mx-2" type="submit" style="background-color:#dbd5d5">Add to Cart<img src="{% static 'shopping/img/cart.png' %}"></button>
                     <input type="number" name="qty" value='1' size="3">
                 </form>
                 {% comment %} <a href="{% url "update_cart" product.id %}?qty=12"><button

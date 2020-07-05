@@ -1,131 +1,168 @@
- // $("form#signup-form button[name='submit']").click(function () {
+/ $(document).ready(function () {
+  //   $("form#signup-form").on("submit", function (event) {
 
-      var validation_holder = 0;
-      var username = $("form#signup-form input[name='username']").val();
-      var username_regex = /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/;
-      var fname = $("form#signup-form input[name='firstname']").val();
-      var fname_regex = /^[A-Za-z. ]{5,20}$/;
-      var lname = $("form#signup-form input[name='lastname']").val();
-      var lname_regex = /^[A-Za-z. ]{5,20}$/;
-      var email = $("form#signup-form input[name='email']").val();
-      var email_regex = /^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$/;
-      var password1 = $("form#signup-form input[name='password1']").val();
-      var password1_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-      var password2 = $("form#signup-form input[name='password2']").val();
-      var password2_regex = /^[ A-Za-z0-9_@.\#&+-]{20,}$/;
+  //     var validation_holder = 0;
+  //     var username = $("form#signup-form input[name='username']").val();
+  //     var username_regex = /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/;
+  //     var fname = $("form#signup-form input[name='firstname']").val();
+  //     var fname_regex = /^[A-Za-z. ]{5,20}$/;
+  //     var lname = $("form#signup-form input[name='lastname']").val();
+  //     var lname_regex = /^[A-Za-z. ]{5,20}$/;
+  //     var email = $("form#signup-form input[name='email']").val();
+  //     var email_regex = /^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$/;
+  //     var password1 = $("form#signup-form input[name='password1']").val();
+  //     var password1_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  //     var password2 = $("form#signup-form input[name='password2']").val();
+  //     var password2_regex = /^[ A-Za-z0-9_@.\#&+-]{20,}$/;
 
-      if (username == "") {
-        $("span.error_username").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=username]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-      } else {
-        if (!username_regex.test(username)) {
-          $("span.error_username").html("<span style='font-size: 80%; color: #dc3545;'>Username invalid. Should contain: altleast 1 alphabet and 1 numeric.</span>").addClass('validate');
-          $("input[name=username]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-        } else {
-          $("span.error_username").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=username]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
+  //     if (username == "") {
+  //       $("span.error_username").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
+  //       $("input[name=username]").focus();
+  //       $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //       validation_holder = 1;
+  //       $("#username").val("");
+  //     } else {
+  //       if (!username_regex.test(username)) {
+  //         $("span.error_username").html("<span style='font-size: 80%; color: #dc3545;'>Username invalid. Should contain: altleast 1 alphabet and 1 numeric.</span>").addClass('validate');
+  //         $("input[name=username]").focus();
+  //         $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //         validation_holder = 1;
+  //         $("#username").val("");
+  //       } else {
 
-      if (fname == "") {
-        $("span.error_fname").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=firstname]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-      } else {
-        if (!fname_regex.test(fname)) {
-          $("span.error_fname").html("<span style='font-size: 80%; color: #dc3545;'>First name invalid. Should contain: atleast 3 albhabets. No numeric allowed.</span>").addClass('validate');
-          $("input[name=firstname]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-        } else {
-          $("span.error_fname").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=firstname]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
+  //         $.ajax({
+  //           url: '/home/signupcheck',
+  //           type: 'post',
+  //           data: {
+  //             "username": username,
+  //             "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
+  //           },
+  //           success: function (msg) {
+  //             if ((msg != "OK")) {
+  //               event.preventDefault();
+  //           event.stopPropagation();
+  //               $("span.error_username").html("<span style='font-size: 80%; color: #dc3545;'>Username unavailable.</span>").addClass('validate');
+  //               $("input[name=username]").focus();
+  //               $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //               $("#username").val("");
+  //               validation_holder = 1;
+  //             }
+  //             else {
+  //               $("span.error_username").html("<span style='font-size: 80%; color: #28a745;'>Username available.</span>");
+  //               $("input[name=username]").focus();
+  //               $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
+  //             }
+  //           }
 
-      if (lname == "") {
-        $("span.error_lname").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=lastname]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-      } else {
-        if (!lname_regex.test(lname)) {
-          $("span.error_lname").html("<span style='font-size: 80%; color: #dc3545;'>Last name invalid. Should contain: atleast 3 albhabets. No numeric allowed.</span>").addClass('validate');
-          $("input[name=lastname]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-        } else {
-          $("span.error_lname").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=lastname]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
+  //         });
+  //       }
+  //     }
 
-      if (email == "") {
-        $("span.error_email").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=email]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-      } else {
-        if (!email_regex.test(email)) {
-          $("span.error_email").html("<span style='font-size: 80%; color: #dc3545;'>Please enter a valid email address.</span>").addClass('validate');
-          $("input[name=email]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-        } else {
-          $("span.error_email").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=email]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
+  //     if (fname == "") {
+  //       $("span.error_fname").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
+  //       $("input[name=firstname]").focus();
+  //       $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //       validation_holder = 1;
+  //       $("#firstname").val("");
+  //     } else {
+  //       if (!fname_regex.test(fname)) {
+  //         $("span.error_fname").html("<span style='font-size: 80%; color: #dc3545;'>First name invalid. Should contain: atleast 3 albhabets. No numeric allowed.</span>").addClass('validate');
+  //         $("input[name=firstname]").focus();
+  //         $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //         validation_holder = 1;
+  //         $("#firstname").val("");
+  //       } else {
+  //         $("span.error_fname").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
+  //         $("input[name=firstname]").focus();
+  //         $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
+  //       }
+  //     }
 
-      if (password1 == "") {
-        $("span.error_password1").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=password1]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-      } else {
-        if (!password1_regex.test(password1)) {
-          $("span.error_password1").html("<span style='font-size: 80%; color: #dc3545;'>Password invalid. Should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed.</span>").addClass('validate');
-          $("input[name=password1]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-        } else {
-          $("span.error_password1").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
-          $("input[name=password1]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
+  //     if (lname == "") {
+  //       $("span.error_lname").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
+  //       $("input[name=lastname]").focus();
+  //       $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //       validation_holder = 1;
+  //       $("#lastname").val("");
+  //     } else {
+  //       if (!lname_regex.test(lname)) {
+  //         $("span.error_lname").html("<span style='font-size: 80%; color: #dc3545;'>Last name invalid. Should contain: atleast 3 albhabets. No numeric allowed.</span>").addClass('validate');
+  //         $("input[name=lastname]").focus();
+  //         $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //         validation_holder = 1;
+  //         $("#lastname").val("");
+  //       } else {
+  //         $("span.error_lname").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
+  //         $("input[name=lastname]").focus();
+  //         $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
+  //       }
+  //     }
 
-      if (password2 == "") {
-        $("span.error_password2").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
-        $("input[name=password2]").focus();
-        $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-        validation_holder = 1;
-      } else {
-        if (password1 != password2) {
-          $("span.error_password2").html("<span style='font-size: 80%; color: #dc3545;'>Password dosen't match.</span>").addClass('validate');
-          $("input[name=password2]").focus();
-          $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
-          validation_holder = 1;
-        } else {
-          $("span.error_password2").html("<span style='font-size: 80%; color: #28a745;'>Password matched.</span>");
-          $("input[name=password2]").focus();
-          $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
-        }
-      }
+  //     if (email == "") {
+  //       $("span.error_email").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
+  //       $("input[name=email]").focus();
+  //       $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //       validation_holder = 1;
+  //       $("#email").val("");
+  //     } else {
+  //       if (!email_regex.test(email)) {
+  //         $("span.error_email").html("<span style='font-size: 80%; color: #dc3545;'>Please enter a valid email address.</span>").addClass('validate');
+  //         $("input[name=email]").focus();
+  //         $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //         validation_holder = 1;
+  //         $("#email").val("");
+  //       } else {
+  //         $("span.error_email").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
+  //         $("input[name=email]").focus();
+  //         $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
+  //       }
+  //     }
 
-      if (validation_holder == 1) {
-        return false;
-      } validation_holder = 0;
-    });
+  //     if (password1 == "") {
+  //       $("span.error_password1").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
+  //       $("input[name=password1]").focus();
+  //       $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //       validation_holder = 1;
+  //       $("#password1").val("");
+  //     } else {
+  //       if (!password1_regex.test(password1)) {
+  //         $("span.error_password1").html("<span style='font-size: 80%; color: #dc3545;'>Password invalid. Should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed.</span>").addClass('validate');
+  //         $("input[name=password1]").focus();
+  //         $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //         validation_holder = 1;
+  //         $("#password1").val("");
+  //       } else {
+  //         $("span.error_password1").html("<span style='font-size: 80%; color: #28a745;'>Done.</span>");
+  //         $("input[name=password1]").focus();
+  //         $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
+  //       }
+  //     }
+
+  //     if (password2 == "") {
+  //       $("span.error_password2").html("<span style='font-size: 80%; color: #dc3545;'>This is a required field.</span>").addClass('validate');
+  //       $("input[name=password2]").focus();
+  //       $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //       validation_holder = 1;
+  //       $("#password2").val("");
+  //     } else {
+  //       if (password1 != password2) {
+  //         $("span.error_password2").html("<span style='font-size: 80%; color: #dc3545;'>Password dosen't match.</span>").addClass('validate');
+  //         $("input[name=password2]").focus();
+  //         $(":focus").css({ "border-color": "red", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(220, 53, 69)" });
+  //         validation_holder = 1;
+  //         $("#password2").val("");
+  //       } else {
+  //         $("span.error_password2").html("<span style='font-size: 80%; color: #28a745;'>Password matched.</span>");
+  //         $("input[name=password2]").focus();
+  //         $(":focus").css({ "border-color": "green", "outline": 0, "box-shadow": "inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(40, 167, 69)" });
+  //       }
+  //     }
+
+  //     if (validation_holder == 1) {
+  //       return false;
+  //     } validation_holder = 0;
+
+  //   });
   // });
 
 

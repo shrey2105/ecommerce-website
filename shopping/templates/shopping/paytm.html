@@ -9,7 +9,7 @@
 <h1>Redirecting You To The Merchant...</h1>
 <h1>Please Do Not Refresh Your Page</h1>
 {% load static %}
-<img src="{% static 'shopping/loader.gif' %}" />
+<img src="{% static 'shopping/img/loader.gif' %}" />
 </center>
 <form action="https://securegw-stage.paytm.in/order/process" method="post" name="paytm">
     {% for key, value in params_dict.items %}

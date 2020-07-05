@@ -3,7 +3,6 @@ from shopping import views
 
 urlpatterns = [
     path("", views.index, name="shoppingHome"),
-    path("about/", views.about, name="aboutUs"),
     path("contact/", views.contact, name="contactUs"),
     path("tracker/", views.tracker, name="trackingStatus"),
     path("orderTracker/", views.orderTracker, name="orderTracker"),

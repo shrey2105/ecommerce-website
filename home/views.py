@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from blog.models import BlogPost
-from home.models import Profile
+from home.models import Profile, Contact
 from shopping.models import Cart
 import json
 from django.core.files.storage import FileSystemStorage
@@ -16,32 +16,19 @@ def error_404_view(request, exception):
 def home(request):
 	return render(request, "home/home.html")
 
-def search(request):
-    query = request.GET.get("query")
-    if len(query) > 60:
-        all_posts = BlogPost.objects.none()
-    else:
-        all_posts_title = BlogPost.objects.filter(title__icontains=query)
-        all_posts_content = BlogPost.objects.filter(content_heading1__icontains=query)
-        all_posts = all_posts_title.union(all_posts_content)
-    params = {'all_posts':all_posts, 'message':''}
-    if len(all_posts) == 0 or len(query) <= 1:
-        params = {'message':'Search Not Found, Search again...'}
-    return render(request, "home/search.html", params)
+def about(request):
+    return render(request, 'home/about.html')
 
 def signupcheck(request):
     if request.method == "POST":
         username = request.POST.get("username")
         try:
-            user = User.objects.filter(username=username)
-            if user.count() > 0:
-                response = "Already in Use"     
-            else:
-                response = "OK"
+            user = User.objects.get(username=username)
+            response = "Already in Use"
+            return HttpResponseRedirect("/home/signup")
+        except User.DoesNotExist:
+            response = "OK"
             return HttpResponse('%s' % response)
-
-        except Exception as e:
-            return HttpResponse("error")
             
     return render(request)
 
@@ -54,12 +41,22 @@ def signup(request):
             email = request.POST.get("email")
             password1 = request.POST.get("password1")
             password2 = request.POST.get("password2")
+            day = request.POST.get("day")
+            month = request.POST.get("month")
+            year = request.POST.get("year")
+            gender = request.POST.get("gender", False)
                 
             user = User.objects.create_user(username, email, password1)
-            user.first_name = firstname
-            user.last_name = lastname
             user.save()
-            messages.success(request, "You have been successfully registered with us. Now, You can Log In")
+            new_user = User.objects.get(pk=user.id)
+            new_user.first_name = firstname
+            new_user.last_name = lastname
+            new_user.profile.birth_day = day
+            new_user.profile.birth_month = month
+            new_user.profile.birth_year = year
+            new_user.profile.gender = gender
+            new_user.save()
+            messages.success(request, "You have been successfully registered with us. Now, You can Log In.")
             return redirect('/home/')
     else:
         return HttpResponseRedirect("/home")
@@ -99,6 +96,10 @@ def signout(request):
 
 def profile(request):
     if request.user.is_authenticated:
+        login_user = User.objects.get(pk=request.user.id)
+        if login_user.profile.mobile_number == "":
+            messages.error(request, "Please fill your mobile number.")
+
         if request.method == "POST":
             user_id = request.POST.get("user_id")
             user = User.objects.get(pk=user_id)
@@ -112,6 +113,7 @@ def profile(request):
             image = request.FILES.get("upload_image", "home/images/no-profile-pic.png")
             user.profile.image = image
             user.save()
+            messages.success(request, "Profile updated successfully.")
             return HttpResponseRedirect("/home/profile")
     else:
         return HttpResponseRedirect("/home/cannot_access")
@@ -139,4 +141,23 @@ def changePassword(request):
 
 def cannot_access(request):
     return render(request, "home/cannot_access.html")
+
+def contact(request):
+    if request.method == "POST":
+        try:
+            print("hello")
+            name = request.POST.get("name")
+            email = request.POST.get("email")
+            mobile = request.POST.get("mobile")
+            message = request.POST.get("message")
+            print(name, email, mobile, message)
+            contact = Contact(name=name, email=email, mobile=mobile, query=message)
+            contact.save()
+            print("tatti")
+            response = json.dumps({"status": "success"})
+            return HttpResponse(response)
+        except Exception as e:
+            response = json.dumps({"status": "failure"})
+            return HttpResponse(response)
+    return render(request, "home/contact.html")
 

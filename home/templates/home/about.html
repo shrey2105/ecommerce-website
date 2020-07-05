@@ -1,4 +1,4 @@
-{% extends 'shopping/basic.html' %}
+{% extends 'home/base.html' %}
 
 {% block title %}About Us{% endblock %}
 {% block aboutactive %}active{% endblock aboutactive %}
@@ -8,8 +8,10 @@
   <!-- Main jumbotron for a primary marketing message or call to action -->
   <div class="jumbotron text-center">
     <div class="container">
-      <h1 class="display-3">Apnakart</h1>
-      <p>The place where you can explore for your desirable items, buy them and can try them. A better place for Online Shoping.</p>
+    {% load static %}
+    <img src="{% static 'home/img/home-logo.png' %}">
+      <h1 class="display-3">Shop N Blog</h1>
+      <p>Shop N Blog is a common platform for an Shopping and Blogging. It provides two platforms: <b>Shop</b> and <b>Blog</b>.</p>
       {% comment %} <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more »</a></p> {% endcomment %}
     </div>
   </div>
@@ -18,18 +20,18 @@
     <!-- Example row of columns -->
     <div class="row">
       <div class="col-md-4">
-        <h2>Online Shopping</h2>
-        <p>Online shopping is a form of electronic commerce which allows consumers to directly buy goods or services from a seller over the Internet using a web browser.</p>
+        <h2>Shop</h2>
+        <p>Shop is place where users can explore for desirable items, can buy, can add to cart items, can track orders. A better place for online shoping.</p>
         {% comment %} <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p> {% endcomment %}
       </div>
       <div class="col-md-4">
-        <h2>Consumers</h2>
-        <p>Consumers find a product of interest by visiting the website of the retailer directly or by searching among alternative vendors using a shopping search engine, which displays the same product's availability and pricing at different e-retailers. </p>
+        <h2>Home</h2>
+        <p>Home is a place where new users can register to try this experience and existing users can login to continue using the services. People can also manage their profiles.</p>
         {% comment %} <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p> {% endcomment %}
       </div>
       <div class="col-md-4">
-        <h2>Products</h2>
-        <p>As of 2020, customers can shop online using a range of different computers and devices, including desktop computers, laptops, tablet computers, smartphones, and smart speakers.</p>
+        <h2>Blog</h2>
+        <p>Blog is a place where users can view different blogs, written by different users. Even users can publish their own blogs and can also share their reviews by commenting on someone's blogs.</p>
         {% comment %} <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p> {% endcomment %}
       </div>
     </div>
