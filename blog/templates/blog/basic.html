@@ -61,6 +61,10 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
+        <li class="nav-item {% block aboutactive %}
+            {% endblock aboutactive %}">
+          <a class="nav-link" href="/home/about">About</a>
+        </li>
         <li class="nav-item {% block homeactive %}
             {% endblock homeactive %}">
           <a class="nav-link" href="/home">Home</a>
@@ -72,10 +76,6 @@
         <li class="nav-item {% block blogactive %}
             {% endblock blogactive %}">
           <a class="nav-link" href="/blog">Blog</a>
-        </li>
-        <li class="nav-item {% block aboutactive %}
-            {% endblock aboutactive %}">
-          <a class="nav-link" href="/home/about">About</a>
         </li>
         <li class="nav-item {% block contactactive %}
             {% endblock contactactive %}">
