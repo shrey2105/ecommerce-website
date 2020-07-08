@@ -5,6 +5,12 @@
 input[type="number"] {
 width:50px;
 }
+.card-img, .card-img-bottom, .card-img-top {
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    margin-left:5em;
+    width:150px
+}
 {% endblock css %}
 {% block shopactive %}active{% endblock shopactive %}
 
@@ -17,7 +23,7 @@ width:50px;
                 <img src="{{MEDIA_URL}}{{product.image}}" class="card-img-top my-3" height=300 alt="...">
             </div>
             <div class="row">
-                <a href="{% url 'buy_now' product.id %}"><button class="btn cart" style="background-color:#dbd5d5">Buy Now<img src="{% static 'shopping/img/buynow.png' %}"></button></a>
+                <a href="{% url 'buy_now' product.id %}"><button class="btn cart mx-2" style="background-color:#dbd5d5">Buy Now<img src="{% static 'shopping/img/buynow.png' %}"></button></a>
                 <form class="form pull-right" method="post" action="{% url 'add_to_cart' product.id %}">
                     {% csrf_token %}
                     <button class="btn mx-2" type="submit" style="background-color:#dbd5d5">Add to Cart<img src="{% static 'shopping/img/add_to_cart.png' %}"></button>
