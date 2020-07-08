@@ -218,13 +218,13 @@ def send_otp(request):
                         return JsonResponse({'status':'not_success', 'message':'Sending OTP error, Limit exceeded. Please try after 30 minutes.'})
                     old.count = old.count + 1
                     old.save()
-                    # url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={old.otp}"
+                    url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={old.otp}"
                 except PhoneOtp.DoesNotExist:
                     new = PhoneOtp.objects.create(mobile_number=user_mobile, otp=otp)
                     new.count = 1
                     new.save()
-                    # url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={new.otp}"
-                # response = requests.request("GET", url)
+                    url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={new.otp}"
+                response = requests.request("GET", url)
                 return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to enter recieved OTP.'})
             else:
                 return JsonResponse({'status':'error'})
