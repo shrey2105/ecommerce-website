@@ -13,10 +13,14 @@ from datetime import datetime, timedelta
 
 
 # Create your views here.
-def handler404(request, exception, template_name="home/404_not_found.html"):
-    response = render_to_response(template_name)
-    response.status_code = 404
-    return response
+def error_404(request, exception):
+    return render(request, "home/404.html")
+
+def error_500(request):
+    return render(request, "home/500.html")
+
+def csrf_failure(request):
+    return render(request, "home/403_csrf.html")
 
 def home(request):
 	return render(request, "home/home.html")
@@ -98,6 +102,8 @@ def signin(request):
                 except Cart.DoesNotExist:
                     request.session['items_total'] = 0
                 messages.success(request, "Welcome to Shop N Blog! You have been logged in successfully.")
+                if request.user.profile.is_verified == "NVF":
+                    messages.warning(request, "Please note that you are not a VERIFIED USER. To verify, navigate to profile section to validate mobile number and enjoy services.")
                 return redirect("/home/")
             else:
                 messages.error(request, "Login Failed! Kindly check your Username or Password")
@@ -208,22 +214,28 @@ def send_otp(request):
             if user.profile.is_verified == "NVF":
                 otp = otp_key_generator(user_mobile)
                 try:
-                    old = PhoneOtp.objects.get(mobile_number__iexact=user_mobile)
+                    old = PhoneOtp.objects.get(mobile_number=user_mobile)
                     saved_datetime = old.updated + timedelta(minutes=30)
                     currentTime = datetime.now()
-                    if currentTime.timestamp() > saved_datetime.timestamp():
-                        old.delete()
-     
-                    if old.count > 0:
-                        return JsonResponse({'status':'not_success', 'message':'Sending OTP error, Limit exceeded. Please try after 30 minutes.'})
-                    old.count = old.count + 1
-                    old.save()
-                    url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={old.otp}"
+                    if old.count < 2:
+                        old.otp = otp
+                        old.count = old.count + 1
+                        old.save()
+                    else:
+                        if currentTime.timestamp() > saved_datetime.timestamp():
+                            old.delete()
+                            old = PhoneOtp.objects.create(mobile_number=user_mobile, otp=otp)
+                            old.save()
+                            url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={old.otp}"
+                            response = requests.request("GET", url)
+                            return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to enter recieved OTP.'})
+                        else:
+                            return JsonResponse({'status':'not_success', 'message':'Sending OTP error, Limit exceeded. Please try after 30 minutes.'})
+
                 except PhoneOtp.DoesNotExist:
-                    new = PhoneOtp.objects.create(mobile_number=user_mobile, otp=otp)
-                    new.count = 1
-                    new.save()
-                    url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={new.otp}"
+                    old = PhoneOtp.objects.create(mobile_number=user_mobile, otp=otp)
+                    old.save()
+                url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={old.otp}"
                 response = requests.request("GET", url)
                 return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to enter recieved OTP.'})
             else:

@@ -56,7 +56,7 @@ class TwoFactor(models.Model):
 class PhoneOtp(models.Model):
     mobile_number = models.CharField(max_length=13, blank=True)
     otp = models.CharField(max_length=8, blank=True, null=True)
-    count = models.IntegerField(default=0, help_text="Number of OTP sent")
+    count = models.IntegerField(default=1, help_text="Number of OTP sent")
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     def __str__(self):

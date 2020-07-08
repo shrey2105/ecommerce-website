@@ -184,9 +184,9 @@ def cartCheckout(request):
                     'TXN_AMOUNT':str(buy.total_price),
                     'CUST_ID':email,
                     'INDUSTRY_TYPE_ID':'Retail',
-                    'WEBSITE':'WEBSTAGING',
+                    'WEBSITE':'DEFAULT',
                     'CHANNEL_ID':'WEB',
-                    'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandleBuy/',
+                    'CALLBACK_URL':'https://shopnblog.herokuapp.com/shop/paymentHandleBuy/',
                     'MERC_UNQ_REF':str(user.id),
                 }
                 params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
@@ -246,9 +246,9 @@ def cartCheckout(request):
                     'TXN_AMOUNT':str(cart.total_price),
                     'CUST_ID':email,
                     'INDUSTRY_TYPE_ID':'Retail',
-                    'WEBSITE':'WEBSTAGING',
+                    'WEBSITE':'DEFAULT',
                     'CHANNEL_ID':'WEB',
-                    'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandle/',
+                    'CALLBACK_URL':'https://shopnblog.herokuapp.com/shop/paymentHandle/',
                     'MERC_UNQ_REF':str(user.id),
                 }
                 params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
@@ -300,7 +300,6 @@ def paymentHandle(request):
     # PayTM will send us the post request here
     
     form = request.POST
-    print(form)
     response_dict = {}
     for i in form.keys():
         response_dict[i]=form[i]
@@ -309,7 +308,6 @@ def paymentHandle(request):
 
     verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
     cart = Cart.objects.get(user=form['MERC_UNQ_REF'])
-    print(cart)
     new_order = Order.objects.get(cart=cart)
     new_order.status = "Finished"
     new_order.save()

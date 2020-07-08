@@ -14,6 +14,7 @@ import django_heroku
 import os
 import dotenv
 from django.contrib.messages import constants as messages
+from django.views.csrf import csrf_failure
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -30,9 +31,12 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
+
+CSRF_FAILURE_VIEW = 'home.views.csrf_failure'
 
 
 # Application definition
