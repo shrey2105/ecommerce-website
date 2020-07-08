@@ -27,36 +27,38 @@ def blogpost(request, id):
 	return render(request, 'blog/blogpost.html', params)
 
 def postComment(request):
-	if request.method == "POST":
-		comment = request.POST.get("comment")
-		user = request.user
-		post_id = request.POST.get("post_id")
-		post = BlogPost.objects.get(post_id=post_id)
-		parent_id = request.POST.get("parent_id")
+	if request.user.profile.is_verified == "VF":
+		if request.method == "POST":
+			comment = request.POST.get("comment")
+			user = request.user
+			post_id = request.POST.get("post_id")
+			post = BlogPost.objects.get(post_id=post_id)
+			parent_id = request.POST.get("parent_id")
 
-		# if comment != "" and user != "" and post != "":
-		if parent_id == "":
-			comment_done = BlogComment(comment=comment, user=user, post=post)
-			# response = "True"
-			comment_done.save()
-			messages.success(request, "Your comment has been posted successfully")
-			
+			# if comment != "" and user != "" and post != "":
+			if parent_id == "":
+				comment_done = BlogComment(comment=comment, user=user, post=post)
+				# response = "True"
+				comment_done.save()
+				messages.success(request, "Your comment has been posted successfully")
+				
 
-		else:
-			parent = BlogComment.objects.get(comment_id=parent_id)
-			comment_done = BlogComment(comment=comment, user=user, post=post, parent=parent)
-			# response = "True"
-			comment_done.save()
-			messages.success(request, "Your reply has been posted successfully")
-		# else:
-			# response = "False"
-			# messages.success(request, "Your comment has been posted successfully")
-		# return HttpResponse('%s' % response)
+			else:
+				parent = BlogComment.objects.get(comment_id=parent_id)
+				comment_done = BlogComment(comment=comment, user=user, post=post, parent=parent)
+				# response = "True"
+				comment_done.save()
+				messages.success(request, "Your reply has been posted successfully")
+			# else:
+				# response = "False"
+				# messages.success(request, "Your comment has been posted successfully")
+			# return HttpResponse('%s' % response)
+	else:
+		return HttpResponseRedirect("/home/notVerified")
 	return redirect(f"/blog/blogPost/{post_id}")
 	# return render(request, 'blog/blogpost.html')
 
 def search(request):
-	print("hello")
 	query = request.GET.get("query")
 	if len(query) > 60:
 		all_posts = BlogPost.objects.none()
@@ -88,19 +90,22 @@ def contact(request):
 
 def publish(request):
 	if request.user.is_authenticated:
-		if request.method == "POST":
-			title = request.POST.get("title")
-			first_heading = request.POST.get("first_heading")
-			first_content = request.POST.get("first_content")
-			second_heading = request.POST.get("second_heading")
-			second_content = request.POST.get("second_content")
-			sub_heading = request.POST.get("sub_heading")
-			sub_content = request.POST.get("sub_content")
-			
-			publish = BlogPost(title=title, heading1=first_heading, content_heading1=first_content, heading2=second_heading, content_heading2=second_content, sub_heading=sub_heading, sub_heading_content=sub_content, author=request.user.first_name)
-			publish.save()
-			messages.success(request, "Your content has been submitted successfully for review. Your content will be published after successful review.")
-			return HttpResponseRedirect("/blog/publish")
+		if request.user.profile.is_verified == "VF":
+			if request.method == "POST":
+				title = request.POST.get("title")
+				first_heading = request.POST.get("first_heading")
+				first_content = request.POST.get("first_content")
+				second_heading = request.POST.get("second_heading")
+				second_content = request.POST.get("second_content")
+				sub_heading = request.POST.get("sub_heading")
+				sub_content = request.POST.get("sub_content")
+				
+				publish = BlogPost(title=title, heading1=first_heading, content_heading1=first_content, heading2=second_heading, content_heading2=second_content, sub_heading=sub_heading, sub_heading_content=sub_content, author=request.user.first_name)
+				publish.save()
+				messages.success(request, "Your content has been submitted successfully for review. Your content will be published after successful review.")
+				return HttpResponseRedirect("/blog/publish")
+		else:
+			return HttpResponseRedirect("/home/notVerified")
 	else:
 		return HttpResponseRedirect("/home/cannot_access")
 	return render(request, "blog/publish.html")

@@ -16,6 +16,11 @@ class Profile(models.Model):
     birth_month = models.CharField(max_length=2, blank=True)
     birth_year = models.CharField(max_length=4, blank=True)
     image = models.ImageField(upload_to="home/images", default='home/images/no-profile-pic.png')
+    VERIFIED_CHOICES = (
+        ('VF', 'Verified'),
+        ('NVF', 'Not Verified'),
+    )
+    is_verified = models.CharField(max_length=4, choices=VERIFIED_CHOICES, blank=True, default="NVF")
 
     def __str__(self):
         return self.user.username
@@ -39,6 +44,24 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.email
+
+class TwoFactor(models.Model):
+    api_key = models.CharField(max_length=200, blank=True, null=True)
+    sender_id = models.CharField(max_length=10, blank=True, null=True)
+    template_name = models.CharField(max_length=30, blank=True, null=True)
+
+    def __str__(self):
+        return self.template_name
+
+class PhoneOtp(models.Model):
+    mobile_number = models.CharField(max_length=13, blank=True)
+    otp = models.CharField(max_length=8, blank=True, null=True)
+    count = models.IntegerField(default=0, help_text="Number of OTP sent")
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return f"{str(self.otp)} is sent to {str(self.mobile_number)}" 
+    
 
 
     

@@ -105,7 +105,7 @@ color: #777;
     <h1 class="my-4">New to Apnakart &amp; Devastator Blogs!</h1>
     <h1 class="h3 mb-3 font-weight-normal">Please Sign Up</h1>
   </div>
-  <form class="form-signup" id="signup-form" action="/home/signup" method="post" novalidate="">
+  <form class="form-signup" id="signup-form" action="/home/signup" method="post">
     {% csrf_token %}
 
 
@@ -116,7 +116,6 @@ color: #777;
       <span class="error_username"></span>
       <div class="valid-feedback" id="username_valid" style="display:none">Username Available</div>
       <div class="invalid-feedback" id="username_response" style="display:none">Username Unavailable. Should contain: altleast 1 alphabet and 1 numeric</div>
-      <div class="invalid-feedback">This is a required field.</div>
     </div>
 
     <div class="form-label-group">
@@ -141,6 +140,14 @@ color: #777;
     </div>
 
     <div class="form-label-group">
+      <input type="tel" class="form-control" id="mobile" pattern="^[0-9]{10}$" name="mobile" placeholder="Mobile Number" required="">
+      <label for="mobile">Mobile Number</label>
+      <span class="error_mobile"></span>
+      {% comment %} <div class="valid-feedback" id="username_valid" style="display:none"></div> {% endcomment %}
+      <div class="invalid-feedback" id="mobile_response" style="display:none">Mobile Number already registered. Should contain: 10 digits.</div>
+    </div>
+
+    <div class="form-label-group">
       <input type="password" class="form-control pwds" id="password1" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" name="password1" placeholder="Password"
         required="">
       <label for="password1">Password</label>
@@ -157,21 +164,21 @@ color: #777;
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" id="day" pattern="^[0-9].{1,1}$" name="day" placeholder="Day of Birth" required="">
+      <input type="text" class="form-control" id="day" pattern="^(0[1-9]|[12]\d|3[01])$" name="day" placeholder="Day of Birth" required="">
       <label for="day">Day of Birth</label>
       <span class="error_day"></span>
       <div class="invalid-feedback">Should contain day in the format dd say 01</div>
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" id="month" pattern="^[0-9].{1,1}$" name="month" placeholder="Month of Birth" required="">
+      <input type="text" class="form-control" id="month" pattern="^(0[1-9]|1[012])$" name="month" placeholder="Month of Birth" required="">
       <label for="month">Month of Birth</label>
       <div class="invalid-feedback">Should contain month in the format mm say 01</div>
       <span class="error_month"></span>
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" id="year" pattern="^[0-9].{3,3}$" name="year" placeholder="Year of Birth" required="">
+      <input type="text" class="form-control" id="year" pattern="^[12][0-9]{3}$" name="year" placeholder="Year of Birth" required="">
       <label for="year">Year of Birth</label>
       <span class="error_year"></span>
       <div class="invalid-feedback">Should contain year in the format yyyy say 1995</div>
@@ -207,7 +214,7 @@ color: #777;
               "username": $("#username").val(),
               "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
             };
-  $.ajax({
+            $.ajax({
             url: '/home/signupcheck',
             type: 'post',
             data: formData,
@@ -228,6 +235,29 @@ color: #777;
 
           });
         });
+
+
+  $("#mobile").on("blur", function(){
+  var formData = {
+              "mobile": $("#mobile").val(),
+              "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
+            };
+  $.ajax({
+            url: '/home/mobilecheck',
+            type: 'post',
+            data: formData,
+            success: function (msg) {
+            if(msg == "OK"){
+                $("#mobile_response").hide()
+            }else{
+              $("#mobile_response").show()
+              $("#mobile").val("")
+            }
+        }
+
+          });
+        });
+
 
         $('#password1, #password2').on('blur', function () {
           if ($('#password1').val() != '' && $('#password2').val() != '' && $('#password1').val() == $('#password2').val()) {

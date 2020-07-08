@@ -20,9 +20,9 @@ from django.conf.urls.static import static
 from django.conf.urls import handler404
 from . import views
 
-admin.site.site_header = "Apnakart Admin"
-admin.site.site_title = "Apnakart Admin Panel"
-admin.site.index_title = "Welcome to Apnakart Admin Panel"
+admin.site.site_header = "Shop N Blog Admin"
+admin.site.site_title = "Shop N Blog Admin Panel"
+admin.site.index_title = "Welcome to Shop N Blog Admin Panel"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,4 +32,4 @@ urlpatterns = [
     path('', views.index)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-handler404 = 'home.views.error_404_view'
+handler404 = 'home.views.handler404'

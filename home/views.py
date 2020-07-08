@@ -4,14 +4,19 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from blog.models import BlogPost
-from home.models import Profile, Contact
+from home.models import Profile, Contact, TwoFactor, PhoneOtp
 from shopping.models import Cart
 import json
-from django.core.files.storage import FileSystemStorage
+import requests
+from home.otp import otp_key_generator
+from datetime import datetime, timedelta
+
 
 # Create your views here.
-def error_404_view(request, exception):
-    return render(request, "home/404_not_found.html")
+def handler404(request, exception, template_name="home/404_not_found.html"):
+    response = render_to_response(template_name)
+    response.status_code = 404
+    return response
 
 def home(request):
 	return render(request, "home/home.html")
@@ -25,8 +30,21 @@ def signupcheck(request):
         try:
             user = User.objects.get(username=username)
             response = "Already in Use"
-            return HttpResponseRedirect("/home/signup")
+            return HttpResponse('%s' % response)
         except User.DoesNotExist:
+            response = "OK"
+            return HttpResponse('%s' % response)
+            
+    return render(request)
+
+def mobilecheck(request):
+    if request.method == "POST":
+        mobile = request.POST.get("mobile")
+        try:
+            profile = Profile.objects.get(mobile_number=mobile)
+            response = "Already in Use"
+            return HttpResponse('%s' % response)
+        except Profile.DoesNotExist:
             response = "OK"
             return HttpResponse('%s' % response)
             
@@ -39,6 +57,7 @@ def signup(request):
             firstname= request.POST.get("firstname")
             lastname= request.POST.get("lastname")
             email = request.POST.get("email")
+            mobile = request.POST.get("mobile")
             password1 = request.POST.get("password1")
             password2 = request.POST.get("password2")
             day = request.POST.get("day")
@@ -51,6 +70,7 @@ def signup(request):
             new_user = User.objects.get(pk=user.id)
             new_user.first_name = firstname
             new_user.last_name = lastname
+            new_user.profile.mobile_number = mobile
             new_user.profile.birth_day = day
             new_user.profile.birth_month = month
             new_user.profile.birth_year = year
@@ -97,15 +117,12 @@ def signout(request):
 def profile(request):
     if request.user.is_authenticated:
         login_user = User.objects.get(pk=request.user.id)
-        if login_user.profile.mobile_number == "":
-            messages.error(request, "Please fill your mobile number.")
 
         if request.method == "POST":
             user_id = request.POST.get("user_id")
             user = User.objects.get(pk=user_id)
             user.first_name = request.POST.get("name")
             user.email = request.POST.get("email")
-            user.profile.mobile_number = request.POST.get("mobile")
             user.profile.gender = request.POST.get("gender", False)
             user.profile.birth_day = request.POST.get("day")
             user.profile.birth_month = request.POST.get("month")
@@ -117,7 +134,7 @@ def profile(request):
             return HttpResponseRedirect("/home/profile")
     else:
         return HttpResponseRedirect("/home/cannot_access")
-    return render(request, "home/profile.html")
+    return render(request, "home/profile.html", {'is_verified':login_user.profile.is_verified})
 
 def changePassword(request):
     if request.method == "POST":
@@ -132,32 +149,110 @@ def changePassword(request):
                 user.set_password(password1)
                 user.save()
                 messages.success(request, "Password changed successfully. Kindly login again with your new password.")
+                return HttpResponseRedirect("/home/signin")
             else:
                 messages.error(request, "Something went wrong. Kindly check if both passwords are matching.")
+                return HttpResponseRedirect("/home/profile")
         else:
             messages.error(request, "Something went wrong. Kindly check if your old password is correct.")
-        return HttpResponseRedirect("/home/signin")
+            return HttpResponseRedirect("/home/profile")
+    return render(request, "home/profile.html")
+
+def updateMobile(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user_id = request.POST.get("user_id")
+            user = User.objects.get(pk=user_id)
+            mobile = request.POST.get("mobile")
+            if user.profile.mobile_number != mobile:
+                user.profile.mobile_number = mobile
+                user.save()
+                messages.success(request, "Mobile Number Updated Successfully. Kindly verify your profile again.")
+                user.profile.is_verified = "NVF"
+                user.save()
+            else:
+                messages.error(request, "Can't update same Mobile Number.")
+            return HttpResponseRedirect("/home/profile")
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
     return render(request, "home/profile.html")
 
 def cannot_access(request):
     return render(request, "home/cannot_access.html")
 
+def notVerified(request):
+    return render(request, "home/not_verified.html")
+
 def contact(request):
     if request.method == "POST":
         try:
-            print("hello")
             name = request.POST.get("name")
             email = request.POST.get("email")
             mobile = request.POST.get("mobile")
             message = request.POST.get("message")
-            print(name, email, mobile, message)
             contact = Contact(name=name, email=email, mobile=mobile, query=message)
             contact.save()
-            print("tatti")
             response = json.dumps({"status": "success"})
             return HttpResponse(response)
         except Exception as e:
             response = json.dumps({"status": "failure"})
             return HttpResponse(response)
     return render(request, "home/contact.html")
+
+def send_otp(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            shop_n_blog = TwoFactor.objects.all()[0]
+            user = User.objects.get(pk=request.user.id)
+            user_mobile = request.POST.get("mobile")
+            if user.profile.is_verified == "NVF":
+                otp = otp_key_generator(user_mobile)
+                try:
+                    old = PhoneOtp.objects.get(mobile_number__iexact=user_mobile)
+                    saved_datetime = old.updated + timedelta(minutes=30)
+                    currentTime = datetime.now()
+                    if currentTime.timestamp() > saved_datetime.timestamp():
+                        old.delete()
+     
+                    if old.count > 0:
+                        return JsonResponse({'status':'not_success', 'message':'Sending OTP error, Limit exceeded. Please try after 30 minutes.'})
+                    old.count = old.count + 1
+                    old.save()
+                    # url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={old.otp}"
+                except PhoneOtp.DoesNotExist:
+                    new = PhoneOtp.objects.create(mobile_number=user_mobile, otp=otp)
+                    new.count = 1
+                    new.save()
+                    # url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={new.otp}"
+                # response = requests.request("GET", url)
+                return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to enter recieved OTP.'})
+            else:
+                return JsonResponse({'status':'error'})
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
+    return render(request, "home/profile.html")
+
+def validateOtp(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user_mobile_no = request.POST.get("validation_otp_mobile")
+            user_input_otp = request.POST.get("user_otp")
+            user = User.objects.get(pk=request.user.id)
+            if user.profile.is_verified == "NVF":
+                sent_otp = PhoneOtp.objects.get(mobile_number__iexact=user_mobile_no)
+                if sent_otp.otp == user_input_otp:
+                    user.profile.is_verified = "VF"
+                    user.save()
+                    messages.success(request, "OTP verified! Your profile status is now verified.")
+                    sent_otp.delete()
+                    return HttpResponseRedirect("/home/profile")
+                else:
+                    messages.warning(request, "OTP is invalid. Dosen't matched.")
+                    return HttpResponseRedirect("/home/profile")
+            else:
+                messages.warning(request, "Profile status already verified.")
+                return HttpResponseRedirect("/home/profile")
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
+    return render(request, "home/profile.html")
 

@@ -20,7 +20,7 @@ width:50px;
                 <a href="{% url 'buy_now' product.id %}"><button class="btn cart" style="background-color:#dbd5d5">Buy Now<img src="{% static 'shopping/img/buynow.png' %}"></button></a>
                 <form class="form pull-right" method="post" action="{% url 'add_to_cart' product.id %}">
                     {% csrf_token %}
-                    <button class="btn mx-2" type="submit" style="background-color:#dbd5d5">Add to Cart<img src="{% static 'shopping/img/cart.png' %}"></button>
+                    <button class="btn mx-2" type="submit" style="background-color:#dbd5d5">Add to Cart<img src="{% static 'shopping/img/add_to_cart.png' %}"></button>
                     <input type="number" name="qty" value='1' size="3">
                 </form>
                 {% comment %} <a href="{% url "update_cart" product.id %}?qty=12"><button

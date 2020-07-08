@@ -13,7 +13,6 @@
 {% load static %}
 {% block body %}
 <div class="container">
-
     {% if empty or cart_count == 0 %}
 
     <div class="result">
@@ -26,6 +25,8 @@
     </div>
 
     {% else %}
+    <h1 class="cart-items-title mt-4">Cart Items</h1><br>
+    <h2 class="cart-details">
     <table class="table">
         <thead>
             <th>Item</th>
@@ -49,6 +50,7 @@
         </tr>
         {% endfor %}
     </table>
+    </h2>
     <br>
     <hr>
     <a href="{% url 'new_checkout' %}"><button class="btn btn-dark">Checkout</button></a>

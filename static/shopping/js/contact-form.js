@@ -1,6 +1,4 @@
-function contact_form_shop_validation() {
-
-  $("form#form-contact button[name='submit']").click(function () {
+$("form#form-contact button[name='submit']").click(function () {
 
     var validation_holder = 0;
     var full_name = $("form#form-contact input[name='name']").val();
@@ -99,7 +97,7 @@ function contact_form_shop_validation() {
       type: 'post',
       beforeSend: function () {
         $('#contact-message').html(
-          '<img src="/static/home/img/Loader.gif" width="25" height="25"/>'
+          '<img src="/static/home/img/Loader.gif" width="20" height="20"/>'
         );
       },
       success: function (response) {
@@ -123,4 +121,3 @@ function contact_form_shop_validation() {
     });
     event.preventDefault();
   });
-}

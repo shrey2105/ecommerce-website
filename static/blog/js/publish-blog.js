@@ -1,5 +1,4 @@
-function publish_blog_validation() {
-    $("form#publish-form button[name=submit]").on("click", function () {
+$("form#publish-form button[name=submit]").on("click", function () {
 
         var validation_holder = 0;
         var title_regex = /^.{10,}$/;
@@ -145,4 +144,25 @@ function publish_blog_validation() {
         } validation_holder = 0;
   
       });
-}
+
+
+      $('textarea[name=first_content]').keypress(function(){
+        if(this.value.length > 160){
+            return true;
+        }
+        $("#remaining_first_content").html("<span style='font-size: 80%; color: #dc3545;'>Min characters: " + (160 - this.value.length) + "</span>");
+    });
+    
+        $('textarea[name=second_content]').keypress(function(){
+        if(this.value.length > 160){
+            return true;
+        }
+        $("#remaining_second_content").html("<span style='font-size: 80%; color: #dc3545;'>Min characters: " + (160 - this.value.length) + "</span>");
+    });
+    
+        $('textarea[name=sub_content]').keypress(function(){
+        if(this.value.length > 160){
+            return true;
+        }
+        $("#remaining_sub_content").html("<span style='font-size: 80%; color: #dc3545;'>Min characters: " + (160 - this.value.length) + "</span>");
+    });
