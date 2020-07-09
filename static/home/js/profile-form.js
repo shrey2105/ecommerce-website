@@ -9,7 +9,7 @@ $("#send_otp").click(function (event) {
         data: formData,
         beforeSend: function () {
             $('#otp-message').html(
-                '<img src="/static/home/img/Loader.gif" width="20" height="20"/>'
+                '<img src="https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/home/img/Loader.gif" width="20" height="20"/>'
             );
         },
         success: function (msg) {
