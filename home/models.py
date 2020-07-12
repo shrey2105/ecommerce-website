@@ -71,7 +71,7 @@ class ForgotPasswordOtp(models.Model):
     otp = models.CharField(max_length=8, blank=True, null=True)
     count = models.IntegerField(default=1, help_text="Number of OTP sent")
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-    is_validated = models.CharField(max_length=2, choices=OTP_VERIFY_CHOICES, blank=True, default="NVF")
+    is_validated = models.CharField(max_length=2, choices=OTP_VERIFY_CHOICES, blank=True, default="NF")
 
     def __str__(self):
         return f"{str(self.otp)} is sent to {str(self.mobile_number)}" 
