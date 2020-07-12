@@ -26,6 +26,7 @@
 
     {% else %}
     <h1 class="cart-items-title mt-4">Cart Items</h1><br>
+    <div class="table-responsive">
     <h2 class="cart-details">
     <table class="table">
         <thead>
@@ -51,6 +52,7 @@
         {% endfor %}
     </table>
     </h2>
+    </div>
     <br>
     <hr>
     <a href="{% url 'new_checkout' %}"><button class="btn btn-dark">Checkout</button></a>

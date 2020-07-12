@@ -27,36 +27,38 @@
     {% else %}
 
 <h1 class="order-detail-title mt-4">Order Details</h1><br>
-<h2 class="details">
-    <table class="table mt-3">
+<div class="table-responsive">
+    <h2 class="cart-details">
+    <table class="table">
         <thead>
-            <th>Order ID</th>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Date/Time</th>
-            <th></th>
+            <th scope="col">Order ID</th>
+            <th scope="col">Product</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price</th>
+            <th scope="col">Date/Time</th>
+            <th scope="col"></th>
         </thead>
         {% for item in order %}
         
         <tr>
-            <td>{{item.order_id}}</td>
-            <td>
+            <td scope="col">{{item.order_id}}</td>
+            <td scope="col">
             {% for product in item.cartproduct_items|literal_eval %}
             {{forloop.counter}}. {{product.0}}<br>
             {% endfor %}
             </td>
-            <td>
+            <td scope="col">
              {% for quantity in item.cartproduct_items|literal_eval %}
             {{quantity.1}}<br>
             {% endfor %}
             </td>
-            <td>{{item.final_total}}</td>
-            <td>{{item.timestamp}}</td>
+            <td scope="col">{{item.final_total}}</td>
+            <td scope="col">{{item.timestamp}}</td>
         </tr>
         {% endfor %}
     </table>
-    {% endif %}
     </h2>
+    </div>
+    {% endif %}
 </div>
 {% endblock body %}

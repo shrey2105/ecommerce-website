@@ -93,6 +93,9 @@ padding-bottom: .25rem;
 font-size: 12px;
 color: #777;
 }
+.forgot a{
+  color:#000;
+}
 {% endblock css %}
 {% block homeactive %}active{% endblock homeactive %}
 
@@ -123,8 +126,10 @@ color: #777;
     </div>
 
     <button id="submit-button-login" class="btn btn-lg btn-dark btn-block" type="submit">Log In</button>
-
   </form>
+  <div class="text-center forgot">
+  <a href="/home/forgotPassword">Forgot Password? Click Here</a>
+  </div>
 </div>
 {% endblock body %}
 

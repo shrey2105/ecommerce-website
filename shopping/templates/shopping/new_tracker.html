@@ -45,7 +45,6 @@
 		})
 
 		.done(function(data){
-            $("#order-details").empty()
 			data = JSON.parse(data);
 			
 			if (data["status"] == "success"){
