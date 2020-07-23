@@ -8,7 +8,9 @@
 .display-box p a {color: #000; font-weight: 600; text-decoration: underline;}
 .display-box h2 {color: #000;font-size: 22px;text-align: center;margin-bottom: 20px;display: block;font-weight: 600;text-transform: uppercase;font-family: lato;}
 .display-box p {color: #000;font-size: 14px;text-align: center;display: block;}
-.review-link{color:#000;}
+a.review-link:link {color:#6C757D;}
+a.review-link:visited {color:#6C757D;}
+a.review-link:hover {font-size:150%;}
 {% endblock %}
 {% block shopactive %}active{% endblock shopactive %}
 {% block body %}
@@ -55,7 +57,7 @@
             </td>
             <td scope="col">
             {% for url in item.cartproduct_items|literal_eval %}
-            <a class="review-link" href="/shop/review/{{url.2}}"><button class="btn btn-dark btn-sm">Review</button></a><br><br>
+            <a class="review-link" href="/shop/review/{{url.2}}">Review</a><br><br>
             {% endfor %}
             </td>
             <td scope="col">{{item.final_total}}</td>
