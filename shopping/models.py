@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg, Count
 
 # Create your models here.
 class Product(models.Model):
@@ -11,9 +12,24 @@ class Product(models.Model):
     description = models.TextField()
     pub_date = models.DateField()
     image = models.ImageField(upload_to="shopping/images", default="")
+    slug = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.product_name
+
+    def averageRating(self):
+        reviews = Comment.objects.filter(product=self).aggregate(average=Avg('rating'))
+        avg = 0
+        if reviews["average"] is not None:
+            avg = float(reviews["average"])
+        return avg
+
+    def reviewCount(self):
+        reviews = Comment.objects.filter(product=self).aggregate(count=Count('id'))
+        cnt = 0
+        if reviews["count"] is not None:
+            cnt = int(reviews["count"])
+        return cnt
 
 class CartItem(models.Model):
     cart = models.ForeignKey('Cart', on_delete=models.CASCADE, null=True, blank=True)
@@ -78,14 +94,19 @@ STATUS_CHOICES = (
     ("Abandoned", "Abandoned"),
     ("Finished", "Finished"),
 )
+ORDER_STATUS_CHOICES = (
+    ("Delivered", "Delivered"),
+    ("Not Delivered", "Not Delivered"),
+)
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     order_id = models.CharField(max_length=120, default='ABC', unique=True)
     cartproduct_items = models.CharField(max_length=5000, null=True, blank=True, default="")
-    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True)
-    buy = models.ForeignKey(Buy, on_delete=models.SET_NULL, null=True)
+    cart = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True, blank=True)
+    buy = models.ForeignKey(Buy, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=120, choices=STATUS_CHOICES, default="Started")
+    order_status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default="Not Delivered")
     sub_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
     final_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
     name = models.CharField(max_length=100, default="")
@@ -148,7 +169,24 @@ class YoutubeLink(models.Model):
 
     def __str__(self):
         return f"Youtube Link id:{self.id}"
-    
+
+class Comment(models.Model):
+    STATUS_CHOICES = (
+    ("New", "New"), 
+    ("True", "True"),
+    ("False", "False"),
+)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    subject = models.CharField(max_length=100, blank=True, null=True)
+    comment = models.CharField(max_length=300, blank=True, null=True)
+    rating = models.IntegerField(default=1, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="New")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Comment: {self.comment} on Product: {self.product}"
 
 
 

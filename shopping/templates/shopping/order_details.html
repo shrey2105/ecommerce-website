@@ -8,6 +8,7 @@
 .display-box p a {color: #000; font-weight: 600; text-decoration: underline;}
 .display-box h2 {color: #000;font-size: 22px;text-align: center;margin-bottom: 20px;display: block;font-weight: 600;text-transform: uppercase;font-family: lato;}
 .display-box p {color: #000;font-size: 14px;text-align: center;display: block;}
+.review-link{color:#000;}
 {% endblock %}
 {% block shopactive %}active{% endblock shopactive %}
 {% block body %}
@@ -28,14 +29,14 @@
 
 <h1 class="order-detail-title mt-4">Order Details</h1><br>
 <div class="table-responsive">
-    <h2 class="cart-details">
+    <h5 class="cart-details">
     <table class="table">
         <thead>
             <th scope="col">Order ID</th>
             <th scope="col">Product</th>
             <th scope="col">Quantity</th>
+            <th scope="col">Review</th>
             <th scope="col">Price</th>
-            <th scope="col">Date/Time</th>
             <th scope="col"></th>
         </thead>
         {% for item in order %}
@@ -44,20 +45,24 @@
             <td scope="col">{{item.order_id}}</td>
             <td scope="col">
             {% for product in item.cartproduct_items|literal_eval %}
-            {{forloop.counter}}. {{product.0}}<br>
+            {{forloop.counter}}. {{product.0|truncatechars:25}}<br><br>
             {% endfor %}
             </td>
             <td scope="col">
-             {% for quantity in item.cartproduct_items|literal_eval %}
-            {{quantity.1}}<br>
+            {% for quantity in item.cartproduct_items|literal_eval %}
+            {{quantity.1}}<br><br>
+            {% endfor %}
+            </td>
+            <td scope="col">
+            {% for url in item.cartproduct_items|literal_eval %}
+            <a class="review-link" href="/shop/review/{{url.2}}"><button class="btn btn-dark btn-sm">Review</button></a><br><br>
             {% endfor %}
             </td>
             <td scope="col">{{item.final_total}}</td>
-            <td scope="col">{{item.timestamp}}</td>
         </tr>
         {% endfor %}
     </table>
-    </h2>
+    </h5>
     </div>
     {% endif %}
 </div>

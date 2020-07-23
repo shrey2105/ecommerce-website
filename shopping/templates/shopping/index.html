@@ -12,6 +12,10 @@ body .no-padding{padding-left:0; padding-right:0; }
 .carousel-indicators .active{background-color:blue;}
 .mdb-color.darken-3{background-color: #1c2a48 !important;}
 .card-body.products a{color:black;}
+.fa-star:before {
+content: "\f005";
+color:#FD4;
+}
 {% endblock %}
 {% block shopactive %}active{% endblock shopactive %}
 
@@ -82,7 +86,15 @@ body .no-padding{padding-left:0; padding-right:0; }
               <div class="card-body products">
                 <a href="/shop/productView/{{i.id}}"><h5 class="card-title" id="poppr{{i.id}}">{{i.product_name|truncatechars:45}}</h5></a>
                 <p class="card-price">Rs. <span id="popprice{{i.id}}">{{i.price}}</span></p>
-                <p class="card-text">{{i.description|truncatechars:55}}</p>
+                <div class="review-rating">
+                    <i class="fa fa-star{% if i.averageRating < 1 %}-o empty{% endif %}"></i>
+                    <i class="fa fa-star{% if i.averageRating < 2 %}-o empty{% endif %}"></i>
+                    <i class="fa fa-star{% if i.averageRating < 3 %}-o empty{% endif %}"></i>
+                    <i class="fa fa-star{% if i.averageRating < 4 %}-o empty{% endif %}"></i>
+                    <i class="fa fa-star{% if i.averageRating < 5 %}-o empty{% endif %}"></i>
+                    {{i.averageRating |stringformat:".1f"}} | ({{i.reviewCount}})
+                </div>
+                <p class="card-text mt-2">{{i.description|truncatechars:55}}</p>
                 <!-- <span id="divpr{{i.id}}" class="divpr">
                   <button id="pr{{i.id}}" class="btn btn-primary cart">Add to Cart</button>
                 </span> -->

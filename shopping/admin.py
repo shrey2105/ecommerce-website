@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey, Cart, CartItem, Order, Buy, BuyItem, YoutubeLink, BannerImage
+from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey, Cart, CartItem, Order, Buy, BuyItem, YoutubeLink, BannerImage, Comment
 
 admin.site.register(Product)
 admin.site.register(Contact)
@@ -15,3 +15,4 @@ admin.site.register(Buy)
 admin.site.register(BuyItem)
 admin.site.register(BannerImage)
 admin.site.register(YoutubeLink)
+admin.site.register(Comment)

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey, Cart, CartItem, Order, Buy, BuyItem, BannerImage, YoutubeLink
+from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey, Cart, CartItem, Order, Buy, BuyItem, BannerImage, YoutubeLink, Comment
 from django.contrib import messages
 from django.contrib.auth.models import User
 from math import ceil
@@ -10,6 +10,7 @@ from PayTM import Checksum
 from django.urls import reverse
 from .utils import orderid_generator
 import ast
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 paytm = PaytmKey.objects.values('merchant_id', 'merchant_key')
 for item in paytm:
@@ -123,8 +124,19 @@ def search(request):
 
 def productView(request, id):
     #Fetching product using id
-    product = Product.objects.filter(id = id)
-    params = {'product':product[0]}
+    product = Product.objects.get(id = id)
+    comments = Comment.objects.filter(product=product).order_by('id')
+
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(comments, 3)
+    try:
+        records = paginator.page(page)
+    except PageNotAnInteger:
+        records = paginator.page(1)
+    except EmptyPage:
+        records = paginator.page(paginator.num_pages)
+    params = {'product':product, 'records':records, 'user':request.user}
     return render(request, 'shopping/product_view.html', params)
 
 def cartCheckout(request):
@@ -138,7 +150,7 @@ def cartCheckout(request):
                 
                 items = []
                 for item in buy_item:
-                    items.append([item.product.product_name, item.quantity])
+                    items.append([item.product.product_name, item.quantity, item.product.slug])
             except:
                 return HttpResponseRedirect(reverse("new_checkout"))
             
@@ -184,9 +196,9 @@ def cartCheckout(request):
                     'TXN_AMOUNT':str(buy.total_price),
                     'CUST_ID':email,
                     'INDUSTRY_TYPE_ID':'Retail',
-                    'WEBSITE':'DEFAULT',
+                    'WEBSITE':'WEBSTAGING',
                     'CHANNEL_ID':'WEB',
-                    'CALLBACK_URL':'https://shopnblog.herokuapp.com/shop/paymentHandleBuy/',
+                    'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandleBuy/',
                     'MERC_UNQ_REF':str(user.id),
                 }
                 params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
@@ -200,7 +212,7 @@ def cartCheckout(request):
                 cart_item = CartItem.objects.filter(cart=cart.id)
                 items = []
                 for item in cart_item:
-                    items.append([item.product.product_name, item.quantity])
+                    items.append([item.product.product_name, item.quantity, item.product.slug])
             except:
                 return HttpResponseRedirect(reverse("cartView"))
 
@@ -246,9 +258,9 @@ def cartCheckout(request):
                     'TXN_AMOUNT':str(cart.total_price),
                     'CUST_ID':email,
                     'INDUSTRY_TYPE_ID':'Retail',
-                    'WEBSITE':'DEFAULT',
+                    'WEBSITE':'WEBSTAGING',
                     'CHANNEL_ID':'WEB',
-                    'CALLBACK_URL':'https://shopnblog.herokuapp.com/shop/paymentHandle/',
+                    'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandle/',
                     'MERC_UNQ_REF':str(user.id),
                 }
                 params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
@@ -512,4 +524,35 @@ def buy_item_count(request):
     except Order.DoesNotExist:
         return HttpResponseRedirect(reverse("cartView"))
     return HttpResponseRedirect(reverse("shoppingHome"))
+
+def review(request, url):
+    if request.user.is_authenticated:
+        product = Product.objects.get(slug=url)
+        comments = Comment.objects.filter(product=product)
+        if comments.exists():
+            params = {'product': product, 'comments':comments[0], 'status':True}
+            if request.method == "POST":
+                review = Comment.objects.get(product=product, user=request.user)
+                review.subject = request.POST.get("subject")
+                review.comment = request.POST.get("comment")
+                review.rating = request.POST.get("rating")
+                review.save()
+                messages.success(request, "Your review has been sent. Thank You for your interest.")
+                return HttpResponseRedirect(f"/shop/review/{url}")     
+        else:
+            params = {'product': product, 'status':False}
+            if request.method == "POST":
+                subject = request.POST.get("subject")
+                review = request.POST.get("comment")
+                rating = request.POST.get("rating")
+                product = Product.objects.get(slug=url)
+                user = request.user
+
+                comment = Comment(product=product, user=user, subject=subject, comment=review, rating=rating)
+                comment.save()
+                messages.success(request, "Your review has been sent. Thank You for your interest.")
+                return HttpResponseRedirect(f"/shop/review/{url}")
+    return render(request, "shopping/review.html", params)
+
+
 

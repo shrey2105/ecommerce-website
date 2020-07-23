@@ -18,6 +18,6 @@ urlpatterns = [
     path("buy_now/<int:id>", views.buy_now, name="buy_now"),
     path("cartCheckout/", views.cartCheckout, name="new_checkout"),
     path("cart_item_count/", views.cart_item_count, name="cart_item_count"),
-    path("buy_item_count/", views.buy_item_count, name="buy_item_count")
-    
+    path("buy_item_count/", views.buy_item_count, name="buy_item_count"),
+    path("review/<slug:url>", views.review, name="review"),
 ]
