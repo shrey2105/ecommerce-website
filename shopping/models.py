@@ -10,7 +10,7 @@ class Product(models.Model):
     subcategory = models.CharField(max_length=50, default="")
     price = models.IntegerField(default="0")
     description = models.TextField()
-    pub_date = models.DateField()
+    pub_date = models.DateTimeField()
     image = models.ImageField(upload_to="shopping/images", default="")
     slug = models.CharField(max_length=100, blank=True, null=True)
 
@@ -143,7 +143,7 @@ class OrdersUpdate(models.Model):
     update_id = models.AutoField(primary_key=True)
     order_id = models.CharField(max_length=20, default="")
     update_description = models.CharField(max_length=5000)
-    timestamp = models.DateField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.update_description[0:]

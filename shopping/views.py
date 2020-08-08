@@ -11,6 +11,7 @@ from django.urls import reverse
 from .utils import orderid_generator
 import ast
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from datetime import datetime, timedelta
 
 paytm = PaytmKey.objects.values('merchant_id', 'merchant_key')
 for item in paytm:
@@ -21,17 +22,25 @@ MERCHANT_KEY = merchant_key
 # Create your views here.
 def index(request):
     all_products = []
+    latest_products = []
+    all_latest_products = Product.objects.all().order_by('-pub_date', '-id')[:8]
+    for products in all_latest_products:
+        saved_datetime = products.pub_date + timedelta(days=30)
+        currentTime = datetime.now()
+        if currentTime.timestamp() < saved_datetime.timestamp():
+            latest_products.append(products)
+
     product_category = Product.objects.values('category','id')
     categories = {item['category'] for item in product_category}
     for category in categories:
-        prod = Product.objects.filter(category = category)
+        prod = Product.objects.filter(category = category).order_by('category')
         n = len(prod)
         no_slides = n // 4 + ceil((n / 4) - (n // 4))
         all_products.append([prod, range(1, no_slides), no_slides])
 
     banner_image = BannerImage.objects.all()
     youtube_link = YoutubeLink.objects.all()[0]
-    params = {'all_products':all_products, 'banner':banner_image, 'youtube':youtube_link}
+    params = {'all_products':all_products, 'banner':banner_image, 'youtube':youtube_link, 'all_latest_products':latest_products}
     return render(request, 'shopping/index.html', params)
 
 def contact(request):
