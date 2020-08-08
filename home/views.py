@@ -282,9 +282,9 @@ def forgotPassword(request):
                 return JsonResponse({'status':'not_success', 'message':'Mobile number is invalid. Please provide 10 digit mobile number.'})
             else:
                 profile = Profile.objects.filter(mobile_number=user_mobile_no)
-                user = User.objects.get(pk=profile[0].user.id)
-                full_name = f"{user.first_name} {user.last_name}"
                 if profile.exists():
+                    user = User.objects.get(pk=profile[0].user.id)
+                    full_name = f"{user.first_name} {user.last_name}"
                     otp = otp_key_generator(user_mobile_no)
                     try:
                         old = ForgotPasswordOtp.objects.get(mobile_number=user_mobile_no)
