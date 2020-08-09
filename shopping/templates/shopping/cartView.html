@@ -45,7 +45,7 @@
         {% for item in cart.cartitem_set.all %}
         <tr>
             <td>{{item.product}}</td>
-            <td>{{item.product.price}}</td>
+            <td>Rs. {{item.product.price}}</td>
             <td>{{item.quantity}}</td>
             <td><a href="{% url 'remove_from_cart' item.id %}"><img src="{% static 'shopping/img/trash.png' %}"></i></a></td>
         </tr>

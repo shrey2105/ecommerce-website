@@ -12,6 +12,7 @@ class Product(models.Model):
     description = models.TextField()
     pub_date = models.DateTimeField()
     image = models.ImageField(upload_to="shopping/images", default="")
+    count_sold = models.IntegerField(default=0)
     slug = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):

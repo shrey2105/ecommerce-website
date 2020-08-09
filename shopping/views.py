@@ -23,7 +23,14 @@ MERCHANT_KEY = merchant_key
 def index(request):
     all_products = []
     latest_products = []
-    all_latest_products = Product.objects.all().order_by('-pub_date', '-id')[:8]
+    trending_products = []
+
+    all_trending_products = Product.objects.all().order_by('-count_sold', '-id')[:10]
+    for top_products in all_trending_products:
+        if top_products.count_sold > 0:
+            trending_products.append(top_products)
+
+    all_latest_products = Product.objects.all().order_by('-pub_date', '-id')[:10]
     for products in all_latest_products:
         saved_datetime = products.pub_date + timedelta(days=30)
         currentTime = datetime.now()
@@ -40,7 +47,7 @@ def index(request):
 
     banner_image = BannerImage.objects.all()
     youtube_link = YoutubeLink.objects.all()[0]
-    params = {'all_products':all_products, 'banner':banner_image, 'youtube':youtube_link, 'all_latest_products':latest_products}
+    params = {'all_products':all_products, 'banner':banner_image, 'youtube':youtube_link, 'all_latest_products':latest_products, 'all_trending_products':trending_products}
     return render(request, 'shopping/index.html', params)
 
 def contact(request):
@@ -299,8 +306,7 @@ def checkout(request):
         
         thanks = True
         order_id = orders.order_id
-        # params = {'thanks':thanks, 'order_id':order_id}
-        # return render(request, 'shopping/empty_cart.html', params)
+
         # After payment, request paytm to transfer amount to our account done by customer
         params_dict = {
             'MID':merchant_id,
@@ -329,17 +335,27 @@ def paymentHandle(request):
 
     verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
     cart = Cart.objects.get(user=form['MERC_UNQ_REF'])
+    cartitems = CartItem.objects.filter(cart=cart)
     new_order = Order.objects.get(cart=cart)
-    new_order.status = "Finished"
-    new_order.save()
 
     if verify:
         if response_dict['RESPCODE'] == '01':
+            for cartitem in cartitems:
+                try:
+                    product = Product.objects.filter(product_name=cartitem.product)
+                    for productitem in product:
+                        productitem.count_sold = productitem.count_sold + cartitem.quantity
+                        productitem.save()
+                except Product.DoesNotExist:
+                    pass
+            new_order.status = "Finished"
+            new_order.save()
             print("Order Successful")
         else:
             new_order.delete()
             print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    else: 
+    else:
+        new_order.delete()
         print("Order Unsuccessful Because" + response_dict['RESPMSG'])
     return render(request, 'shopping/paytm_status.html', {'response':response_dict})
 
@@ -356,17 +372,26 @@ def paymentHandleBuy(request):
 
     verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
     buy = Buy.objects.get(user=form['MERC_UNQ_REF'])
+    buyitem = BuyItem.objects.get(buy=buy)
     new_order = Order.objects.get(buy=buy)
-    new_order.status = "Finished"
-    new_order.save()
 
     if verify:
         if response_dict['RESPCODE'] == '01':
+            try:
+                product = Product.objects.get(product_name=buyitem.product)
+                product.count_sold = product.count_sold + buyitem.quantity
+                product.save()
+            except Product.DoesNotExist:
+                pass
+
+            new_order.status = "Finished"
+            new_order.save()
             print("Order Successful")
         else:
             new_order.delete()
             print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    else: 
+    else:
+        new_order.delete()
         print("Order Unsuccessful Because" + response_dict['RESPMSG'])
     return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'buy_thanks':True})
 
@@ -374,7 +399,7 @@ def orderDetails(request):
     if request.user.is_authenticated:
         if request.user.profile.is_verified == "VF":
             user = request.user
-            new_order = Order.objects.filter(user=user)
+            new_order = Order.objects.filter(user=user).order_by('-id')
             if new_order.exists():
                 params = {'order':new_order}
             else:
