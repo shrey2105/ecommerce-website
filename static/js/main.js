@@ -90,7 +90,6 @@
 
 				// Video check.
 					var video = $banner.data('video');
-					console.log(video)
 
 					if (video)
 						$window.on('load.banner', function() {
