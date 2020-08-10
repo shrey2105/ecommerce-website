@@ -3077,7 +3077,7 @@
 		.wrapper.style3 {
 			background-color: #000;
 			color: #bfbfbf;
-			background-image: url(../images/bg.jpg);
+			background-image: url("https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1597086993/bg_o2jz9j.jpg");
 			background-size: cover;
 			background-attachment: fixed;
 			background-position: center;
@@ -3712,7 +3712,7 @@
 		-webkit-justify-content: center;
 		-ms-justify-content: center;
 		justify-content: center;
-		background-image: url("https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/images/banner.jpg");
+		background-image: url("https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1597086989/banner_vj7tq2.jpg");
 		background-position: center;
 		background-size: cover;
 		background-repeat: no-repeat;
