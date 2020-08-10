@@ -102,10 +102,10 @@ color: #777;
 <div class="container">
   <div class="text-center my-3">
     <img class="d-block mx-auto my-4" src="{% static 'shopping/img/home-logo.png' %}" alt="">
-    <h1 class="my-4">New to Apnakart &amp; Devastator Blogs!</h1>
+    <h1 class="my-4">New to Shop N Blog !!</h1>
     <h1 class="h3 mb-3 font-weight-normal">Please Sign Up</h1>
   </div>
-  <form class="form-signup" id="signup-form" action="/home/signup" method="post">
+  <form class="form-signup" id="signup-form" action="/home/signup" method="post" novalidate="">
     {% csrf_token %}
 
 
@@ -136,14 +136,15 @@ color: #777;
       <input type="email" class="form-control" id="email" pattern="^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$" name="email" placeholder="Email Address" required="">
       <label for="email">Email Address</label>
       <span class="error_email"></span>
-      <div class="invalid-feedback">Email should be in the format abc@domain.tld.</div>
+      <div class="invalid-feedback">Email should be in the format abc@domain.tld</div>
     </div>
 
     <div class="form-label-group">
       <input type="tel" class="form-control" id="mobile" pattern="^[0-9]{10}$" name="mobile" placeholder="Mobile Number" required="">
       <label for="mobile">Mobile Number</label>
       <span class="error_mobile"></span>
-      <div class="invalid-feedback" id="mobile_response" style="display:none">Mobile Number already registered. Should contain: 10 digits.</div>
+      <div class="invalid-feedback">Should contain 10 digit mobile number</div>
+      <div class="invalid-feedback" id="mobile_response" style="display:none">Mobile Number already registered. Should contain: 10 digits</div>
     </div>
 
     <div class="form-label-group">
@@ -151,7 +152,7 @@ color: #777;
         required="">
       <label for="password1">Password</label>
       <span class="error_password1"></span>
-      <div class="invalid-feedback">Password Should be 8 characters and long &amp; should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed.</div>
+      <div class="invalid-feedback">Password Should be 8 characters and long &amp; should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed</div>
     </div>
 
     <div class="form-label-group">
@@ -159,7 +160,7 @@ color: #777;
         required="">
       <label for="password2">Confirm Password</label>
       <span class="error_password2"></span>
-      <div class="invalid-feedback">This is a required field.</div>
+      <div class="invalid-feedback">This is a required field</div>
     </div>
 
     <div class="form-label-group">
@@ -197,7 +198,7 @@ color: #777;
           <label class="form-check-label" for="female">Female</label>
         </div>
       </div>
-      <div class="invalid-feedback">This is a required field.</div>
+      <div class="invalid-feedback">This is a required field</div>
     </div>
 
     <button id="submit-button" name="submit" class="btn btn-lg btn-dark btn-block" type="submit">Sign Up</button>
