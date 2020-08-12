@@ -57,7 +57,7 @@ a.review-link:hover {font-size:150%;}
             </td>
             <td scope="col">
             {% for url in item.cartproduct_items|literal_eval %}
-            <a class="review-link" href="/shop/review/{{url.2}}">Review</a><br><br>
+            <a class="review-link" href="/shop/review/{{url.2}}">Rate &amp; Review</a><br><br>
             {% endfor %}
             </td>
             <td scope="col">Rs. {{item.final_total}}</td>
