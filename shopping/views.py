@@ -24,6 +24,18 @@ def index(request):
     all_products = []
     latest_products = []
     trending_products = []
+    total_products_count = 0
+    total_members_count = 0
+
+    total_members = User.objects.all()
+    for members in total_members:
+        if not members.is_staff:
+            total_members_count += 1
+
+    total_products_redemption = Product.objects.all().order_by('count_sold', 'id')
+    for total_products in total_products_redemption:
+        if total_products.count_sold > 0:
+            total_products_count = total_products_count + total_products.count_sold
 
     all_trending_products = Product.objects.all().order_by('-count_sold', '-id')[:10]
     for top_products in all_trending_products:
@@ -47,7 +59,8 @@ def index(request):
 
     banner_image = BannerImage.objects.all()
     youtube_link = YoutubeLink.objects.all()[0]
-    params = {'all_products':all_products, 'banner':banner_image, 'youtube':youtube_link, 'all_latest_products':latest_products, 'all_trending_products':trending_products}
+    params = {'all_products':all_products, 'banner':banner_image, 'youtube':youtube_link, 'all_latest_products':latest_products, 'all_trending_products':trending_products,
+    'total_products_count':total_products_count, 'total_members_count':total_members_count}
     return render(request, 'shopping/index.html', params)
 
 def contact(request):
