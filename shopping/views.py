@@ -575,7 +575,7 @@ def buy_item_count(request):
 def review(request, url):
     if request.user.is_authenticated:
         product = Product.objects.get(slug=url)
-        comments = Comment.objects.filter(product=product)
+        comments = Comment.objects.filter(product=product, user=request.user)
         if comments.exists():
             params = {'product': product, 'comments':comments[0], 'status':True}
             if request.method == "POST":
