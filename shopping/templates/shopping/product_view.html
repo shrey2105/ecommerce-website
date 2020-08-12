@@ -86,7 +86,7 @@ color:#FD4;
                 {% for record in records %}
                 <div class="row mt-4">
                     <div class="col-md-1 image-div">
-                        <img class="profile-image" src="{% static 'blog/img/profile.png' %}">
+                        <img class="profile-image" src="{{MEDIA_URL}}{{request.user.profile.image}}" width="78" height="78">
                     </div>
                     <div class="col-md-11 comment-div">
                         <div class="comment-text w-100">
