@@ -12,6 +12,10 @@ from .utils import orderid_generator
 import ast
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
+from django.utils.safestring import mark_safe
+msg = """
+        Please note that you are not a VERIFIED USER. To verify, Click <a style='color:#000' href='{url}'><strong><em><u>Here</u></em></strong></a> to navigate to Profile Section to validate email address & mobile number and enjoy services.
+    """
 
 paytm = PaytmKey.objects.values('merchant_id', 'merchant_key')
 for item in paytm:
@@ -21,6 +25,10 @@ MERCHANT_KEY = merchant_key
 
 # Create your views here.
 def index(request):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
     all_products = []
     latest_products = []
     trending_products = []
@@ -64,6 +72,10 @@ def index(request):
     return render(request, 'shopping/index.html', params)
 
 def contact(request):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
     if request.method == 'POST':
         try:
             name = request.POST.get("name", default="")
@@ -104,7 +116,10 @@ def tracker(request):
 
 def orderTracker(request):
     if request.user.is_authenticated:
-        if request.user.profile.is_verified == "VF":
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
+        if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
             if request.method == 'POST':
                 orderid = request.POST.get("orderid", default="")
                 
@@ -135,6 +150,10 @@ def searchMatch(query, item):
         return False
 
 def search(request):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
     query = request.GET.get("search")
     all_products = []
     product_category = Product.objects.values('category','id')
@@ -152,6 +171,10 @@ def search(request):
     return render(request, 'shopping/search.html', params)
 
 def productView(request, id):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
     #Fetching product using id
     product = Product.objects.get(id = id)
     comments = Comment.objects.filter(product=product).order_by('id')
@@ -169,7 +192,7 @@ def productView(request, id):
     return render(request, 'shopping/product_view.html', params)
 
 def cartCheckout(request):
-    if request.user.profile.is_verified == "VF":
+    if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
         thanks = request.POST.get("buy_thanks")
         if thanks:
             try:
@@ -410,7 +433,7 @@ def paymentHandleBuy(request):
 
 def orderDetails(request):
     if request.user.is_authenticated:
-        if request.user.profile.is_verified == "VF":
+        if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
             user = request.user
             new_order = Order.objects.filter(user=user).order_by('-id')
             if new_order.exists():
@@ -426,7 +449,7 @@ def orderDetails(request):
 
 def cartView(request):
     if request.user.is_authenticated:
-        if request.user.profile.is_verified == "VF":
+        if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
             try:
                 user = request.user
                 cart = Cart.objects.get(user=user)
@@ -469,7 +492,7 @@ def remove_from_cart(request, id):
         
 def add_to_cart(request, id):
     if request.user.is_authenticated:
-        if request.user.profile.is_verified == "VF":
+        if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
             try:
                 user = request.user
                 cart = Cart.objects.get(user=user)
@@ -510,7 +533,7 @@ def add_to_cart(request, id):
 
 def buy_now(request, id):
     if request.user.is_authenticated:
-        if request.user.profile.is_verified == "VF":
+        if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
             buy = Buy.objects.filter(user=request.user)
             buy.delete()
             try:

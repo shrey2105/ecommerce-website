@@ -17,7 +17,7 @@
             <p>You cannot access this page without login.</p>
             <p>Please login to access this page.</p>
             <p>Some of the pages require user access.</p>
-            <p>Note: The page will automatically redirect in <span id="count">3</span> seconds.</p>
+            <p>Note: The page will automatically redirect in <span id="count">5</span> seconds.</p>
         </div>
     </div>
 </div>
@@ -28,7 +28,7 @@
 window.onload = function () {
 
             (function () {
-                var counter = 3;
+                var counter = 5;
 
                 setInterval(function () {
                     counter--;
@@ -49,7 +49,7 @@ window.onload = function () {
         }
     setTimeout(function () {
             document.location = "/home";
-        }, 3000);
+        }, 5000);
 </script>
 {% endblock %}
 

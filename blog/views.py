@@ -5,14 +5,27 @@ import json
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.contrib.auth.decorators import login_required
 from blog.templatetags import get_dict
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+msg = """
+        Please note that you are not a VERIFIED USER. To verify, Click <a style='color:#000' href='{url}'><strong><em><u>Here</u></em></strong></a> to navigate to Profile Section to validate email address & mobile number and enjoy services.
+    """
 
 # Create your views here.
 def index(request):
+	if request.user.is_authenticated:
+		if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+			url = reverse("profile")
+			messages.warning(request, mark_safe(msg.format(url=url)))
 	blogposts = BlogPost.objects.all()
 	params = {'blogposts':blogposts}
 	return render(request, 'blog/index.html', params)
 
 def blogpost(request, id):
+	if request.user.is_authenticated:
+		if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+			url = reverse("profile")
+			messages.warning(request, mark_safe(msg.format(url=url)))
 	blogpost = BlogPost.objects.filter(post_id=id)
 	comments = BlogComment.objects.filter(post=blogpost[0], parent=None)
 	replies = BlogComment.objects.filter(post=blogpost[0]).exclude(parent=None)
@@ -27,7 +40,7 @@ def blogpost(request, id):
 	return render(request, 'blog/blogpost.html', params)
 
 def postComment(request):
-	if request.user.profile.is_verified == "VF":
+	if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
 		if request.method == "POST":
 			comment = request.POST.get("comment")
 			user = request.user
@@ -59,6 +72,10 @@ def postComment(request):
 	# return render(request, 'blog/blogpost.html')
 
 def search(request):
+	if request.user.is_authenticated:
+		if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+			url = reverse("profile")
+			messages.warning(request, mark_safe(msg.format(url=url)))
 	query = request.GET.get("query")
 	if len(query) > 60:
 		all_posts = BlogPost.objects.none()
@@ -72,25 +89,30 @@ def search(request):
 	return render(request, "blog/search.html", params)
 
 def contact(request):
-    if request.method == "POST":
-        try:
-            name = request.POST.get("name")
-            email = request.POST.get("email")
-            mobile = request.POST.get("mobile")
-            message = request.POST.get("message")
-            contact = Contact(name=name, email=email, mobile=mobile, message=message)
-            contact.save()
-            response = json.dumps({"status": "success"})
-            return HttpResponse(response)
-        except Exception as e:
-            response = json.dumps({"status": "failure"})
-            return HttpResponse(response)
+	if request.user.is_authenticated:
+		if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+			url = reverse("profile")
+			messages.warning(request, mark_safe(msg.format(url=url)))
+		
+	if request.method == "POST":
+		try:
+			name = request.POST.get("name")
+			email = request.POST.get("email")
+			mobile = request.POST.get("mobile")
+			message = request.POST.get("message")
+			contact = Contact(name=name, email=email, mobile=mobile, message=message)
+			contact.save()
+			response = json.dumps({"status": "success"})
+			return HttpResponse(response)
+		except Exception as e:
+			response = json.dumps({"status": "failure"})
+			return HttpResponse(response)
         # messages.success(request, "Your response has been successfully recorded."
-    return render(request, "blog/contact.html")
+	return render(request, "blog/contact.html")
 
 def publish(request):
 	if request.user.is_authenticated:
-		if request.user.profile.is_verified == "VF":
+		if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
 			if request.method == "POST":
 				title = request.POST.get("title")
 				first_heading = request.POST.get("first_heading")

@@ -1,7 +1,9 @@
 from django.shortcuts import render, HttpResponse, redirect, HttpResponseRedirect
 from django.http import JsonResponse
 from django.contrib import messages
+from django.views.generic import View
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from blog.models import BlogPost
 from home.models import Profile, Contact, TwoFactor, PhoneOtp, ForgotPasswordOtp
@@ -10,25 +12,55 @@ import json
 import requests
 from home.otp import otp_key_generator
 from datetime import datetime, timedelta
+from django.core.mail import EmailMessage, send_mail
+from home.utils import token_generator
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.safestring import mark_safe
 import re
 MOBILE_REGEX = re.compile(r'^[0-9]{10}$')
 OTP_REGEX = re.compile(r'^[A-Z0-9]{6,6}$')
 PASSWORD_REGEX = re.compile(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$')
+msg = """
+        Please note that you are not a VERIFIED USER. To verify, Click <a style='color:#000' href='{url}'><strong><em><u>Here</u></em></strong></a> to navigate to Profile Section to validate email address & mobile number and enjoy services.
+    """
 
 # Create your views here.
 def error_404(request, exception):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
     return render(request, "home/404.html")
 
 def error_500(request):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
     return render(request, "home/500.html")
 
 def csrf_failure(request):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
     return render(request, "home/403_csrf.html")
 
 def home(request):
-	return render(request, "home/home.html")
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
+    return render(request, "home/home.html")
 
 def about(request):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg.format(url=url)))
     return render(request, 'home/about.html')
 
 def signupcheck(request):
@@ -44,6 +76,19 @@ def signupcheck(request):
             
     return render(request)
 
+def emailcheck(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        try:
+            user = User.objects.get(email=email)
+            response = "Already in Use"
+            return HttpResponse('%s' % response)
+        except User.DoesNotExist:
+            response = "OK"
+            return HttpResponse('%s' % response)
+            
+    return render(request, "home/profile.html")
+
 def mobilecheck(request):
     if request.method == "POST":
         mobile = request.POST.get("mobile")
@@ -55,7 +100,7 @@ def mobilecheck(request):
             response = "OK"
             return HttpResponse('%s' % response)
             
-    return render(request)
+    return render(request, "home/profile.html")
 
 def signup(request):
     if not request.user.is_authenticated:
@@ -89,6 +134,23 @@ def signup(request):
         return HttpResponseRedirect("/home")
     return render(request, "home/signup.html")
 
+class VerificationView(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and token_generator.check_token(user, token):
+            user.profile.is_email_verified = "VF"
+            user.save()
+            messages.success(request, 'Your Email Address has been verified.')
+            return redirect('profile')
+        else:
+            messages.error(request, 'The confirmation link was invalid, possibly because it has already been used.')
+            return redirect('profile')
+
 def signin(request):
     if not request.user.is_authenticated:
         if request.method == "POST":
@@ -105,8 +167,6 @@ def signin(request):
                 except Cart.DoesNotExist:
                     request.session['items_total'] = 0
                 messages.success(request, "Welcome to Shop N Blog! You have been logged in successfully.")
-                if request.user.profile.is_verified == "NVF":
-                    messages.warning(request, "Please note that you are not a VERIFIED USER. To verify, navigate to profile section to validate mobile number and enjoy services.")
                 return redirect("/home/")
             else:
                 messages.error(request, "Login Failed! Kindly check your Username or Password")
@@ -125,6 +185,12 @@ def signout(request):
 
 def profile(request):
     if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+            msg_profile = """
+                Please note that you are not a VERIFIED USER. To verify, please validate email address & mobile number and enjoy services.
+            """
+            url = reverse("profile")
+            messages.warning(request, mark_safe(msg_profile.format(url=url)))
         login_user = User.objects.get(pk=request.user.id)
 
         if request.method == "POST":
@@ -143,7 +209,7 @@ def profile(request):
             return HttpResponseRedirect("/home/profile")
     else:
         return HttpResponseRedirect("/home/cannot_access")
-    return render(request, "home/profile.html", {'is_verified':login_user.profile.is_verified})
+    return render(request, "home/profile.html", {'is_verified':login_user.profile.is_verified, 'is_email_verified':login_user.profile.is_email_verified})
 
 def changePassword(request):
     if request.method == "POST":
@@ -186,13 +252,39 @@ def updateMobile(request):
         return HttpResponseRedirect("/home/cannot_access")
     return render(request, "home/profile.html")
 
+def updateEmail(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user_id = request.POST.get("user_id")
+            user = User.objects.get(pk=user_id)
+            email = request.POST.get("email")
+            if user.email != email:
+                user.email = email
+                user.save()
+                messages.success(request, "Email Address Updated Successfully. Kindly verify your profile again.")
+                user.profile.is_email_verified = "NVF"
+                user.save()
+            else:
+                messages.error(request, "Can't update same Email Address.")
+            return HttpResponseRedirect("/home/profile")
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
+    return render(request, "home/profile.html")
+
 def cannot_access(request):
     return render(request, "home/cannot_access.html")
 
 def notVerified(request):
+    if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+        url = reverse("profile")
+        messages.warning(request, mark_safe(msg.format(url=url)))
     return render(request, "home/not_verified.html")
 
 def contact(request):
+    if request.user.is_authenticated:
+        if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
+           url = reverse("profile")
+           messages.warning(request, mark_safe(msg.format(url=url)))
     if request.method == "POST":
         try:
             name = request.POST.get("name")
@@ -207,6 +299,39 @@ def contact(request):
             response = json.dumps({"status": "failure"})
             return HttpResponse(response)
     return render(request, "home/contact.html")
+
+def send_email(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user = User.objects.get(pk=request.user.id)
+            email = user.email
+            if user.profile.is_email_verified == "NVF":
+                # path_to_view
+                # - getting domain we are on
+                # - relative url to verification
+                # - encode uid
+                # - token
+
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                domain = get_current_site(request).domain
+                link = reverse("activate", kwargs={"uidb64":uidb64, "token":token_generator.make_token(user)})
+
+                activate_url = "https://"+domain+link
+                email_subject = "Activate your Shop N Blog Account"
+                from_email = "Shop N Blog Support <shopnblog2020@gmail.com>"
+                message = render_to_string('home/profile_activation_email.html', {
+                'user': user,
+                'activate_url':activate_url,
+                })
+                send_mail(email_subject,message,from_email,[email],fail_silently=False,html_message=message)
+
+                return JsonResponse({'status':'success', 'message':'Email Sent. Please check your inbox for mail and click on the link to verify it.'})
+            else:
+                return JsonResponse({'status':'not_success', 'message':'There is some error in sending mail. Please try again.'})
+            
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
+    return render(request, "home/profile.html")
 
 def send_otp(request):
     if request.user.is_authenticated:
@@ -231,7 +356,7 @@ def send_otp(request):
                             old.save()
                             url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={old.otp}"
                             response = requests.request("GET", url)
-                            return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to enter recieved OTP.'})
+                            return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to verify.'})
                         else:
                             return JsonResponse({'status':'not_success', 'message':'Sending OTP error, Limit exceeded. Please try after 30 minutes.'})
 
@@ -240,7 +365,7 @@ def send_otp(request):
                     old.save()
                 url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={user.first_name}&var2={old.otp}"
                 response = requests.request("GET", url)
-                return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to enter recieved OTP.'})
+                return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to verify.'})
             else:
                 return JsonResponse({'status':'error'})
     else:
@@ -258,7 +383,7 @@ def validateOtp(request):
                 if sent_otp.otp == user_input_otp:
                     user.profile.is_verified = "VF"
                     user.save()
-                    messages.success(request, "OTP verified! Your profile status is now verified.")
+                    messages.success(request, "Your Mobile Number has been verified.")
                     sent_otp.delete()
                     return HttpResponseRedirect("/home/profile")
                 else:
@@ -301,7 +426,7 @@ def forgotPassword(request):
                                 old.save()
                                 url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile_no}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={full_name}&var2={old.otp}"
                                 response = requests.request("GET", url)
-                                return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Enter OTP to enter recieved OTP.'})
+                                return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Enter OTP to verify.'})
                             else:
                                 return JsonResponse({'status':'not_success', 'message':'Sending OTP error, Limit exceeded. Please try after 30 minutes.'})
 
@@ -310,7 +435,7 @@ def forgotPassword(request):
                         old.save()
                     url = f"https://2factor.in/API/R1/?module=TRANS_SMS&apikey={shop_n_blog.api_key}&to={user_mobile_no}&from={shop_n_blog.sender_id}&templatename={shop_n_blog.template_name}&var1={full_name}&var2={old.otp}"
                     response = requests.request("GET", url)
-                    return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to enter recieved OTP.'})
+                    return JsonResponse({'status':'success', 'message':'OTP sent, valid for 30 minutes. Click on Verify Mobile to verify.'})
                 else:
                     return JsonResponse({'status':'not_success', 'message':'This mobile number is not registered with us. Please provide a registered mobile number.'})
     else:

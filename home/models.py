@@ -21,6 +21,7 @@ class Profile(models.Model):
         ('NVF', 'Not Verified'),
     )
     is_verified = models.CharField(max_length=4, choices=VERIFIED_CHOICES, blank=True, default="NVF")
+    is_email_verified = models.CharField(max_length=4, choices=VERIFIED_CHOICES, blank=True, default="NVF")
 
     def __str__(self):
         return self.user.username

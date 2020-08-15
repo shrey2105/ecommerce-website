@@ -189,5 +189,12 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger"
 }
 
+EMAIL_HOST = os.environ['EMAIL_HOST']
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
+EMAIL_PORT = 587
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
 # Activate Django-Heroku.
 django_heroku.settings(locals(), staticfiles=False)

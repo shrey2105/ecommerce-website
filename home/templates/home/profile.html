@@ -4,11 +4,17 @@
 img.profile-image-logo {
 border-radius: 90px;
 }
-form#form_send_otp a {
+form#form_send_otp a, form#form_send_email a {
 color: white;
 }
-.update_profile, .update_mobile, .update_password{
+.update_profile, .update_email, .update_mobile, .update_password{
 float:right
+}
+.custom-margin{
+margin-left:2rem!important;
+}
+.custom-margin-top{
+    margin-top:0.8em!important;
 }
 {% endblock css %}
 {% block homeactive %}active{% endblock homeactive %}
@@ -20,7 +26,8 @@ float:right
     <div class="col-lg-12 my-2 mx-2">
         <input type="button" class="update_profile btn btn-dark btn-sm mt-2" value="EDIT">
         <h1 class="my-3">Update Profile</h1>
-        <form method="post" id="basic_profile" class="profile_basic" action="/home/profile" enctype="multipart/form-data" novalidate="">{% csrf_token %}
+        <form method="post" id="basic_profile" class="profile_basic" action="/home/profile"
+            enctype="multipart/form-data" novalidate="">{% csrf_token %}
             <input type="hidden" name="user_id" value="{{request.user.id}}">
             <div class="row my-3">
                 <div class="col-md-4">
@@ -34,7 +41,7 @@ float:right
                     </div>
                     <div class="row mt-4">
                         <label for="status"><b>Profile Status:&nbsp;&nbsp;</b></label>
-                        {% if is_verified == "VF" %}
+                        {% if is_verified == "VF" and is_email_verified == "VF" %}
                         <div class="stats">Verified<img src="{% static 'home/img/verified.png' %}"></div>
                         {% else %}
                         <div class="stats">Not Verified<img class="mx-2" src="{% static 'home/img/unverified.png' %}">
@@ -46,37 +53,10 @@ float:right
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label for="name"><b>Name</b></label>
-                            <input type="text" name="name" value="{{request.user.first_name}}" pattern="^[A-Za-z. ]{3,20}$" class="form-control"
-                                id="name" placeholder="" required="">
-                                <div class="invalid-feedback">Should contain: atleast 3 albhabets. No numeric allowed</div>
+                            <input type="text" name="name" value="{{request.user.first_name}}"
+                                pattern="^[A-Za-z. ]{3,20}$" class="form-control" id="name" placeholder="" required="">
+                            <div class="invalid-feedback">Should contain: atleast 3 albhabets. No numeric allowed</div>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label for="email"><b>Email</b></label>
-                            <input type="email" name="email" pattern="^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$" class="form-control" value="{{request.user.email}}"
-                                id="email" placeholder="" required="">
-                            <div class="invalid-feedback">Email should be in the format abc@domain.tld.</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-auto">
-                            <label for="day"><b>Date of Birth</b></label>
-                            <input type="text" class="form-control mb-2" id="day" pattern="^(0[1-9]|[12]\d|3[01])$" name="day" placeholder="Day"
-                                value="{{request.user.profile.birth_day}}" required="">
-                            <div class="invalid-feedback">Should contain day in the format dd say 01</div>
-                        </div>
-                        <div class="form-group col-auto">
-                            <label for="month"></label>
-                            <input type="text" class="form-control mt-2" id="month" pattern="^(0[1-9]|1[012])$"  name="month" placeholder="Month"
-                                value="{{request.user.profile.birth_month}}" required="">
-                                <div class="invalid-feedback">Should contain month in the format mm say 01</div>
-                        </div>
-                        <div class="form-group col-auto">
-                            <label for="year"></label>
-                            <input type="text" class="form-control mt-2" id="year" pattern="^[12][0-9]{3}$" name="year" placeholder="Year"
-                                value="{{request.user.profile.birth_year}}" required="">
-                                <div class="invalid-feedback">Should contain year in the format yyyy say 1995</div>
-                        </div>
-
                         <div class="form-group col-md-6">
                             <label for="gender"><b>Gender</b></label>
                             <div class="">
@@ -89,9 +69,30 @@ float:right
                                     <input class="form-check-input" type="radio" name="gender" id="female" value="F"
                                         {% if request.user.profile.gender == "F" %} checked {% endif %} required="">
                                     <label class="form-check-label" for="female">Female</label>
-                                     <div class="invalid-feedback">This is a required field.</div>
+                                    <div class="invalid-feedback">This is a required field.</div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-auto">
+                            <label for="day"><b>Date of Birth</b></label>
+                            <input type="text" class="form-control mb-2" id="day" pattern="^(0[1-9]|[12]\d|3[01])$"
+                                name="day" placeholder="Day" value="{{request.user.profile.birth_day}}" required="">
+                            <div class="invalid-feedback">Should contain day in the format dd say 01</div>
+                        </div>
+                        <div class="form-group col-auto">
+                            <label for="month"></label>
+                            <input type="text" class="form-control mt-2" id="month" pattern="^(0[1-9]|1[012])$"
+                                name="month" placeholder="Month" value="{{request.user.profile.birth_month}}"
+                                required="">
+                            <div class="invalid-feedback">Should contain month in the format mm say 01</div>
+                        </div>
+                        <div class="form-group col-auto">
+                            <label for="year"></label>
+                            <input type="text" class="form-control mt-2" id="year" pattern="^[12][0-9]{3}$" name="year"
+                                placeholder="Year" value="{{request.user.profile.birth_year}}" required="">
+                            <div class="invalid-feedback">Should contain year in the format yyyy say 1995</div>
                         </div>
 
                     </div>
@@ -105,17 +106,58 @@ float:right
     </div>
 
     <div class="form-group">
+        <input type="button" class="update_email btn btn-dark btn-sm mb-2" value="EDIT">
+        <h1 class="my-4">Verify Email Address</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <form id="form_verify_email" class="verify_email_form" action="/home/updateEmail" method="post"
+                    novalidate="">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{request.user.id}}">
+                    <label for="email"><b>Email Address</b></label>
+                    <input type="email" name="email" pattern="^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$"
+                        class="form-control" id="email" value="{{request.user.email}}" placeholder="Email Address"
+                        required="">
+                    <div class="invalid-feedback" id="email_response" style="display:none">Email Address already
+                        registered. Should be in the format abc@domain.tld</div>
+                    <div class="row">
+                        <button class="btn btn-dark mt-2 mr-2 mx-3 update_email_button" type="submit"
+                            style="display: none;">Update Email</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-md-6">
+                <form id="form_send_email" class="send_email_form" method="post">{% csrf_token %}
+                    <input type="hidden" id="send_email_mobile" value="{{request.user.email}}">
+                    <div class="row mb-4"></div>
+                    <div class="row">
+                        {% if is_email_verified == "NVF" %}
+                        <a id="send_email" class="btn btn-dark mb-2 mx-3 mr-2 mt-2">Send Email</a>
+                        <div class="row">
+                            <div id="email-message" class="custom-margin-top mx-2"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
         <input type="button" class="update_mobile btn btn-dark btn-sm mb-2" value="EDIT">
         <h1 class="my-4">Verify Mobile Number</h1>
         <div class="row">
             <div class="col-md-6">
-                <form id="form_verify_mobile" class="verify_mobile_form" action="/home/updateMobile" method="post" novalidate="">
+                <form id="form_verify_mobile" class="verify_mobile_form" action="/home/updateMobile" method="post"
+                    novalidate="">
                     {% csrf_token %}
                     <input type="hidden" name="user_id" value="{{request.user.id}}">
                     <label for="mobile"><b>Mobile Number</b></label>
                     <input type="tel" name="mobile" pattern="^[0-9]{10}$" class="form-control" id="mobile"
                         value="{{request.user.profile.mobile_number}}" placeholder="Mobile Number" required="">
-                    <div class="invalid-feedback" id="mobile_response" style="display:none">Mobile Number already registered. Should contain: 10 digits.</div>
+                    <div class="invalid-feedback" id="mobile_response" style="display:none">Mobile Number already
+                        registered. Should contain: 10 digits.</div>
                     <div class="row">
                         <button class="btn btn-dark mt-2 mr-2 mx-3 update_mobile_button" type="submit"
                             style="display: none;">Update Mobile</button>
@@ -130,31 +172,29 @@ float:right
                     <div class="row">
                         {% if is_verified == "NVF" %}
                         <a id="send_otp" class="btn btn-dark mb-2 mx-3 mr-2 mt-2">Send OTP</a>
-                        <div class="row">
-                            <div id="otp-message" class="mx-4 mt-2"></div>
-                        </div>
-                        </div>
-                        {% endif %}
-                        {% if is_verified == "NVF" %}
-                        <div class="row">
-                        <a class="btn btn-dark mb-2 mr-2 mt-2 mx-3" data-toggle="collapse" href="#verifyMobile"
+                        <a class="btn btn-dark mb-2 mr-2 mt-2 mx-1" data-toggle="collapse" href="#verifyMobile"
                             role="button" aria-expanded="false" aria-controls="collapseExample">Verify Mobile</a>
-                        {% endif %}
+                        <div class="row">
+                            <div id="otp-message" class="custom-margin custom-margin-top"></div>
+                        </div>
                     </div>
+                    {% endif %}
                 </form>
-                <div class="collapse" id="verifyMobile">
+                <div class="collapse mt-2" id="verifyMobile">
                     <h5>Validate OTP</h5>
                     <div class="card card-body">
-                        <form method="post" action="/home/validateOtp" class="form_validate_otp" id="validate_otp_form" novalidate="">
+                        <form method="post" action="/home/validateOtp" class="form_validate_otp" id="validate_otp_form"
+                            novalidate="">
                             {% csrf_token %}
                             <input type="hidden" id="validation_otp_mobile" name="validation_otp_mobile"
                                 value="{{request.user.profile.mobile_number}}">
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="user_otp"><b>OTP</b></label>
-                                    <input type="text" name="user_otp" pattern="^[A-Z0-9]{6,6}$" class="form-control" id="user_otp"
-                                        placeholder="Enter OTP" required="">
-                                <div class="invalid-feedback">This is a required field. Please provide a valid OTP recieved</div>
+                                    <input type="text" name="user_otp" pattern="^[A-Z0-9]{6,6}$" class="form-control"
+                                        id="user_otp" placeholder="Enter OTP" required="">
+                                    <div class="invalid-feedback">This is a required field. Please provide a valid OTP
+                                        recieved</div>
                                     <button type="submit" id="validate_button"
                                         class="btn btn-dark mt-2">Validate</button>
                                 </div>
@@ -169,148 +209,233 @@ float:right
     <div class="form-group my-2">
         <input type="button" class="update_password btn btn-dark btn-sm mb-2" value="EDIT">
         <h1 class="my-4">Change Password</h1>
-        <form method="post" id="form_update_password" class="update_password_form" action="/home/changePassword" novalidate="">{% csrf_token %}
+        <form method="post" id="form_update_password" class="update_password_form" action="/home/changePassword"
+            novalidate="">{% csrf_token %}
             <input type="hidden" name="user_id" value="{{request.user.id}}">
             <div class="row">
                 <div class="col-md-6">
                     <label for="current_password" class="mt-2"><b>Current Password</b></label>
-                    <input type="password" name="current_password" class="form-control mb-2" id="current_password" value=""
-                        placeholder="Current Password" required="">
-                        <div class="invalid-feedback">Please enter your current password. This is a required field.</div>
+                    <input type="password" name="current_password" class="form-control mb-2" id="current_password"
+                        value="" placeholder="Current Password" required="">
+                    <div class="invalid-feedback">Please enter your current password. This is a required field.</div>
                 </div>
                 <div class="col-md-6">
                     <label for="password1" class="mt-2"><b>New Password</b></label>
-                    <input type="password" name="password1" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" class="form-control mb-2" id="password1" value=""
-                        placeholder="New Password" required="">
-                        <div class="invalid-feedback">Should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed.</div>
+                    <input type="password" name="password1" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$"
+                        class="form-control mb-2" id="password1" value="" placeholder="New Password" required="">
+                    <div class="invalid-feedback">Should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special
+                        characters allowed.</div>
                     <label for="password2" class="mt-2"><b>Confirm Password</b></label>
                     <input type="password" name="password2" class="form-control mb-2" id="password2" value=""
                         placeholder="Confirm Password" required="">
-                        <span class="error_password2"></span>
+                    <span class="error_password2"></span>
                     <div class="invalid-feedback">This is a required field.</div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-dark my-3 update_password_button" style="display: none;">Update Password</button>
+            <button type="submit" class="btn btn-dark my-3 update_password_button" style="display: none;">Update
+                Password</button>
         </form>
     </div>
-</div>
+</div></div></div>
+
 {% endblock body %}
 
 {% block js %}
 <script src="{% static 'home/js/profile-form.js' %}"></script>
 <script>
 
-  $("#mobile").on("blur", function(){
+    $("#mobile").on("blur", function () {
 
-  var formData = {
-              "mobile": $("#mobile").val(),
-              "csrfmiddlewaretoken": $("form#form_verify_mobile input[name=csrfmiddlewaretoken]").val()
-            };
-  $.ajax({
+        var formData = {
+            "mobile": $("#mobile").val(),
+            "csrfmiddlewaretoken": $("form#form_verify_mobile input[name=csrfmiddlewaretoken]").val()
+        };
+        $.ajax({
             url: '/home/mobilecheck',
             type: 'post',
             data: formData,
             success: function (msg) {
-            if(msg == "OK"){
-                $("#mobile_response").hide()
-            }else{
-              $("#mobile_response").show()
-              $("#mobile").val("")
+                if (msg == "OK") {
+                    $("#mobile_response").hide()
+                } else {
+                    $("#mobile_response").show()
+                    $("#mobile").val("")
+                }
+            }
+
+        });
+    });
+
+    $("#email").on("blur", function () {
+
+        var formData = {
+            "email": $("#email").val(),
+            "csrfmiddlewaretoken": $("form#form_verify_email input[name=csrfmiddlewaretoken]").val()
+        };
+        $.ajax({
+            url: '/home/emailcheck',
+            type: 'post',
+            data: formData,
+            success: function (msg) {
+                if (msg == "OK") {
+                    $("#email_response").hide()
+                } else {
+                    $("#email_response").show()
+                    $("#email").val("")
+                }
+            }
+
+        });
+    });
+
+    $('#password1, #password2').on('blur', function () {
+        if ($('#password1').val() != '' && $('#password2').val() != '' && $('#password1').val() == $('#password2').val()) {
+            $('.error_password2').html('Password Matching').css({ 'font-size': '80%', 'color': '#28a745' });
+        } else {
+            $('.error_password2').html('Password Not Matching').css({ 'font-size': '80%', 'color': '#dc3545' });
+            $("#password2").val("");
+        }
+    });
+
+    (function () {
+        'use strict'
+
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('profile_basic')
+
+            // Loop over them and prevent submission
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        }, false)
+    }());
+
+
+    (function () {
+        'use strict'
+
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('verify_mobile_form')
+
+            // Loop over them and prevent submission
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        }, false)
+    }());
+
+    (function () {
+        'use strict'
+
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('update_password_form')
+
+            // Loop over them and prevent submission
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        }, false)
+    }());
+
+    (function () {
+        'use strict'
+
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('form_validate_otp')
+
+            // Loop over them and prevent submission
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        }, false)
+    }());
+
+    (function () {
+        'use strict'
+
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('verify_email_form')
+
+            // Loop over them and prevent submission
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        }, false)
+    }());
+
+    $("#form_verify_email :input").prop("disabled", true);
+    $(".update_email").click(function () {
+        if (this.value == "EDIT") {
+            this.value = "CANCEL";
+            $(".update_email_button").show();
+            $("#form_verify_email :input").prop("disabled", false);
+        }
+        else {
+            this.value = "EDIT";
+            $(".update_email_button").hide();
+            $("#form_verify_email :input").prop("disabled", true);
+        }
+    });
+
+    $("#send_email").click(function (event) {
+    var formData = {
+        "email": $("#send_email_mobile").val(),
+        "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val()
+    };
+    $.ajax({
+        url: '/home/send_email',
+        type: 'post',
+        data: formData,
+        beforeSend: function () {
+            $('#email-message').html(
+                '<img src="https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/home/img/Loader.gif" width="20" height="20"/>'
+            );
+        },
+        success: function (msg) {
+
+            if (msg.status == "success") {
+                    $("#email-message").html(`<span style='font-size: 80%; color: #28a745;'>${msg.message}</span>`);
+            } else {
+                    $("#email-message").html(`<span style='font-size: 80%; color: #dc3545;'>${msg.message}</span>`);
             }
         }
-
-          });
-        });
-
-
-        $('#password1, #password2').on('blur', function () {
-          if ($('#password1').val() != '' && $('#password2').val() != '' && $('#password1').val() == $('#password2').val()) {
-            $('.error_password2').html('Password Matching').css({'font-size': '80%', 'color': '#28a745'});
-            } else {
-            $('.error_password2').html('Password Not Matching').css({'font-size': '80%', 'color': '#dc3545'});
-            $("#password2").val("");
-            }
-        });
-
-(function () {
-    'use strict'
-
-    window.addEventListener('load', function () {
-      // Fetch all the forms we want to apply custom Bootstrap validation styles to
-      var forms = document.getElementsByClassName('profile_basic')
-
-      // Loop over them and prevent submission
-      Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-          if (form.checkValidity() === false) {
-            event.preventDefault()
-            event.stopPropagation()
-          }
-          form.classList.add('was-validated')
-        }, false)
-      })
-    }, false)
-  }());
-
-
-  (function () {
-    'use strict'
-
-    window.addEventListener('load', function () {
-      // Fetch all the forms we want to apply custom Bootstrap validation styles to
-      var forms = document.getElementsByClassName('verify_mobile_form')
-
-      // Loop over them and prevent submission
-      Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-          if (form.checkValidity() === false) {
-            event.preventDefault()
-            event.stopPropagation()
-          }
-          form.classList.add('was-validated')
-        }, false)
-      })
-    }, false)
-  }());
-
-  (function () {
-    'use strict'
-
-    window.addEventListener('load', function () {
-      // Fetch all the forms we want to apply custom Bootstrap validation styles to
-      var forms = document.getElementsByClassName('update_password_form')
-
-      // Loop over them and prevent submission
-      Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-          if (form.checkValidity() === false) {
-            event.preventDefault()
-            event.stopPropagation()
-          }
-          form.classList.add('was-validated')
-        }, false)
-      })
-    }, false)
-  }());
-
-  (function () {
-    'use strict'
-
-    window.addEventListener('load', function () {
-      // Fetch all the forms we want to apply custom Bootstrap validation styles to
-      var forms = document.getElementsByClassName('form_validate_otp')
-
-      // Loop over them and prevent submission
-      Array.prototype.filter.call(forms, function (form) {
-        form.addEventListener('submit', function (event) {
-          if (form.checkValidity() === false) {
-            event.preventDefault()
-            event.stopPropagation()
-          }
-          form.classList.add('was-validated')
-        }, false)
-      })
-    }, false)
-  }());
+    });
+    event.preventDefault();
+});
 </script>
 {% endblock js %}

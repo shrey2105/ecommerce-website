@@ -17,7 +17,7 @@
             <h2>Thank You</h2>
             <p>You have been successfully logged out.</p>
             <p>Kindly please visit again.</p>
-            <p>Note: The page will automatically redirect in <span id="count">3</span> seconds.</p>
+            <p>Note: The page will automatically redirect in <span id="count">5</span> seconds.</p>
         </div>
     </div>
 </div>
@@ -28,7 +28,7 @@
 window.onload = function () {
 
             (function () {
-                var counter = 3;
+                var counter = 5;
 
                 setInterval(function () {
                     counter--;
@@ -49,6 +49,6 @@ window.onload = function () {
         }
     setTimeout(function () {
             document.location = "/home";
-        }, 3000);
+        }, 5000);
 </script>
 {% endblock %}

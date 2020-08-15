@@ -15,41 +15,11 @@
         <div class="display-box">
             <h2>NOT A VERIFIED USER</h2>
             <p>You cannot access this page because you are not a verified user.</p>
-            <p>Kindly access the profile section.</p>
-            <p>Validate your mobile number.</p>
-            <p>Note: The page will automatically redirect in <span id="count">5</span> seconds.</p>
+            <p>Validate your Email address and Mobile Number by going to Profile Section</p>
+            <p>Click <a href="/home/profile"><strong><em>Here</em></strong></a> and navigate to Profile Section</p>
         </div>
     </div>
 </div>
 {% endblock %}
 
-{% block js %}
-<script>
-window.onload = function () {
-
-            (function () {
-                var counter = 5;
-
-                setInterval(function () {
-                    counter--;
-                    if (counter >= 0) {
-                        span = document.getElementById("count");
-                        span.innerHTML = counter;
-                    }
-                    // Display 'counter' wherever you want to display it.
-                    if (counter === 0) {
-                        //    alert('this is where it happens');
-                        clearInterval(counter);
-                    }
-
-                }, 1000);
-
-            })();
-
-        }
-    setTimeout(function () {
-            document.location = "/home";
-        }, 5000);
-</script>
-{% endblock %}
 

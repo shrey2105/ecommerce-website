@@ -115,44 +115,53 @@ color: #777;
       <label for="username">Username</label>
       <span class="error_username"></span>
       <div class="valid-feedback" id="username_valid" style="display:none">Username Available</div>
-      <div class="invalid-feedback" id="username_response" style="display:none">Username Unavailable. Should contain: altleast 1 alphabet and 1 numeric</div>
+      <div class="invalid-feedback" id="username_response" style="display:none">Username Unavailable. Should contain:
+        altleast 1 alphabet and 1 numeric</div>
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" pattern="^[A-Za-z. ]{3,20}$" id="firstname" name="firstname" placeholder="First Name" required="">
+      <input type="text" class="form-control" pattern="^[A-Za-z. ]{3,20}$" id="firstname" name="firstname"
+        placeholder="First Name" required="">
       <label for="firstname">First Name</label>
       <span class="error_fname"></span>
       <div class="invalid-feedback">Should contain: atleast 3 albhabets. No numeric allowed</div>
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" id="lastname" pattern="^[A-Za-z. ]{3,20}$" name="lastname" placeholder="Last Name" required="">
+      <input type="text" class="form-control" id="lastname" pattern="^[A-Za-z. ]{3,20}$" name="lastname"
+        placeholder="Last Name" required="">
       <label for="lastname">Last Name</label>
       <span class="error_lname"></span>
       <div class="invalid-feedback">Should contain: atleast 3 albhabets. No numeric allowed</div>
     </div>
 
     <div class="form-label-group">
-      <input type="email" class="form-control" id="email" pattern="^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$" name="email" placeholder="Email Address" required="">
+      <input type="email" class="form-control" id="email" pattern="^[\w%_\-.\d]+@[\w.\-]+.[A-Za-z]{2,6}$" name="email"
+        placeholder="Email Address" required="">
       <label for="email">Email Address</label>
       <span class="error_email"></span>
       <div class="invalid-feedback">Email should be in the format abc@domain.tld</div>
+      <div class="invalid-feedback" id="email_response" style="display:none">Email Address already registered. Should
+        be in the format abc@domain.tld</div>
     </div>
 
     <div class="form-label-group">
-      <input type="tel" class="form-control" id="mobile" pattern="^[0-9]{10}$" name="mobile" placeholder="Mobile Number" required="">
+      <input type="tel" class="form-control" id="mobile" pattern="^[0-9]{10}$" name="mobile" placeholder="Mobile Number"
+        required="">
       <label for="mobile">Mobile Number</label>
       <span class="error_mobile"></span>
       <div class="invalid-feedback">Should contain 10 digit mobile number</div>
-      <div class="invalid-feedback" id="mobile_response" style="display:none">Mobile Number already registered. Should contain: 10 digits</div>
+      <div class="invalid-feedback" id="mobile_response" style="display:none">Mobile Number already registered. Should
+        contain: 10 digits</div>
     </div>
 
     <div class="form-label-group">
-      <input type="password" class="form-control pwds" id="password1" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" name="password1" placeholder="Password"
-        required="">
+      <input type="password" class="form-control pwds" id="password1" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$"
+        name="password1" placeholder="Password" required="">
       <label for="password1">Password</label>
       <span class="error_password1"></span>
-      <div class="invalid-feedback">Password Should be 8 characters and long &amp; should contain atleast 1 uppercase, 1 lowecase and 1 numeric. Special characters allowed</div>
+      <div class="invalid-feedback">Password Should be 8 characters and long &amp; should contain atleast 1 uppercase, 1
+        lowecase and 1 numeric. Special characters allowed</div>
     </div>
 
     <div class="form-label-group">
@@ -164,21 +173,24 @@ color: #777;
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" id="day" pattern="^(0[1-9]|[12]\d|3[01])$" name="day" placeholder="Day of Birth" required="">
+      <input type="text" class="form-control" id="day" pattern="^(0[1-9]|[12]\d|3[01])$" name="day"
+        placeholder="Day of Birth" required="">
       <label for="day">Day of Birth</label>
       <span class="error_day"></span>
       <div class="invalid-feedback">Should contain day in the format dd say 01</div>
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" id="month" pattern="^(0[1-9]|1[012])$" name="month" placeholder="Month of Birth" required="">
+      <input type="text" class="form-control" id="month" pattern="^(0[1-9]|1[012])$" name="month"
+        placeholder="Month of Birth" required="">
       <label for="month">Month of Birth</label>
       <div class="invalid-feedback">Should contain month in the format mm say 01</div>
       <span class="error_month"></span>
     </div>
 
     <div class="form-label-group">
-      <input type="text" class="form-control" id="year" pattern="^[12][0-9]{3}$" name="year" placeholder="Year of Birth" required="">
+      <input type="text" class="form-control" id="year" pattern="^[12][0-9]{3}$" name="year" placeholder="Year of Birth"
+        required="">
       <label for="year">Year of Birth</label>
       <span class="error_year"></span>
       <div class="invalid-feedback">Should contain year in the format yyyy say 1995</div>
@@ -208,89 +220,108 @@ color: #777;
 
 {% block js %}
 <script>
-    $(document).ready(function(){
-  $("#username").on("blur", function(){
-  var formData = {
-              "username": $("#username").val(),
-              "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
-            };
-            $.ajax({
-            url: '/home/signupcheck',
-            type: 'post',
-            data: formData,
-            success: function (msg) {
-              var hasNumber = /\d/;
-              if((msg == "OK") && ((formData.username).length > 4) && (hasNumber.test(formData.username)))
-        {
+  $(document).ready(function () {
+    $("#username").on("blur", function () {
+      var formData = {
+        "username": $("#username").val(),
+        "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
+      };
+      $.ajax({
+        url: '/home/signupcheck',
+        type: 'post',
+        data: formData,
+        success: function (msg) {
+          var hasNumber = /\d/;
+          if ((msg == "OK") && ((formData.username).length > 4) && (hasNumber.test(formData.username))) {
             $("#username_valid").show()
             $("#username_response").hide()
-        }
-        else
-        {
-             $("#username_valid").hide()
-            $("#username_response").show()
-            $("#username").val("");    
-        }
-    }
-
-          });
-        });
-
-
-  $("#mobile").on("blur", function(){
-  var formData = {
-              "mobile": $("#mobile").val(),
-              "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
-            };
-  $.ajax({
-            url: '/home/mobilecheck',
-            type: 'post',
-            data: formData,
-            success: function (msg) {
-            if(msg == "OK"){
-                $("#mobile_response").hide()
-            }else{
-              $("#mobile_response").show()
-              $("#mobile").val("")
-            }
-        }
-
-          });
-        });
-
-
-        $('#password1, #password2').on('blur', function () {
-          if ($('#password1').val() != '' && $('#password2').val() != '' && $('#password1').val() == $('#password2').val()) {
-            $('.error_password2').html('Password Matching').css({'font-size': '80%', 'color': '#28a745'});
-            } else {
-            $('.error_password2').html('Password Not Matching').css({'font-size': '80%', 'color': '#dc3545'});
-            $("#password2").val("");
-            }
-            });
-
-        let currForm1 = document.getElementById('signup-form');
-        // Validate on submit:
-        currForm1.addEventListener('submit', function(event) {
-          if (currForm1.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
           }
-          currForm1.classList.add('was-validated');
-        }, false);
-        // Validate on input:
-        currForm1.querySelectorAll('.form-control').forEach(input => {
-          input.addEventListener(('input'), () => {
-            if (input.checkValidity()) {
-              input.classList.remove('is-invalid')
-              input.classList.add('is-valid');
-            } else {
-              input.classList.remove('is-valid')
-              input.classList.add('is-invalid');
-            }
+          else {
+            $("#username_valid").hide()
+            $("#username_response").show()
+            $("#username").val("");
+          }
+        }
 
-          });
-        });
       });
+    });
+
+
+    $("#mobile").on("blur", function () {
+      var formData = {
+        "mobile": $("#mobile").val(),
+        "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
+      };
+      $.ajax({
+        url: '/home/mobilecheck',
+        type: 'post',
+        data: formData,
+        success: function (msg) {
+          if (msg == "OK") {
+            $("#mobile_response").hide()
+          } else {
+            $("#mobile_response").show()
+            $("#mobile").val("")
+          }
+        }
+
+      });
+    });
+
+    $("#email").on("blur", function () {
+      var formData = {
+        "email": $("#email").val(),
+        "csrfmiddlewaretoken": $("form#signup-form input[name=csrfmiddlewaretoken]").val()
+      };
+      $.ajax({
+        url: '/home/emailcheck',
+        type: 'post',
+        data: formData,
+        success: function (msg) {
+          if (msg == "OK") {
+            $("#email_response").hide()
+          } else {
+            $("#email_response").show()
+            $("#email").val("")
+          }
+        }
+
+      });
+    });
+
+
+    $('#password1, #password2').on('blur', function () {
+      if ($('#password1').val() != '' && $('#password2').val() != '' && $('#password1').val() == $('#password2').val()) {
+        $('.error_password2').html('Password Matching').css({ 'font-size': '80%', 'color': '#28a745' });
+      } else {
+        $('.error_password2').html('Password Not Matching').css({ 'font-size': '80%', 'color': '#dc3545' });
+        $("#password2").val("");
+      }
+    });
+
+    let currForm1 = document.getElementById('signup-form');
+    // Validate on submit:
+    currForm1.addEventListener('submit', function (event) {
+      if (currForm1.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      currForm1.classList.add('was-validated');
+    }, false);
+    // Validate on input:
+    currForm1.querySelectorAll('.form-control').forEach(input => {
+      input.addEventListener(('input'), () => {
+        if (input.checkValidity()) {
+          input.classList.remove('is-invalid')
+          input.classList.add('is-valid');
+        } else {
+          input.classList.remove('is-valid')
+          input.classList.add('is-invalid');
+        }
+
+      });
+    });
+  });
 
 </script>
 {% endblock %}
