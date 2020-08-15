@@ -149,14 +149,6 @@ class OrdersUpdate(models.Model):
     def __str__(self):
         return self.update_description[0:]
 
-class PaytmKey(models.Model):
-    name = models.CharField(max_length=50, default="", blank=True, null=True)
-    merchant_id = models.CharField(max_length=50, default="", blank=True, null=True)
-    merchant_key = models.CharField(max_length=50, default="", blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
 class BannerImage(models.Model):
     image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)
     second_image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)

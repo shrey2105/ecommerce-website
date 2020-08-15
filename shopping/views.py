@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from shopping.models import Product, Contact, Orders, OrdersUpdate, PaytmKey, Cart, CartItem, Order, Buy, BuyItem, BannerImage, YoutubeLink, Comment
+from shopping.models import Product, Contact, Orders, OrdersUpdate, Cart, CartItem, Order, Buy, BuyItem, BannerImage, YoutubeLink, Comment
 from django.contrib import messages
 from django.contrib.auth.models import User
 from math import ceil
@@ -13,16 +13,11 @@ import ast
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
 from django.utils.safestring import mark_safe
+from django.conf import settings
 msg = """
         Please note that you are not a VERIFIED USER. To verify, Click <a style='color:#000' href='{url}'><strong><em><u>Here</u></em></strong></a> to navigate to Profile Section to validate email address & mobile number and enjoy services.
     """
-
-paytm = PaytmKey.objects.values('merchant_id', 'merchant_key')
-for item in paytm:
-    merchant_id = item['merchant_id']
-    merchant_key = item['merchant_key']
-MERCHANT_KEY = merchant_key
-
+    
 # Create your views here.
 def index(request):
     if request.user.is_authenticated:
@@ -243,7 +238,7 @@ def cartCheckout(request):
 
                 # After payment, request paytm to transfer amount to our account done by customer
                 params_dict = {
-                    'MID':merchant_id,
+                    'MID':settings.MERCHANT_ID,
                     'ORDER_ID':new_order.order_id,
                     'TXN_AMOUNT':str(buy.total_price),
                     'CUST_ID':email,
@@ -253,7 +248,7 @@ def cartCheckout(request):
                     'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandleBuy/',
                     'MERC_UNQ_REF':str(user.id),
                 }
-                params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
+                params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, settings.MERCHANT_KEY)
                 return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
             return render(request, "shopping/new_checkout.html", {'buy_item':buy_item, 'buy_total':buy.total_price})
 
@@ -305,7 +300,7 @@ def cartCheckout(request):
                 
                 # After payment, request paytm to transfer amount to our account done by customer
                 params_dict = {
-                    'MID':merchant_id,
+                    'MID':settings.MERCHANT_ID,
                     'ORDER_ID':new_order.order_id,
                     'TXN_AMOUNT':str(cart.total_price),
                     'CUST_ID':email,
@@ -315,7 +310,7 @@ def cartCheckout(request):
                     'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandle/',
                     'MERC_UNQ_REF':str(user.id),
                 }
-                params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, MERCHANT_KEY)
+                params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, settings.MERCHANT_KEY)
                 return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
             return render(request, "shopping/new_checkout.html", {'cart_item':cart_item, 'cart_total':cart.total_price})
     else:
@@ -369,7 +364,7 @@ def paymentHandle(request):
         if i == "CHECKSUMHASH":
             checksum = form[i]
 
-    verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
+    verify = Checksum.verify_checksum(response_dict, settings.MERCHANT_KEY, checksum)
     cart = Cart.objects.get(user=form['MERC_UNQ_REF'])
     cartitems = CartItem.objects.filter(cart=cart)
     new_order = Order.objects.get(cart=cart)
@@ -406,7 +401,7 @@ def paymentHandleBuy(request):
         if i == "CHECKSUMHASH":
             checksum = form[i]
 
-    verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
+    verify = Checksum.verify_checksum(response_dict, settings.MERCHANT_KEY, checksum)
     buy = Buy.objects.get(user=form['MERC_UNQ_REF'])
     buyitem = BuyItem.objects.get(buy=buy)
     new_order = Order.objects.get(buy=buy)

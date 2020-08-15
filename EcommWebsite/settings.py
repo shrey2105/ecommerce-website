@@ -196,5 +196,9 @@ DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
 EMAIL_PORT = 587
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
+#PAYTM KEYS
+MERCHANT_ID = os.environ['MERCHANT_ID']
+MERCHANT_KEY = os.environ['MERCHANT_KEY']
+
 # Activate Django-Heroku.
 django_heroku.settings(locals(), staticfiles=False)
