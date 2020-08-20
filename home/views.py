@@ -127,8 +127,9 @@ def signup(request):
             new_user.profile.birth_month = month
             new_user.profile.birth_year = year
             new_user.profile.gender = gender
+            new_user.profile.credit = 2
             new_user.save()
-            messages.success(request, "You have been successfully registered with us. Now, You can Log In.")
+            messages.success(request, "You have been successfully registered with us. You get Rs. 2 credits as Sign Up Bonus. Please Sign in")
             return redirect('/home/')
     else:
         return HttpResponseRedirect("/home")
@@ -166,6 +167,8 @@ def signin(request):
                     request.session['items_total'] = cart.cartitem_set.count()
                 except Cart.DoesNotExist:
                     request.session['items_total'] = 0
+                
+                request.session['total_credits'] = float(user.profile.credit)
                 messages.success(request, "Welcome to Shop N Blog! You have been logged in successfully.")
                 return redirect("/home/")
             else:
@@ -278,6 +281,9 @@ def notVerified(request):
     if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
         url = reverse("profile")
         messages.warning(request, mark_safe(msg.format(url=url)))
+        return HttpResponseRedirect("/home/notVerified")
+    else:
+        return HttpResponseRedirect("/home")
     return render(request, "home/not_verified.html")
 
 def contact(request):

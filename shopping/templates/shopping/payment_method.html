@@ -1,0 +1,168 @@
+{% extends 'shopping/basic.html' %}
+{% block title %}Payment Methods{% endblock %}
+{% block css %}
+.form-payment {
+width: 100%;
+max-width: 495px;
+padding: 15px;
+margin: auto;
+}
+.form-payment .text-center {
+text-align: center!important;
+}
+.form-payment .mb-4, .form-payment .my-4 {
+margin-bottom: 1.5rem!important;
+}
+.form-payment img{
+vertical-align: middle;
+border-style: none;
+}
+.form-payment .font-weight-normal {
+font-weight: 400!important;
+}
+.form-payment .text-center p {
+margin-top: 0;
+margin-bottom: 1rem;
+}
+.form-payment .form-label-group {
+position: relative;
+margin-bottom: 1rem;
+}
+.form-payment .form-label-group > input,.form-payment .form-label-group > label {
+height: 3.125rem;
+padding: .75rem;
+}
+.form-payment .form-control {
+display: block;
+width: 100%;
+height: calc(1.5em + .75rem + 2px);
+padding: .375rem .75rem;
+font-size: 1rem;
+font-weight: 400;
+line-height: 1.5;
+color: #495057;
+background-color: #fff;
+background-clip: padding-box;
+border: 1px solid #ced4da;
+border-radius: .25rem;
+transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.form-payment .form-label-group > label {
+position: absolute;
+top: 0;
+left: 0;
+display: block;
+width: 100%;
+margin-bottom: 0;
+line-height: 1.5;
+color: #495057;
+pointer-events: none;
+cursor: text;
+border: 1px solid transparent;
+border-radius: .25rem;
+transition: all .1s ease-in-out;
+}
+.form-payment .form-label-group input::-webkit-input-placeholder {
+color: transparent;
+}
+
+.form-payment .form-label-group input:-ms-input-placeholder {
+color: transparent;
+}
+
+.form-payment .form-label-group input::-ms-input-placeholder {
+color: transparent;
+}
+
+.form-payment .form-label-group input::-moz-placeholder {
+color: transparent;
+}
+
+.form-payment .form-label-group input::placeholder {
+color: transparent;
+}
+
+.form-payment .form-label-group input:not(:placeholder-shown) {
+padding-top: 1.25rem;
+padding-bottom: .25rem;
+}
+
+.form-payment .form-label-group input:not(:placeholder-shown) ~ label {
+padding-top: .25rem;
+padding-bottom: .25rem;
+font-size: 12px;
+color: #777;
+}
+{% endblock css %}
+{% block shopactive %}active{% endblock shopactive %}
+
+{% block body %}
+{% load static %}
+<div class="container">
+    <div class="text-center my-3">
+        <img class="d-block mx-auto my-4" src="{% static 'shopping/img/home-logo.png' %}" alt="">
+        <h1 class="my-4">Final Process !!</h1>
+        <h1 class="h3 mb-3 font-weight-normal">Select Payment Method</h1>
+    </div>
+
+    <h5 class="mb-3 font-weight-normal text-center"><strong>Available Credits:</strong> {{credits}}</h5>
+    <form class="form-payment" id="payment-form" action="/shop/paymentMethod/" method="post" novalidate="">
+        {% csrf_token %}
+        <input type="hidden" name="buy_thanks" value="{{buy_thanks}}">
+        <div class="form-group">
+            <div class="form-check form-check-inline">
+                {% if zero or credits == 0.0 %}
+                <input class="form-check-input mx-3" type="radio" name="payment" id="credits" value="credits" required="" disabled="disabled">
+                {% else %}
+                <input class="form-check-input mx-3" type="radio" name="payment" id="credits" value="credits" required="">
+                {% endif %}
+            </div>
+            {% if zero or credits == 0.0 %}
+            <label for="credits">Credits</label><img class="mx-4" src="{% static 'shopping/img/credits-black.png' %}" height="71"><br><br>
+            {% else %}
+            <label for="credits"><b>Credits</b></label><img class="mx-4" src="{% static 'shopping/img/credits.png' %}" height="71"><br><br>
+            {% endif %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input mx-3" type="radio" name="payment" id="paytm" value="paytm" required="">
+            </div>
+            <label for="paytm"><b>PayTM</b></label><img class="mx-4" src="{% static 'shopping/img/paytm.png' %}" width="200" height="71"><br><br>
+            
+            <div class="form-check form-check-inline">
+                <input class="form-check-input mx-3" type="radio" name="payment" id="cod" value="cod" required="">
+            </div>
+            <label for="cod"><b>Cash on Delivery</b></label><img class="mx-4" src="{% static 'shopping/img/cod.jpg' %}" width="200" height="71">
+            
+            <div class="invalid-feedback">This is a required field</div>
+        </div>
+        <button id="submit-button" name="submit" class="btn btn-lg btn-dark btn-block" type="submit">Proceed to Pay (Rs. {{final_price}})</button>
+    </form>
+</div>
+{% endblock body %}
+
+{% block js %}
+<script>
+let currForm1 = document.getElementById('payment-form');
+    // Validate on submit:
+    currForm1.addEventListener('submit', function (event) {
+      if (currForm1.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      currForm1.classList.add('was-validated');
+    }, false);
+    // Validate on input:
+    currForm1.querySelectorAll('.form-control').forEach(input => {
+      input.addEventListener(('input'), () => {
+        if (input.checkValidity()) {
+          input.classList.remove('is-invalid')
+          input.classList.add('is-valid');
+        } else {
+          input.classList.remove('is-valid')
+          input.classList.add('is-invalid');
+        }
+
+      });
+    });
+</script>
+
+{% endblock %}

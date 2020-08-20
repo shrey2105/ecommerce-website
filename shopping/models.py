@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Avg, Count
+from django.conf import settings
 
 # Create your models here.
 class Product(models.Model):
@@ -11,7 +12,7 @@ class Product(models.Model):
     price = models.IntegerField(default="0")
     description = models.TextField()
     pub_date = models.DateTimeField()
-    image = models.ImageField(upload_to="shopping/images", default="")
+    image = models.ImageField(upload_to="shopping/images")
     count_sold = models.IntegerField(default=0)
     slug = models.CharField(max_length=100, blank=True, null=True)
 
@@ -110,6 +111,7 @@ class Order(models.Model):
     order_status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default="Not Delivered")
     sub_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
     final_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
+    is_amount_paid = models.BooleanField(default=False, blank=True, null=True)
     name = models.CharField(max_length=100, default="")
     email = models.CharField(max_length=100, default="")
     address1 = models.CharField(max_length=100, default="")
@@ -138,21 +140,33 @@ class Orders(models.Model):
     total_price = models.IntegerField(default=0) 
 
     def __str__(self):
-        return self.name
+        return self.name      
 
 class OrdersUpdate(models.Model):
     update_id = models.AutoField(primary_key=True)
     order_id = models.CharField(max_length=20, default="")
     update_description = models.CharField(max_length=5000)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.update_description[0:]
+
+    def save(self, *args, **kwargs):
+        try:
+            order_update = Order.objects.get(order_id=self.order_id)
+            if self.update_description == "Delivered":
+                order_update.order_status = "Delivered"
+                order_update.is_amount_paid = True
+                order_update.save()
+        except Exception as e:
+            print(e)
+        super(OrdersUpdate, self).save(*args, **kwargs)  
 
 class BannerImage(models.Model):
     image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)
     second_image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)
     third_image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)
+    fourth_image_url = models.ImageField(upload_to="shopping/images", blank=True, null=True)
 
     def __str__(self):
         return f"Banner Image id:{self.id}"
@@ -180,6 +194,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment: {self.comment} on Product: {self.product}"
+
 
 
 

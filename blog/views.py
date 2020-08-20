@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from blog.templatetags import get_dict
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 msg = """
         Please note that you are not a VERIFIED USER. To verify, Click <a style='color:#000' href='{url}'><strong><em><u>Here</u></em></strong></a> to navigate to Profile Section to validate email address & mobile number and enjoy services.
     """
@@ -17,8 +18,18 @@ def index(request):
 		if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
 			url = reverse("profile")
 			messages.warning(request, mark_safe(msg.format(url=url)))
-	blogposts = BlogPost.objects.all()
-	params = {'blogposts':blogposts}
+	blogposts = BlogPost.objects.all().order_by("-pub_date")
+
+	page = request.GET.get('page', 1)
+	paginator = Paginator(blogposts, 4)
+	try:
+		records = paginator.page(page)
+	except PageNotAnInteger:
+		records = paginator.page(1)
+	except EmptyPage:
+		records = paginator.page(paginator.num_pages)
+
+	params = {'blogposts':blogposts, 'records':records}
 	return render(request, 'blog/index.html', params)
 
 def blogpost(request, id):

@@ -45,71 +45,100 @@ transform: translateX(-33.333%);
 transform: translateX(0);
 }
 .list-number {
-    margin-top: 35px;
+margin-top: 35px;
 }
 .list-number .left-number, .list-number .right-number {
-    text-align: center;
+text-align: center;
 }
 .list-number .left-number {
-    border-right: 2px solid #d0d0d0;
+border-right: 2px solid #d0d0d0;
 }
 .fadeIn {
-    -webkit-animation-name: fadeIn;
-    animation-name: fadeIn;
+-webkit-animation-name: fadeIn;
+animation-name: fadeIn;
 }
 .animated {
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
+-webkit-animation-duration: 1s;
+animation-duration: 1s;
+-webkit-animation-fill-mode: both;
+animation-fill-mode: both;
 }
 .title-number {
-    display: inline-block;
-    position: relative;
+display: inline-block;
+position: relative;
 }
 .title-number h3 {
-    font-size: 35px;
-    font-style: italic;
-    position: relative;
-    z-index: 10;
-    font-family: 'Garamond';
+font-size: 35px;
+font-style: italic;
+position: relative;
+z-index: 10;
+font-family: 'Garamond';
 }
 .list-number .title-number .line-title {
-    background: #d9e6e7;
-    bottom: 7px;
+background: #d9e6e7;
+bottom: 7px;
 }
 .line-title {
-    height: 8px;
-    width: 100%;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 9px;
-    background: #ffbbad;
+height: 8px;
+width: 100%;
+position: absolute;
+left: 0;
+right: 0;
+bottom: 9px;
+background: #ffbbad;
 }
 .list-number .number {
-    display: block;
-    font-size: 25px;
-    font-weight: 700;
-    letter-spacing: 3px;
+display: block;
+font-size: 25px;
+font-weight: 700;
+letter-spacing: 3px;
 }
 .list-number .right-number .line-title {
-    background: #ffeac5;
+background: #ffeac5;
 }
 .col-xs-6 {
-    width: 50%;
+width: 50%;
 }
 @media screen and (max-width: 768px)
 .list-number {
-    margin-left: 15px;
-    margin-right: 15px;
-    padding: 30px 0;
-    border-bottom: 2px solid #ececec;
-    border-top: 2px solid #ececec;
+margin-left: 15px;
+margin-right: 15px;
+padding: 30px 0;
+border-bottom: 2px solid #ececec;
+border-top: 2px solid #ececec;
 }
 @media (min-width: 768px)
 .col-sm-6 {
-    width: 50%;
+width: 50%;
+}
+.pagination {
+justify-content: center;
+}
+.center-header {
+    text-align: center;
+    color: #fff;
+    position: relative;
+    height: 200px;
+    background-position: left;
+    background-size: cover;
+    height: auto !important;
+}
+.header-img {
+    width: 100%;
+}
+.bg-behind {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* background-color: #000; */
+    opacity: 0.5;
+    transition: all 0.3s ease-in-out 0s;
+    -moz-transition: all 0.3s ease-in-out 0s;
+    -o-transition: all 0.3s ease-in-out 0s;
+    -webkit-transition: all 0.3s ease-in-out 0s;
+    -ms-transition: all 0.3s ease-in-out 0s;
 }
 
 {% endblock %}
@@ -117,6 +146,15 @@ transform: translateX(0);
 
 {% block body %}
 {% load static %}
+
+<div class="container-fluid">
+{% for img in banner %}
+  <div class="center-header" style="background-position:center; background-repeat: no-repeat;">
+    <img src="{{MEDIA_URL}}{{img.fourth_image_url}}" alt="" class="header-img">
+    <div class="bg-behind"></div>
+  </div>
+{% endfor %}
+</div>
 
 <div class="container-fluid">
   {% if all_trending_products %}
@@ -194,22 +232,22 @@ transform: translateX(0);
 </div>
 
 <div class="container">
-<div class="row list-number">
-  <div class="animated fade-in col-sm-6 col-xs-6 left-number fadeIn">
-    <div class="title-number">
-      <h3>Redemptions</h3>
-      <span class="line-title"></span>
+  <div class="row list-number mt-2">
+    <div class="animated fade-in col-sm-6 col-xs-6 left-number fadeIn">
+      <div class="title-number">
+        <h3>Redemptions</h3>
+        <span class="line-title"></span>
+      </div>
+      <span class="number">{{total_products_count}}</span>
     </div>
-    <span class="number">{{total_products_count}}</span>
-  </div>
-  <div class="animated fade-in col-sm-6 col-xs-6 right-number fadeIn">
-    <div class="title-number">
-      <h3>Members</h3>
-      <span class="line-title"></span>
+    <div class="animated fade-in col-sm-6 col-xs-6 right-number fadeIn">
+      <div class="title-number">
+        <h3>Members</h3>
+        <span class="line-title"></span>
+      </div>
+      <span class="number">{{total_members_count}}</span>
     </div>
-    <span class="number">{{total_members_count}}</span>
   </div>
-</div>
 </div>
 
 <div class="container-fluid">
@@ -264,19 +302,22 @@ transform: translateX(0);
   {% endif %}
 </div>
 
-<div class="container">
-  <div class="font-small mdb-color darken-3 pt-4 mt-4">
+<div class="container-fluid">
+  <div class="font-small mdb-color darken-3 mt-4">
     <div class="row d-flex justify-content-center">
       <div class="col-md-12 col-lg-12 col-xl-12">
-        <div class="embed-responsive embed-responsive-16by9 mb-4">
-          <iframe class="embed-responsive-item" src="{{youtube.youtube_video_link}}" allow="autoplay"></iframe>
+        <div class="embed-responsive embed-responsive-16by9">
+          <iframe class="embed-responsive-item" src="{{youtube.youtube_video_link}}" height="300"
+            allow="autoplay"></iframe>
         </div>
       </div>
     </div>
   </div>
+</div>
 
+<div class="container">
   <!--Slideshow starts here-->
-  {% for product, range, no_slides in all_products %}
+  {% for product, range, no_slides in records %}
   <h4 class="my-4">Flash Sale On - <strong><em>{{product.0.category}}</em></strong></h4>
   <div class="row mx-auto my-auto products-list">
     <div id="demo{{forloop.counter}}" class="carousel slide w-100 carousel-products" data-ride="carousel">
@@ -323,6 +364,33 @@ transform: translateX(0);
     </div>
   </div>
   {% endfor %}
+
+  {% if records.has_other_pages %}
+  <ul class="pagination mt-4">
+    <li class="page-item">
+      {% if records.has_previous %}
+      <a class="page-link" href="?page={{ records.previous_page_number }}">Previous</a>
+      {% else %}
+      <a class="page-link disabled">Previous</a>
+      {% endif %}
+    </li>
+
+    <li class="page-item">
+      <a class="page-link">
+        Page {{records.number}} of {{records.paginator.num_pages}}
+      </a>
+    </li>
+
+    <li class="page-item">
+      {% if records.has_next %}
+      <a class="page-link" href="?page={{ records.next_page_number }}">Next</a>
+      {% else %}
+      <a class="page-link disabled">Next</a>
+      {% endif %}
+    </li>
+  </ul>
+  {% endif %}
+
 </div>
 
 {% endblock %}
@@ -369,17 +437,6 @@ transform: translateX(0);
     }
   });
 
-  $('.number').each(function () {
-    $(this).prop('Counter',0).animate({
-        Counter: $(this).text()
-    }, {
-        duration: 4000,
-        easing: 'swing',
-        step: function (now) {
-            $(this).text(Math.ceil(now));
-        }
-    });
-});
 </script>
 <!-- <script>
   // Find out the cart items from localStorage

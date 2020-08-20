@@ -21,6 +21,12 @@
         footer.page-footer a{color: #fff;}
         .deep-purple{background-color: #673ab7 !important;}
         img.bottom-image{width: 231px;height: 110px;}
+        .navbar-nav .nav-item a.nav-link{
+          font-size: 1.5em; font-weight:500;
+    }
+    .alert{
+      margin-bottom:0em;
+    }
     </style>
 
 </head>
@@ -71,6 +77,7 @@
           Welcome: {{request.user}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item">Credits - <strong>(Rs.{{request.session.total_credits}})</strong></a>
           <a class="dropdown-item" href="/home/profile">Profile</a>
           <a class="dropdown-item" href="/shop/orderDetails">Order Details</a>
           <a class="dropdown-item" href="/shop/orderTracker">Order Tracker</a>

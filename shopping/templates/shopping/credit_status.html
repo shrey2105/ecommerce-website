@@ -13,7 +13,7 @@
         integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    {% if response.RESPCODE == '01' %}
+    {% if response.payment %}
     <title>Contratulations !!</title>
     {% else %}
     <title>Error !!</title>
@@ -104,10 +104,10 @@
             <span class="navbar-toggler-icon"></span>
         </button>
     </nav>
-    {% if response.RESPCODE == '01' %}
+    {% if response.payment %}
     <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
-        <strong>Contratulations!!</strong> Your Order has been successfully placed. Use this Order ID:
-        {{response.ORDERID}} to track your order.
+        <strong>Contratulations!</strong> Your Order has been successfully placed. Use this Order ID:
+        {{response.new_order}} to track your order.
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -122,17 +122,12 @@
             </div>
         </div>
         <div class="alert alert-success text-center" role="alert">
-            <h4 class="alert-heading">{% if response.RESPMSG == 'Txn Success' %}Your Payment is
-                Successful{% endif %}</h4>
-            <p><b>Transaction Amount: </b>Rs. {{response.TXNAMOUNT}} {{response.CURRENCY}}</p>
-            <p><b>Status: </b>{% if response.STATUS == 'TXN_SUCCESS' %}Transaction Successful{% endif %}</p>
-            <p><b>Transaction ID: </b>{{response.TXNID}}</p>
-            <p><b>Date: </b>{{txn_date}}</p>
+            <h4 class="alert-heading">Your Payment is Successful</h4>
+            <p><b>Transaction Credits: </b>{{credits_debited}}</p>
+            <p><b>Status: </b>Transaction Successful</p>
+            <p><b>Date: </b>{{response.txn_date}}</p>
         </div>
         {% else %}
-        <div class="alert alert-danger text-center" role="alert">
-            <strong>Error !!</strong> {{response.RESPMSG}}
-        </div>
         <div class="result mt-4">
             <div class="display-box">
                 <h2>Order Placement was not Successful</h2>
@@ -140,6 +135,9 @@
                 <p>Please Visit Again</p>
                 <p><strong>Note:</strong> The page will automatically redirect in <span id="count">10</span> seconds</p>
             </div>
+        </div>
+        <div class="alert alert-danger text-center" role="alert">
+            Payment Unsuccessful due to insufficient credits or some other reason. Please try again later.
         </div>
         {% endif %}
     </div>

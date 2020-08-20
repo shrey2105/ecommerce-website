@@ -16,6 +16,7 @@ class Profile(models.Model):
     birth_month = models.CharField(max_length=2, blank=True)
     birth_year = models.CharField(max_length=4, blank=True)
     image = models.ImageField(upload_to="home/images", default='home/images/no-profile-pic.png')
+    credit = models.DecimalField(default="0", max_digits=1000, decimal_places=2)
     VERIFIED_CHOICES = (
         ('VF', 'Verified'),
         ('NVF', 'Not Verified'),

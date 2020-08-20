@@ -1,37 +1,74 @@
 {% extends 'blog/basic.html' %}
 
 {% block title %}Blog{% endblock %}
+{% block css %}
+.pagination {
+    justify-content: center;
+}
+{% endblock css %}
 {% block blogactive %}active{% endblock blogactive %}
 {% block body %}
 
 <div class="container mt-3">
   <div class="row my-2">
-  {% for blogpost in blogposts %}
-  {% if blogpost.status == "Published" or blogpost.status == "Featured" %}
+    {% for record in records %}
+    {% if record.status == "Published" or record.status == "Featured" %}
     <div class="col-md-6">
       <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
-        {% if blogpost.status == "Published" %}
-        <span class="badge badge-success">{{blogpost.status}}</span>
-        {% else %}
-        <span class="badge badge-info">{{blogpost.status}}</span>
-        {% endif %}
-          <strong class="d-inline-block mt-2 mb-2 text-primary">Article by: {{blogpost.author}}</strong>
-          <h3 class="mb-0">{{blogpost.title}}</h3>
-          <div class="mb-1 text-muted">{{blogpost.pub_date}}</div>
-          <p class="card-text mb-auto">{{blogpost.content_heading1|truncatechars:50}}</p>
-          <a href="blogPost/{{blogpost.post_id}}" class="stretched-link mt-2">Continue reading</a>
+          {% if record.status == "Published" %}
+          <span class="badge badge-success">{{record.status}}</span>
+          {% else %}
+          <span class="badge badge-info">{{record.status}}</span>
+          {% endif %}
+          <strong class="d-inline-block mt-2 mb-2 text-primary">Article by: {{record.author}}</strong>
+          <h3 class="mb-0">{{record.title}}</h3>
+          <div class="mb-1 text-muted">{{record.pub_date}}</div>
+          <p class="card-text mb-auto">{{record.content_heading1|truncatechars:50}}</p>
+          <a href="blogPost/{{record.post_id}}" class="stretched-link mt-2">Continue reading</a>
         </div>
         <div class="col-auto d-none d-lg-block">
-          <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><defs><clipPath id="myRectangle"><rect width="200" height="250" fill="#55595c" /></clipPath></defs><image xlink:href="{{MEDIA_URL}}{{blogpost.thumbnail}}" height="250px" width="200px" clip-path="url(#myRectangle)"/></svg>
+          <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail">
+            <defs>
+              <clipPath id="myRectangle">
+                <rect width="200" height="250" fill="#55595c" />
+              </clipPath>
+            </defs>
+            <image xlink:href="{{MEDIA_URL}}{{record.thumbnail}}" height="250px" width="200px"
+              clip-path="url(#myRectangle)" />
+          </svg>
         </div>
       </div>
     </div>
     {% endif %}
-    {% if forloop.counter|divisibleby:2 %}
-  </div><div class="row my-2">
-  {% endif %}
-  {% endfor %}
-</div>
+    {% endfor %}
+  </div>
+
+    {% if records.has_other_pages %}
+    <ul class="pagination mt-4">
+      <li class="page-item">
+        {% if records.has_previous %}
+        <a class="page-link" href="?page={{ records.previous_page_number }}">Previous</a>
+        {% else %}
+        <a class="page-link disabled">Previous</a>
+        {% endif %}
+      </li>
+
+      <li class="page-item">
+        <a class="page-link">
+          Page {{records.number}} of {{records.paginator.num_pages}}
+        </a>
+      </li>
+
+      <li class="page-item">
+        {% if records.has_next %}
+        <a class="page-link" href="?page={{ records.next_page_number }}">Next</a>
+        {% else %}
+        <a class="page-link disabled">Next</a>
+        {% endif %}
+      </li>
+    </ul>
+    {% endif %}
 </div>
 {% endblock %}

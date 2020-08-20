@@ -189,6 +189,7 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger"
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ['EMAIL_HOST']
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
 EMAIL_USE_TLS = True
@@ -197,8 +198,10 @@ EMAIL_PORT = 587
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 #PAYTM KEYS
-MERCHANT_ID = os.environ['MERCHANT_ID']
-MERCHANT_KEY = os.environ['MERCHANT_KEY']
+USE_PAYTM = os.environ['USE_PAYTM'] == 'TRUE'
+if USE_PAYTM:
+    MERCHANT_ID = os.environ['MERCHANT_ID']
+    MERCHANT_KEY = os.environ['MERCHANT_KEY']
 
 # Activate Django-Heroku.
 django_heroku.settings(locals(), staticfiles=False)

@@ -5,17 +5,16 @@
     <meta charset="UTF-8">
     {% load static %}
     <link rel="shortcut icon" type="image/png" href="{% static 'shopping/img/favicon.png' %}"/>
-    <title>PayTM Merchant Payment Page</title>
+    <title>Merchant Payment Page</title>
 </head>
-
 <body>
     <center>
-        <h1>Redirecting You To The Merchant...!! Please Wait...</h1>
+        <h1>Processing Your Request...!! Please Wait...</h1>
         <h1>Please Do Not Refresh Your Page</h1>
         {% load static %}
         <img src="{% static 'shopping/img/loader.gif' %}" />
     </center>
-    <form action="https://securegw-stage.paytm.in/order/process" method="post" name="paytm">
+    <form action="http://127.0.0.1:8000/shop/codProcess/" method="post" name="cod">{% csrf_token %}
         {% for key, value in params_dict.items %}
         <input type="hidden" name="{{key}}" value="{{value}}">
         {% endfor %}
@@ -23,8 +22,7 @@
 </body>
 <script>
     setTimeout(function () {
-        document.paytm.submit();
+        document.cod.submit();
     }, 2000);
 </script>
-
 </html>
