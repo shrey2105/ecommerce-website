@@ -896,36 +896,32 @@ def review(request, url):
     return render(request, "shopping/review.html", params)
 
 def pincodeCheck(request):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            try:
-                pincode = request.POST.get("pincode")
-                if len(pincode) < 1:
-                    return HttpResponse('{"status":"not_success", "message":"Required field. Cannot be empty. Provide 6 digit pincode"}')
-                elif not PINCODE_REGEX.match(pincode):
-                    return HttpResponse('{"status":"not_success", "message":"Please provide 6 digit pincode"}')
+    if request.method == "POST":
+        try:
+            pincode = request.POST.get("pincode")
+            if len(pincode) < 1:
+                return HttpResponse('{"status":"not_success", "message":"Required field. Cannot be empty. Provide 6 digit pincode"}')
+            elif not PINCODE_REGEX.match(pincode):
+                return HttpResponse('{"status":"not_success", "message":"Please provide 6 digit pincode"}')
+            else:
+                r = requests.get(f"https://api.postalpincode.in/pincode/{pincode}")
+                j = r.json()
+
+                now = datetime.now()
+                saved_datetime = now + timedelta(days=7)
+                dt_string = saved_datetime.strftime("%A, %B %d")
+
+                if j[0]['Status'] != "Error":
+                    pincode_list = []
+                    for i in j[0]['PostOffice']:
+                        if i['DeliveryStatus'] == "Delivery":
+                            pincode_list.append({"name":i['Name'], "delivery":i['DeliveryStatus'], "district":i['District'], "state":i['State']})
+                            res = json.dumps({"status": "success", "message":"Delivery Available", "date":dt_string, "pincode":pincode_list}, default=str)
+                    return HttpResponse(res)
                 else:
-                    r = requests.get(f"https://api.postalpincode.in/pincode/{pincode}")
-                    j = r.json()
-
-                    now = datetime.now()
-                    saved_datetime = now + timedelta(days=7)
-                    dt_string = saved_datetime.strftime("%A, %B %d")
-
-                    if j[0]['Status'] != "Error":
-                        pincode_list = []
-                        for i in j[0]['PostOffice']:
-                            if i['DeliveryStatus'] == "Delivery":
-                                pincode_list.append({"name":i['Name'], "delivery":i['DeliveryStatus'], "district":i['District'], "state":i['State']})
-                                res = json.dumps({"status": "success", "message":"Delivery Available", "date":dt_string, "pincode":pincode_list}, default=str)
-                        return HttpResponse(res)
-                    else:
-                        return HttpResponse('{"status": "not_success", "message":"Error! Postal Code invalid. Please enter a valid postal code."}')
-            except Exception as e:
-                return HttpResponse('{"status": "not_success", "message":"Error! Please try after some time."}')
-                
-    else:
-        return HttpResponseRedirect("/home/cannot_access")
+                    return HttpResponse('{"status": "not_success", "message":"Error! Postal Code invalid. Please enter a valid postal code."}')
+        except Exception as e:
+            return HttpResponse('{"status": "not_success", "message":"Error! Please try after some time."}')
     return render(request, "shopping/product_view.html")
 
 
