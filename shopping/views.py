@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from shopping.models import Product, Contact, Orders, Cart, CartItem, Order, OrdersUpdate, Buy, BuyItem, BannerImage, YoutubeLink, Comment
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -15,7 +15,10 @@ from datetime import datetime, timedelta
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from decimal import *
-from datetime import datetime
+from datetime import datetime, timedelta
+import requests
+import re
+PINCODE_REGEX = re.compile(r'^[0-9]{6,6}$')
 msg = """
         Please note that you are not a VERIFIED USER. To verify, Click <a style='color:#000' href='{url}'><strong><em><u>Here</u></em></strong></a> to navigate to Profile Section to validate email address & mobile number and enjoy services.
     """
@@ -139,7 +142,7 @@ def orderTracker(request):
                         update = OrdersUpdate.objects.filter(order_id=orderid)
                         updates = []
                         for item in update:
-                            updates.append({'text':item.update_description, 'time':item.created_at.strftime("%Y-%m-%d %H:%M:%S")})
+                            updates.append({'text':item.update_description, 'time':item.created_at.strftime("%A, %B %d, %Y %I:%M %p")})
                             response = json.dumps({"status":"success", "updates":updates, "items_json":order[0].cartproduct_items}, default=str)
                         return HttpResponse(response)
                     else:
@@ -224,10 +227,11 @@ def cartCheckout(request):
                 email = request.POST.get("email", default="")
                 address1 = request.POST.get("address1", default="")
                 address2 = request.POST.get("address2", default="")
-                city = request.POST.get("city", default="")
-                state = request.POST.get("state", default="")
+                city = request.POST.get("city1", default="")
+                state = request.POST.get("state1", default="")
                 zip_code = request.POST.get("zip_code", default="")
                 mobile_number = request.POST.get("mobile_number", default="")
+                post_office = request.POST.get("post_office", default="")
 
                 try:
                     new_order = Order.objects.get(buy=buy)
@@ -247,6 +251,7 @@ def cartCheckout(request):
                     new_order.state = state
                     new_order.zip_code = zip_code
                     new_order.mobile_number = mobile_number
+                    new_order.post_office = post_office
                     new_order.save()
                 except:
                     return HttpResponseRedirect(reverse("new_checkout"))
@@ -273,10 +278,11 @@ def cartCheckout(request):
                 email = request.POST.get("email", default="")
                 address1 = request.POST.get("address1", default="")
                 address2 = request.POST.get("address2", default="")
-                city = request.POST.get("city", default="")
-                state = request.POST.get("state", default="")
+                city = request.POST.get("city1", default="")
+                state = request.POST.get("state1", default="")
                 zip_code = request.POST.get("zip_code", default="")
                 mobile_number = request.POST.get("mobile_number", default="")
+                post_office = request.POST.get("post_office", default="")
 
                 try:
                     new_order = Order.objects.get(cart=cart)
@@ -296,6 +302,7 @@ def cartCheckout(request):
                     new_order.state = state
                     new_order.zip_code = zip_code
                     new_order.mobile_number = mobile_number
+                    new_order.post_office = post_office
                     new_order.save()
                 except:
                     return HttpResponseRedirect(reverse("cartview"))
@@ -887,6 +894,39 @@ def review(request, url):
     else:
         return HttpResponseRedirect("/home/cannot_access")
     return render(request, "shopping/review.html", params)
+
+def pincodeCheck(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            try:
+                pincode = request.POST.get("pincode")
+                if len(pincode) < 1:
+                    return HttpResponse('{"status":"not_success", "message":"Required field. Cannot be empty. Provide 6 digit pincode"}')
+                elif not PINCODE_REGEX.match(pincode):
+                    return HttpResponse('{"status":"not_success", "message":"Please provide 6 digit pincode"}')
+                else:
+                    r = requests.get(f"https://api.postalpincode.in/pincode/{pincode}")
+                    j = r.json()
+
+                    now = datetime.now()
+                    saved_datetime = now + timedelta(days=7)
+                    dt_string = saved_datetime.strftime("%A, %B %d")
+
+                    if j[0]['Status'] != "Error":
+                        pincode_list = []
+                        for i in j[0]['PostOffice']:
+                            if i['DeliveryStatus'] == "Delivery":
+                                pincode_list.append({"name":i['Name'], "delivery":i['DeliveryStatus'], "district":i['District'], "state":i['State']})
+                                res = json.dumps({"status": "success", "message":"Delivery Available", "date":dt_string, "pincode":pincode_list}, default=str)
+                        return HttpResponse(res)
+                    else:
+                        return HttpResponse('{"status": "not_success", "message":"Error! Postal Code invalid. Please enter a valid postal code."}')
+            except Exception as e:
+                return HttpResponse('{"status": "not_success", "message":"Error! Please try after some time."}')
+                
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
+    return render(request, "shopping/product_view.html")
 
 
 

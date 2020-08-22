@@ -6,6 +6,9 @@ input[type="number"] {
 width:50px;
 float:right;
 }
+input[type="pincode"] {
+width:150px;
+}
 .card-img, .card-img-bottom, .card-img-top {
 -ms-flex-negative: 0;
 flex-shrink: 0;
@@ -28,7 +31,12 @@ color:#FD4;
 .result {display: block; clear: both; vertical-align: middle; position: relative;}
 .display-box {position: relative;width: 100%;max-width: 500px;background-color: #fff;border: 4px solid #000;padding:
 40px 20px;margin: 50px auto;line-height: 30px;display: block;clear: both;}
-.display-box h2 {color: #000;font-size: 22px;text-align: center;margin-bottom: 20px;display: block;font-weight: 600;text-transform: uppercase;font-family: lato;}
+.display-box h2 {color: #000;font-size: 22px;text-align: center;margin-bottom: 20px;display: block;font-weight:
+600;text-transform: uppercase;font-family: lato;}
+.custom-margin-top {
+    margin-top: 0.8em!important;
+    margin-left:1em!important;
+}
 {% endblock css %}
 {% block shopactive %}active{% endblock shopactive %}
 
@@ -67,7 +75,19 @@ color:#FD4;
                     {{product.averageRating |stringformat:".1f"}} | ({{product.reviewCount}})
                 </div>
             </div>
-            <p class="mt-2">{{product.description}}</p>
+            <p class="mt-2">{{product.description}}</p><br><br><br>
+            <form action="#" class="form-pincode-check" id="pincode-check" method="post">
+                {% csrf_token %}
+                <h6>Check Delivery</h6>
+                <div class="form-field">
+                <div class="row">
+                <input class="form-control pull-left mr-2 mx-3 mt-2" type="pincode" name="pincode" placeholder="Enter Pincode">
+                <button class="btn mr-2 mt-2" id="pincode-check-button" type="submit"
+                    style="background-color:#dbd5d5">Check</button>
+                    <div id="delivery-message" class="custom-margin-top mt-2 mr-2"></div>
+                    </div>
+                    </div>
+            </form>
         </div>
     </div>
     <div class="row">
@@ -86,7 +106,8 @@ color:#FD4;
                 {% for record in records %}
                 <div class="row mt-4">
                     <div class="col-md-1 image-div">
-                        <img class="profile-image" src="{{MEDIA_URL}}{{record.user.profile.image}}" width="78" height="78">
+                        <img class="profile-image" src="{{MEDIA_URL}}{{record.user.profile.image}}" width="78"
+                            height="78">
                     </div>
                     <div class="col-md-11 comment-div">
                         <div class="comment-text w-100">
@@ -98,8 +119,10 @@ color:#FD4;
                                 <i class="fa fa-star{% if record.rating < 5 %}-o empty{% endif %}"></i>
                             </div>
                             <h6 class="font-medium"><i class="fa fa-user-o"></i> <strong><em>{{record.user}}
-                                        says:</em></strong>&nbsp;&nbsp;&nbsp;<i class="fa fa-comment-o"></i> {{record.subject}}</h6>
-                            <div class="m-b-15 d-block comment-reviews"><i class="fa fa-comments-o"></i> {{record.comment}}</div>
+                                        says:</em></strong>&nbsp;&nbsp;&nbsp;<i class="fa fa-comment-o"></i>
+                                {{record.subject}}</h6>
+                            <div class="m-b-15 d-block comment-reviews"><i class="fa fa-comments-o"></i>
+                                {{record.comment}}</div>
                             <div class="text-muted float-right"><i class="fa fa-clock-o"></i>
                                 {{record.created_at}}</div>
                         </div>
@@ -137,4 +160,42 @@ color:#FD4;
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $("#pincode-check-button").click(function (event) {
+
+        var formData = {
+            "pincode": $("input[name=pincode]").val(),
+            "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val()
+        };
+        $.ajax({
+            type: "POST",
+            url: "/shop/pincodeCheck/",
+            data: formData,
+            beforeSend: function () {
+                $('#delivery-message').html(
+                    '<img src="https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/home/img/Loader.gif" width="20" height="20"/>'
+                );
+            },
+            success: function (msg) {
+                msg = JSON.parse(msg);
+                console.log(msg)
+                if (msg.status == "success") {
+                    pincode = msg["pincode"];
+                    city = pincode[0]['district'];
+                    state = pincode[0]['state']
+                    $("#delivery-message").html(`<span style='font-size: 80%; color: #28a745;'>${msg.message} at <strong>${city}, ${state}</strong> by <strong>${msg.date}</strong></span>`);
+                } else if(msg.status == "not_success") {
+                    $("#delivery-message").html(`<span style='font-size: 80%; color: #dc3545;'>${msg.message}</span>`);
+                } else {
+                    $("#delivery-message").html(`<span style='font-size: 80%; color: #dc3545;'>Delivery Not Available</span>`);
+                }
+            }
+        });
+        event.preventDefault();
+    });
+</script>
+
 {% endblock %}

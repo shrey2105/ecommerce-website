@@ -57,7 +57,7 @@
     <div class="col-md-8 order-md-1">
       <h4 class="mb-3">Shipping Address</h4>
       <form class="needs-validation" novalidate="" action="/shop/cartCheckout/" method="post">{% csrf_token %}
-            <input type="hidden" name="buy_thanks" value="{{thanks}}">
+        <input type="hidden" name="buy_thanks" value="{{thanks}}">
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="fullName"><b>Full Name</b></label>
@@ -72,6 +72,25 @@
             <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="" required="">
             <div class="invalid-feedback">
               Please enter a valid email address for shipping updates.
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="zip"><b>Zip</b></label>
+            <input type="text" class="form-control" id="zip" name="zip_code" placeholder="Zip Code" required="">
+            <div id="delivery-message" class="mr-2"></div>
+            <div class="invalid-feedback">
+              Zip code required.
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="mobile"><b>Mobile Number</b></label>
+            <input type="tel" class="form-control" id="mobile" pattern="^[0-9]{10}$" name="mobile_number" placeholder="Mobile Number"
+              required="">
+            <div class="invalid-feedback">
+              Please enter 10 digit mobile number.
             </div>
           </div>
         </div>
@@ -94,34 +113,31 @@
         </div>
 
         <div class="row">
-          <div class="col-md-5 mb-3">
+          <div class="col-md-4 mb-3">
             <label for="city"><b>City</b></label>
-            <input type="text" class="form-control" name="city" id="city" placeholder="City" required="">
+            <input type="text" class="form-control" name="city" id="city" placeholder="City" required="" disabled>
+            <input type="hidden" class="form-control" name="city1" id="city1">
             <div class="invalid-feedback">
               Please enter your city.
             </div>
           </div>
           <div class="col-md-4 mb-3">
             <label for="state"><b>State</b></label>
-            <input type="text" class="form-control" name="state" id="state" placeholder="State" required="">
+            <input type="text" class="form-control" name="state" id="state" placeholder="State" required="" disabled>
+            <input type="hidden" class="form-control" name="state1" id="state1">
             <div class="invalid-feedback">
               Please enter your state.
             </div>
           </div>
-          <div class="col-md-3 mb-3">
-            <label for="zip"><b>Zip</b></label>
-            <input type="text" class="form-control" id="zip" name="zip_code" placeholder="Zip" required="">
+          <div class="col-md-4 mb-3">
+            <label for="post_office"><b>Post Office</b></label>
+            <select class="form-control" name="post_office" id="post_office" required="">
+              <option disabled selected hidden value="">Select Post Office</option>
+            </select>
+            <div id="postal-message" class="mr-2"></div>
             <div class="invalid-feedback">
-              Zip code required.
+              Please select your post office.
             </div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="mobile"><b>Mobile Number</b></label>
-          <input type="tel" class="form-control" id="mobile" name="mobile_number" placeholder="Mobile Number"
-            required="">
-          <div class="invalid-feedback">
-            Please enter your mobile number.
           </div>
         </div>
         <hr class="mb-4">
@@ -155,6 +171,61 @@
       })
     }, false)
   }())
+
+
+  $("#zip").blur(function (event) {
+
+    $("#post_office").empty();
+    var formData = {
+      "pincode": $("input[name=zip_code]").val(),
+      "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val()
+    };
+    $.ajax({
+      type: "POST",
+      url: "/shop/pincodeCheck/",
+      data: formData,
+      beforeSend: function () {
+        $('#delivery-message').html(
+          '<img src="https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/home/img/Loader.gif" width="20" height="20"/>'
+        );
+        $('#postal-message').html(
+          '<img src="https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/home/img/Loader.gif" width="20" height="20"/>'
+        );
+      },
+      success: function (msg) {
+        msg = JSON.parse(msg);
+        optionText = "Select Post Office";
+        optionValue = "";
+        $('#post_office').append(new Option(optionText, optionValue))
+        if (msg.status == "success") {
+          pincode = msg["pincode"];
+          for (i = 0; i < pincode.length; i++) {
+            name = pincode[i]['name'];
+            city = pincode[i]['district'];
+            state = pincode[i]['state'];
+            optionText = name;
+            optionValue = name.toLowerCase();
+            $('#post_office').append(new Option(optionText, optionValue));
+          }
+          var cityF = document.getElementById("city");
+          var cityF1 = document.getElementById("city1");
+          var stateF = document.getElementById("state");
+          var stateF1 = document.getElementById("state1");
+          cityF1.value = city;
+          cityF.value = city;
+          stateF.value = state;
+          stateF1.value = state;
+          $("#delivery-message").html(`<span style='display:none;'>${msg.message}</span>`);
+          $("#postal-message").html(`<span style='display:none;'>${msg.message}</span>`);
+        } else if (msg.status == "not_success") {
+          $("#delivery-message").html(`<span style='font-size: 80%; color: #dc3545;'>${msg.message}</span>`);
+        } else {
+          $("#delivery-message").html(`<span style='font-size: 80%; color: #dc3545;'>Delivery Not Available</span>`);
+        }
+      }
+    });
+    event.preventDefault();
+  });
 </script>
 
 {% endblock %}

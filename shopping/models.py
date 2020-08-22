@@ -119,6 +119,7 @@ class Order(models.Model):
     city = models.CharField(max_length=100, default="")
     state = models.CharField(max_length=100, default="")
     zip_code = models.CharField(max_length=100, default="")
+    post_office = models.CharField(max_length=100)
     mobile_number = models.CharField(max_length=50, default="")
     timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)

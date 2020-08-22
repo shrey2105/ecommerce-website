@@ -22,4 +22,5 @@ urlpatterns = [
     path("review/<slug:url>", views.review, name="review"),
     path("creditProcess/", views.creditProcess, name="creditProcess"),
     path("codProcess/", views.codProcess, name="codProcess"),
+    path("pincodeCheck/", views.pincodeCheck, name="pincodeCheck"),
 ]

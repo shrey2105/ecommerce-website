@@ -281,7 +281,6 @@ def notVerified(request):
     if request.user.profile.is_verified == "NVF" or request.user.profile.is_email_verified == "NVF":
         url = reverse("profile")
         messages.warning(request, mark_safe(msg.format(url=url)))
-        return HttpResponseRedirect("/home/notVerified")
     else:
         return HttpResponseRedirect("/home")
     return render(request, "home/not_verified.html")
@@ -312,11 +311,6 @@ def send_email(request):
             user = User.objects.get(pk=request.user.id)
             email = user.email
             if user.profile.is_email_verified == "NVF":
-                # path_to_view
-                # - getting domain we are on
-                # - relative url to verification
-                # - encode uid
-                # - token
 
                 uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
                 domain = get_current_site(request).domain
