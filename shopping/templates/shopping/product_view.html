@@ -181,7 +181,6 @@ color:#FD4;
             },
             success: function (msg) {
                 msg = JSON.parse(msg);
-                console.log(msg)
                 if (msg.status == "success") {
                     pincode = msg["pincode"];
                     city = pincode[0]['district'];
