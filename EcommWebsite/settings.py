@@ -202,6 +202,7 @@ USE_PAYTM = os.environ['USE_PAYTM'] == 'TRUE'
 if USE_PAYTM:
     MERCHANT_ID = os.environ['MERCHANT_ID']
     MERCHANT_KEY = os.environ['MERCHANT_KEY']
+    WEBSITE = os.environ['WEBSITE']
 
 # Activate Django-Heroku.
 django_heroku.settings(locals(), staticfiles=False)
