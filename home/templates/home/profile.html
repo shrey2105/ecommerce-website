@@ -13,8 +13,13 @@ float:right
 .custom-margin{
 margin-left:2rem!important;
 }
-.custom-margin-top{
-    margin-top:0.8em!important;
+.custom-margin-top {
+    margin-top: 0.8em!important;
+    margin-left:2em!important;
+}
+#send_email {
+    margin-top: 0.5em!important;
+    margin-left:1em!important;
 }
 {% endblock css %}
 {% block homeactive %}active{% endblock homeactive %}
@@ -133,9 +138,9 @@ margin-left:2rem!important;
                     <div class="row mb-4"></div>
                     <div class="row">
                         {% if is_email_verified == "NVF" %}
-                        <a id="send_email" class="btn btn-dark mb-2 mx-3 mr-2 mt-2">Send Email</a>
+                        <a id="send_email" class="btn btn-dark mr-2">Send Email</a>
                         <div class="row">
-                            <div id="email-message" class="custom-margin-top mx-2"></div>
+                            <div id="email-message" class="custom-margin-top mr-2"></div>
                         </div>
                     </div>
                     {% endif %}

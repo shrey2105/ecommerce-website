@@ -627,34 +627,36 @@ def paymentHandle(request):
         if i == "CHECKSUMHASH":
             checksum = form[i]
     
-    verify = Checksum.verify_checksum(response_dict, settings.MERCHANT_KEY, checksum)
-    cart = Cart.objects.get(user=response_dict['MERC_UNQ_REF'])
-    cartitems = CartItem.objects.filter(cart=cart)
-    new_order = Order.objects.get(cart=cart)
-    curr_date = datetime.strptime(response_dict['TXNDATE'], "%Y-%m-%d %H:%M:%S.%f")
-    new_date = curr_date.strftime("%A, %B %d, %Y %I:%M %p")
+    if response_dict['RESPCODE'] == '01':
+        verify = Checksum.verify_checksum(response_dict, settings.MERCHANT_KEY, checksum)
+        cart = Cart.objects.get(user=response_dict['MERC_UNQ_REF'])
+        cartitems = CartItem.objects.filter(cart=cart)
+        new_order = Order.objects.get(cart=cart)
+        curr_date = datetime.strptime(response_dict['TXNDATE'], "%Y-%m-%d %H:%M:%S.%f")
+        new_date = curr_date.strftime("%A, %B %d, %Y %I:%M %p")
 
-    if verify:
-        if response_dict['RESPCODE'] == '01':
-            for cartitem in cartitems:
-                try:
-                    product = Product.objects.filter(product_name=cartitem.product)
-                    for productitem in product:
-                        productitem.count_sold = productitem.count_sold + cartitem.quantity
-                        productitem.save()
-                except Product.DoesNotExist:
-                    pass
-            new_order.status = "Finished"
-            new_order.is_amount_paid = True
-            new_order.save()
-            print("Order Successful")
+        if verify:
+            if response_dict['RESPCODE'] == '01':
+                for cartitem in cartitems:
+                    try:
+                        product = Product.objects.filter(product_name=cartitem.product)
+                        for productitem in product:
+                            productitem.count_sold = productitem.count_sold + cartitem.quantity
+                            productitem.save()
+                    except Product.DoesNotExist:
+                        pass
+                new_order.status = "Finished"
+                new_order.is_amount_paid = True
+                new_order.save()
+                print("Order Successful")
+                return render(request, 'shopping/paytm_status.html', {'txn_date':new_date})
+            else:
+                new_order.delete()
+                print("Order Unsuccessful Because" + response_dict['RESPMSG'])
         else:
             new_order.delete()
             print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    else:
-        new_order.delete()
-        print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'txn_date':new_date})
+    return render(request, 'shopping/paytm_status.html', {'response':response_dict})
 
 @csrf_exempt
 def paymentHandleBuy(request):
@@ -667,33 +669,35 @@ def paymentHandleBuy(request):
         if i == "CHECKSUMHASH":
             checksum = form[i]
 
-    verify = Checksum.verify_checksum(response_dict, settings.MERCHANT_KEY, checksum)
-    buy = Buy.objects.get(user=response_dict['MERC_UNQ_REF'])
-    buyitem = BuyItem.objects.get(buy=buy)
-    new_order = Order.objects.get(buy=buy)
-    curr_date = datetime.strptime(response_dict['TXNDATE'], "%Y-%m-%d %H:%M:%S.%f")
-    new_date = curr_date.strftime("%A, %B %d, %Y %I:%M %p")
+    if response_dict['RESPCODE'] == '01':
+        verify = Checksum.verify_checksum(response_dict, settings.MERCHANT_KEY, checksum)
+        buy = Buy.objects.get(user=response_dict['MERC_UNQ_REF'])
+        buyitem = BuyItem.objects.get(buy=buy)
+        new_order = Order.objects.get(buy=buy)
+        curr_date = datetime.strptime(response_dict['TXNDATE'], "%Y-%m-%d %H:%M:%S.%f")
+        new_date = curr_date.strftime("%A, %B %d, %Y %I:%M %p")
 
-    if verify:
-        if response_dict['RESPCODE'] == '01':
-            try:
-                product = Product.objects.get(product_name=buyitem.product)
-                product.count_sold = product.count_sold + buyitem.quantity
-                product.save()
-            except Product.DoesNotExist:
-                pass
+        if verify:
+            if response_dict['RESPCODE'] == '01':
+                try:
+                    product = Product.objects.get(product_name=buyitem.product)
+                    product.count_sold = product.count_sold + buyitem.quantity
+                    product.save()
+                except Product.DoesNotExist:
+                    pass
 
-            new_order.status = "Finished"
-            new_order.is_amount_paid = True
-            new_order.save()
-            print("Order Successful")
+                new_order.status = "Finished"
+                new_order.is_amount_paid = True
+                new_order.save()
+                print("Order Successful")
+                return render(request, 'shopping/paytm_status.html', {'txn_date':new_date})
+            else:
+                new_order.delete()
+                print("Order Unsuccessful Because" + response_dict['RESPMSG'])
         else:
             new_order.delete()
             print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    else:
-        new_order.delete()
-        print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'txn_date':new_date, 'buy_thanks':True})
+    return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'buy_thanks':True})
 
 def orderDetails(request):
     if request.user.is_authenticated:
