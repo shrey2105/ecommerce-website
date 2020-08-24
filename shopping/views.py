@@ -218,7 +218,7 @@ def cartCheckout(request):
                 
                 items = []
                 for item in buy_item:
-                    items.append([item.product.product_name, item.quantity, item.product.slug, item.product.image.url[7:]])
+                    items.append([item.product.product_name, item.quantity, item.product.slug, item.product.image.url])
             except:
                 return HttpResponseRedirect(reverse("new_checkout"))
             
@@ -269,7 +269,7 @@ def cartCheckout(request):
                 cart_item = CartItem.objects.filter(cart=cart.id)
                 items = []
                 for item in cart_item:
-                    items.append([item.product.product_name, item.quantity, item.product.slug, item.product.image.url[7:]])
+                    items.append([item.product.product_name, item.quantity, item.product.slug, item.product.image.url])
             except:
                 return HttpResponseRedirect(reverse("cartView"))
 
@@ -705,7 +705,15 @@ def orderDetails(request):
             user = request.user
             new_order = Order.objects.filter(user=user).order_by('-id')
             if new_order.exists():
-                params = {'order':new_order}
+                page = request.GET.get('page', 1)
+                paginator = Paginator(new_order, 5)
+                try:
+                    records = paginator.page(page)
+                except PageNotAnInteger:
+                    records = paginator.page(1)
+                except EmptyPage:
+                    records = paginator.page(paginator.num_pages)
+                params = {'order':new_order, 'records':records}
             else:
                 params = {'empty':True}
 

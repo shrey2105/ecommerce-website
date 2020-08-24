@@ -5,164 +5,194 @@
 	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
 -->
 <html>
-	<head>
-  {% load static %}
-		<title>Shop N Blog | A Platform for Shopping and Blogging</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-    	<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}"/>
-	    <link rel="stylesheet" href="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099184/main_cs4o3e.css" />
-		<link rel="stylesheet" href="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597086670/font-awesome.min_mk9yxk.css" />
-	</head>
-	<body>
 
-		<!-- Header -->
-			<header id="header" class="alt">
-				<div class="logo"><a href="/"><img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1597086989/home-logo-header_zojzse.png"><span></span></a></div>
-				{% comment %} <a href="#menu" class="toggle"><span>Menu</span></a> {% endcomment %}
-			</header>
+<head>
+	{% load static %}
+	<title>Shop N Blog | A Platform for Shopping and Blogging</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}" />
+	<link rel="stylesheet"
+		href="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099184/main_cs4o3e.css" />
+	<link rel="stylesheet"
+		href="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597086670/font-awesome.min_mk9yxk.css" />
+	<style>
+		.image.fit img {
+			height: auto;
+		}
+	</style>
+</head>
 
-		<!--
+<body>
+
+	<!-- Header -->
+	<header id="header" class="alt">
+		<div class="logo"><a href="/"><img
+					src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1597086989/home-logo-header_zojzse.png"><span></span></a>
+		</div>
+		{% comment %} <a href="#menu" class="toggle"><span>Menu</span></a> {% endcomment %}
+	</header>
+
+	<!--
 			To use a video as your background, set data-video to the name of your video without
 			its extension (eg. images/banner). Your video must be available in both .mp4 and .webm
 			formats to work correctly.
 		-->
-			<section id="banner" data-video="images/banner">
-				<div class="inner">
-					<img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1597086989/home-logo_lqitmw.png">
-					<p>A common platform, for your shopping as well as Blogging<br />
-					where you can <a href="#">Shop</a> your things and write <a href="#">Blogs</a> about your experiences.</p>
-					<a href="#one" class="button special scrolly" style="background-color: transparent;
+	<section id="banner" data-video="images/banner">
+		<div class="inner">
+			<img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1597086989/home-logo_lqitmw.png">
+			<p>A common platform, for your shopping as well as Blogging<br />
+				where you can <a href="#">Shop</a> your things and write <a href="#">Blogs</a> about your experiences.
+			</p>
+			<a href="#one" class="button special scrolly" style="background-color: transparent;
     box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);">Get Started</a>
-				</div>
-			</section>
+		</div>
+	</section>
 
-		<!-- One -->
-			<section id="one" class="wrapper style2">
-				<div class="inner">
-					<div>
-						<div class="box">
-							<div class="image fit">
-								<img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1598277698/home_hsqlto.jpg" width="1174" height="350" alt="" />
-							</div>
-							<div class="content">
-								<header class="align-center">
-									<h2>Shop N Blog</h2>
-									<p>Common Platform for your shopping and blogging experience.</p>
-								</header>
-								<hr />
-								<p> Online shopping is a form of electronic commerce which allows consumers to directly buy goods or services from a seller over the Internet using a web browser. Consumers find a product of interest by visiting the website of the retailer directly or by searching among alternative vendors using a shopping search engine, which displays the same product's availability and pricing at different e-retailers.</p>
-								<p>A blog (shortening of “weblog”) is an online journal or informational website displaying information in the reverse chronological order, with the latest posts appearing first. It is a platform where a writer or even a group of writers share their views on an individual subject.</p>
-							</div>
-						</div>
+	<!-- One -->
+	<section id="one" class="wrapper style2">
+		<div class="inner">
+			<div>
+				<div class="box">
+					<div class="image fit">
+						<img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1598277698/home_hsqlto.jpg"
+							width="1174" height="350" alt="" />
+					</div>
+					<div class="content">
+						<header class="align-center">
+							<h2>Shop N Blog</h2>
+							<p>Common Platform for your shopping and blogging experience.</p>
+						</header>
+						<hr />
+						<p> Online shopping is a form of electronic commerce which allows consumers to directly buy
+							goods or services from a seller over the Internet using a web browser. Consumers find a
+							product of interest by visiting the website of the retailer directly or by searching among
+							alternative vendors using a shopping search engine, which displays the same product's
+							availability and pricing at different e-retailers.</p>
+						<p>A blog (shortening of “weblog”) is an online journal or informational website displaying
+							information in the reverse chronological order, with the latest posts appearing first. It is
+							a platform where a writer or even a group of writers share their views on an individual
+							subject.</p>
 					</div>
 				</div>
-			</section>
+			</div>
+		</div>
+	</section>
 
-		<!-- Two -->
-			<section id="two" class="wrapper style3">
-				<div class="inner">
-					<div id="flexgrid">
-						<div>
-							<header>
-								<h3>Shop</h3>
-							</header>
-							<p>Platform for online shopping.</p>
-							<ul class="actions">
-								{% comment %} <li><a href="#" class="button alt">Learn More</a></li> {% endcomment %}
-							</ul>
-						</div>
-						<div>
-							<header>
-								<h3>Home</h3>
-							</header>
-							<p>New customers can signup and exisiting customers should signin to enjoy experience. </p>
-							<ul class="actions">
-								<li><a href="/home/" class="button alt">Let's Explore</a></li>
-							</ul>
-						</div>
-						<div>
-							<header>
-								<h3>Blog</h3>
-							</header>
-							<p>Platfrom for writing blogs.</p>
-							<ul class="actions">
-								{% comment %} <li><a href="#" class="button alt">Learn More</a></li> {% endcomment %}
-							</ul>
-						</div>
-					</div>
-				</div>
-			</section>
-
-		<!-- Three -->
-			<section id="three" class="wrapper style2">
-				<div class="inner">
-					<div class="grid-style">
-
-						<div>
-							<div class="box">
-								<div class="image fit">
-									<img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1598278124/home_pic02_kagecl.jpg" width="543" height="194" alt="" />
-								</div>
-								<div class="content">
-									<header class="align-center">
-										<h2>Shop</h2>
-										<p>Online Shopping Platform</p>
-									</header>
-									<hr />
-									<p> An online shop evokes the physical analogy of buying products or services at a regular "bricks-and-mortar" retailer or shopping center; the process is called business-to-consumer (B2C) online shopping.</p>
-								</div>
-							</div>
-						</div>
-
-						<div>
-							<div class="box">
-								<div class="image fit">
-									<img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1598278480/home_pic03_ijmzo8.jpg" width="543" height="194" alt="" />
-								</div>
-								<div class="content">
-									<header class="align-center">
-										<h2>Blog</h2>
-										<p>Blogging Platform</p>
-									</header>
-									<hr />
-									<p>  The main purpose of a blog is to connect you to the relevant audience. Another one is to boost your traffic and send quality leads to your website.</p>
-								</div>
-							</div>
-						</div>
-
-					</div>
-				</div>
-			</section>
-
-		<!-- Four -->
-			<section id="four" class="wrapper style3">
-				<div class="inner">
-
-					<header class="align-center">
-						<h2>Shop N Blog platform</h2>
-						<p>Please try out this awesome experience. We hope you will like it. We will try to improve and for any problem, please let us know.</p>
+	<!-- Two -->
+	<section id="two" class="wrapper style3">
+		<div class="inner">
+			<div id="flexgrid">
+				<div>
+					<header>
+						<h3>Shop</h3>
 					</header>
-
+					<p>Platform for online shopping.</p>
+					<ul class="actions">
+						{% comment %} <li><a href="#" class="button alt">Learn More</a></li> {% endcomment %}
+					</ul>
 				</div>
-			</section>
+				<div>
+					<header>
+						<h3>Home</h3>
+					</header>
+					<p>New customers can signup and exisiting customers should signin to enjoy experience. </p>
+					<ul class="actions">
+						<li><a href="/home/" class="button alt">Let's Explore</a></li>
+					</ul>
+				</div>
+				<div>
+					<header>
+						<h3>Blog</h3>
+					</header>
+					<p>Platfrom for writing blogs.</p>
+					<ul class="actions">
+						{% comment %} <li><a href="#" class="button alt">Learn More</a></li> {% endcomment %}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
 
-		<!-- Footer -->
-			<footer id="footer" class="wrapper">
-				<div class="inner">
-					<div class="copyright">
-						&copy; 2020 Copyright: shopnblog
+	<!-- Three -->
+	<section id="three" class="wrapper style2">
+		<div class="inner">
+			<div class="grid-style">
+
+				<div>
+					<div class="box">
+						<div class="image fit">
+							<img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1598278124/home_pic02_kagecl.jpg"
+								width="543" height="194" alt="" />
+						</div>
+						<div class="content">
+							<header class="align-center">
+								<h2>Shop</h2>
+								<p>Online Shopping Platform</p>
+							</header>
+							<hr />
+							<p> An online shop evokes the physical analogy of buying products or services at a regular
+								"bricks-and-mortar" retailer or shopping center; the process is called
+								business-to-consumer (B2C) online shopping.</p>
+						</div>
 					</div>
 				</div>
-			</footer>
 
-		<!-- Scripts -->
-			<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099419/jquery.min_wzevpf.js"></script>
-			<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099600/jquery.scrolly.min_fx8j47.js"></script>
-			<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099495/jquery.scrollex.min_t230wh.js"></script>
-			<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099682/skel.min_im0o4z.js"></script>
-			<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597069316/util_yavm49.js"></script>
-			<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597097315/main_bhe6zg.js"></script>
+				<div>
+					<div class="box">
+						<div class="image fit">
+							<img src="https://res.cloudinary.com/shopnblog-herokuapp-com/image/upload/v1598278480/home_pic03_ijmzo8.jpg"
+								width="543" height="194" alt="" />
+						</div>
+						<div class="content">
+							<header class="align-center">
+								<h2>Blog</h2>
+								<p>Blogging Platform</p>
+							</header>
+							<hr />
+							<p> The main purpose of a blog is to connect you to the relevant audience. Another one is to
+								boost your traffic and send quality leads to your website.</p>
+						</div>
+					</div>
+				</div>
 
-	</body>
+			</div>
+		</div>
+	</section>
+
+	<!-- Four -->
+	<section id="four" class="wrapper style3">
+		<div class="inner">
+
+			<header class="align-center">
+				<h2>Shop N Blog platform</h2>
+				<p>Please try out this awesome experience. We hope you will like it. We will try to improve and for any
+					problem, please let us know.</p>
+			</header>
+
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer id="footer" class="wrapper">
+		<div class="inner">
+			<div class="copyright">
+				&copy; 2020 Copyright: shopnblog
+			</div>
+		</div>
+	</footer>
+
+	<!-- Scripts -->
+	<script
+		src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099419/jquery.min_wzevpf.js"></script>
+	<script
+		src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099600/jquery.scrolly.min_fx8j47.js"></script>
+	<script
+		src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099495/jquery.scrollex.min_t230wh.js"></script>
+	<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597099682/skel.min_im0o4z.js"></script>
+	<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597069316/util_yavm49.js"></script>
+	<script src="https://res.cloudinary.com/shopnblog-herokuapp-com/raw/upload/v1597097315/main_bhe6zg.js"></script>
+
+</body>
+
 </html>
