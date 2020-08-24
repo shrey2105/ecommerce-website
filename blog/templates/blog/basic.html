@@ -90,15 +90,15 @@
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0 mr-3" method="get" action="/blog/search">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query" id="query">
-            <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
+            <input class="form-control btn-sm mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query" id="query">
+            <button class="btn btn-sm btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
       </form>
-      <a href="/shop/cartView"><button type="button" class="btn btn-secondary my-2 mr-3"><img src="{% static 'shopping/img/cart.png' %}">
+      <a href="/shop/cartView"><button type="button" class="btn btn-secondary btn-sm my-2 mr-3"><img src="{% static 'shopping/img/cart.png' %}">
             Cart <span class="badge badge-dark">{{request.session.items_total}}</span>
         </button></a>
       {% if user.is_authenticated %}
       <div class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle btn btn-dark mr-3 my-3" href="#" id="navbarDropdownMenuLink" role="button"
+        <a class="nav-link dropdown-toggle btn btn-sm btn-dark mr-3 my-3" href="#" id="navbarDropdownMenuLink" role="button"
           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Welcome: {{request.user}}
         </a>
@@ -112,8 +112,8 @@
         </div>
       </div>
       {% else %}
-      <a href="/home/signin"><button type="button" id="signin" class="btn btn-light mx-2">Log In</button>
-        <a href="/home/signup"><button type="button" id="signup" class="btn btn-light">Sign Up</button></a>
+      <a href="/home/signin"><button type="button" id="signin" class="btn btn-sm btn-light mx-2">Log In</button>
+        <a href="/home/signup"><button type="button" id="signup" class="btn btn-sm btn-light">Sign Up</button></a>
         {% endif %}
     </div>
   </nav>

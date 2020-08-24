@@ -200,7 +200,6 @@ def profile(request):
             user_id = request.POST.get("user_id")
             user = User.objects.get(pk=user_id)
             user.first_name = request.POST.get("name")
-            user.email = request.POST.get("email")
             user.profile.gender = request.POST.get("gender", False)
             user.profile.birth_day = request.POST.get("day")
             user.profile.birth_month = request.POST.get("month")
