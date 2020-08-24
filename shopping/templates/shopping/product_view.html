@@ -37,6 +37,12 @@ color:#FD4;
     margin-top: 0.8em!important;
     margin-left:1em!important;
 }
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
 {% endblock css %}
 {% block shopactive %}active{% endblock shopactive %}
 
@@ -46,7 +52,7 @@ color:#FD4;
     <div class="row mt-4">
         <div class="col-md-4">
             <div class="row">
-                <img src="{{MEDIA_URL}}{{product.image}}" class="card-img-top my-3" height=300 alt="...">
+                <img src="{{MEDIA_URL}}{{product.image}}" class="img-fluid center my-3" height="235" alt="...">
             </div>
             <div class="row">
                 <a href="{% url 'buy_now' product.id %}"><button class="btn cart mx-2 mr-2 mt-2"
