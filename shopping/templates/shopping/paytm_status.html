@@ -127,7 +127,7 @@
             <p><b>Transaction Amount: </b>Rs. {{response.TXNAMOUNT}} {{response.CURRENCY}}</p>
             <p><b>Status: </b>{% if response.STATUS == 'TXN_SUCCESS' %}Transaction Successful{% endif %}</p>
             <p><b>Transaction ID: </b>{{response.TXNID}}</p>
-            <p><b>Date: </b>{{txn_date}}</p>
+            <p><b>Date: </b>{{response.TXNDATE}}</p>
         </div>
         {% else %}
         <div class="alert alert-danger text-center" role="alert">
