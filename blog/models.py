@@ -48,3 +48,12 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.email
+
+class BannerImage(models.Model):
+    first_image_url = models.ImageField(upload_to="blog/images", blank=True, null=True)
+    second_image_url = models.ImageField(upload_to="blog/images", blank=True, null=True)
+    third_image_url = models.ImageField(upload_to="blog/images", blank=True, null=True)
+    main_banner = models.ImageField(upload_to="blog/images", blank=True, null=True)
+
+    def __str__(self):
+        return f"Banner Image id:{self.id}"

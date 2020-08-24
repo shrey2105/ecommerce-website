@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
-from blog.models import BlogPost, BlogComment, Contact
+from blog.models import BlogPost, BlogComment, Contact, BannerImage
 from django.contrib import messages
+from django.contrib.auth.models import User
 import json
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.contrib.auth.decorators import login_required
@@ -20,6 +21,18 @@ def index(request):
 			messages.warning(request, mark_safe(msg.format(url=url)))
 	blogposts = BlogPost.objects.all().order_by("-pub_date")
 
+	total_members_count = 0
+	total_members = User.objects.all()
+	for members in total_members:
+		if not members.is_staff:
+			total_members_count += 1
+
+	total_blogs_count = 0
+	total_blogs = BlogPost.objects.all()
+	for blogs in total_blogs:
+		if blogs.status == "Published" or blogs.status == "Featured":
+			total_blogs_count += 1
+
 	page = request.GET.get('page', 1)
 	paginator = Paginator(blogposts, 4)
 	try:
@@ -29,7 +42,8 @@ def index(request):
 	except EmptyPage:
 		records = paginator.page(paginator.num_pages)
 
-	params = {'blogposts':blogposts, 'records':records}
+	banner_image = BannerImage.objects.all()
+	params = {'blogposts':blogposts, 'records':records, 'banner':banner_image, 'total_members_count':total_members_count, 'total_blogs_count':total_blogs_count}
 	return render(request, 'blog/index.html', params)
 
 def blogpost(request, id):

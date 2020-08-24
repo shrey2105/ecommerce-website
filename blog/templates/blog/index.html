@@ -3,11 +3,135 @@
 {% block title %}Blog | Online Blogging Platform{% endblock %}
 {% block css %}
 .pagination {
-    justify-content: center;
+justify-content: center;
 }
+.center-header {
+text-align: center;
+color: #fff;
+position: relative;
+height: 200px;
+background-position: left;
+background-size: cover;
+height: auto !important;
+}
+.header-img {
+width: 100%;
+}
+.bg-behind {
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+/* background-color: #000; */
+opacity: 0.5;
+transition: all 0.3s ease-in-out 0s;
+-moz-transition: all 0.3s ease-in-out 0s;
+-o-transition: all 0.3s ease-in-out 0s;
+-webkit-transition: all 0.3s ease-in-out 0s;
+-ms-transition: all 0.3s ease-in-out 0s;
+}
+.list-number {
+margin-top: 35px;
+}
+.list-number .left-number, .list-number .right-number {
+text-align: center;
+}
+.list-number .left-number {
+border-right: 2px solid #d0d0d0;
+}
+.fadeIn {
+-webkit-animation-name: fadeIn;
+animation-name: fadeIn;
+}
+.animated {
+-webkit-animation-duration: 1s;
+animation-duration: 1s;
+-webkit-animation-fill-mode: both;
+animation-fill-mode: both;
+}
+.title-number {
+display: inline-block;
+position: relative;
+}
+.title-number h3 {
+font-size: 35px;
+font-style: italic;
+position: relative;
+z-index: 10;
+font-family: 'Garamond';
+}
+.list-number .title-number .line-title {
+background: #d9e6e7;
+bottom: 7px;
+}
+.line-title {
+height: 8px;
+width: 100%;
+position: absolute;
+left: 0;
+right: 0;
+bottom: 9px;
+background: #ffbbad;
+}
+.list-number .number {
+display: block;
+font-size: 25px;
+font-weight: 700;
+letter-spacing: 3px;
+}
+.list-number .right-number .line-title {
+background: #ffeac5;
+}
+.col-xs-6 {
+width: 50%;
+}
+@media screen and (max-width: 768px)
+.list-number {
+margin-left: 15px;
+margin-right: 15px;
+padding: 30px 0;
+border-bottom: 2px solid #ececec;
+border-top: 2px solid #ececec;
+}
+@media (min-width: 768px)
+.col-sm-6 {
+width: 50%;
+}
+a.readmore-link:link {color:#6C757D; font-weight:800}
+a.readmore-link:visited {color:#6C757D; font-weight:800}
+a.readmore-link:hover {font-size:150%; font-weight:800}
 {% endblock css %}
 {% block blogactive %}active{% endblock blogactive %}
 {% block body %}
+
+<div class="container-fluid">
+  {% for img in banner %}
+  <div class="center-header" style="background-position:center; background-repeat: no-repeat;">
+    <img src="{{MEDIA_URL}}{{img.main_banner}}" alt="" class="header-img">
+    <div class="bg-behind"></div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="container-fluid">
+  <div class="row list-number mt-4">
+    <div class="animated fade-in col-sm-6 col-xs-6 left-number fadeIn">
+      <div class="title-number">
+        <h3>Blog Content</h3>
+        <span class="line-title"></span>
+      </div>
+      <span class="number">{{total_blogs_count}}</span>
+    </div>
+    <div class="animated fade-in col-sm-6 col-xs-6 right-number fadeIn">
+      <div class="title-number">
+        <h3>Members</h3>
+        <span class="line-title"></span>
+      </div>
+      <span class="number">{{total_members_count}}</span>
+    </div>
+  </div>
+</div>
 
 <div class="container mt-3">
   <div class="row my-2">
@@ -19,13 +143,13 @@
           {% if record.status == "Published" %}
           <span class="badge badge-success">{{record.status}}</span>
           {% else %}
-          <span class="badge badge-info">{{record.status}}</span>
+          <span class="badge badge-warning">{{record.status}}</span>
           {% endif %}
-          <strong class="d-inline-block mt-2 mb-2 text-primary">Article by: {{record.author}}</strong>
+          <strong class="d-inline-block mt-2 mb-2 text-danger">Article by: {{record.author}}</strong>
           <h3 class="mb-0">{{record.title}}</h3>
           <div class="mb-1 text-muted">{{record.pub_date}}</div>
           <p class="card-text mb-auto">{{record.content_heading1|truncatechars:50}}</p>
-          <a href="blogPost/{{record.post_id}}" class="stretched-link mt-2">Continue reading</a>
+          <a href="blogPost/{{record.post_id}}" class="stretched-link readmore-link mt-2">Continue reading</a>
         </div>
         <div class="col-auto d-none d-lg-block">
           <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
@@ -45,30 +169,46 @@
     {% endfor %}
   </div>
 
-    {% if records.has_other_pages %}
-    <ul class="pagination mt-4">
-      <li class="page-item">
-        {% if records.has_previous %}
-        <a class="page-link" href="?page={{ records.previous_page_number }}">Previous</a>
-        {% else %}
-        <a class="page-link disabled">Previous</a>
-        {% endif %}
-      </li>
+  {% if records.has_other_pages %}
+  <ul class="pagination mt-4">
+    <li class="page-item">
+      {% if records.has_previous %}
+      <a class="page-link readmore-link" href="?page={{ records.previous_page_number }}">Previous</a>
+      {% else %}
+      <a class="page-link disabled">Previous</a>
+      {% endif %}
+    </li>
 
-      <li class="page-item">
-        <a class="page-link">
-          Page {{records.number}} of {{records.paginator.num_pages}}
-        </a>
-      </li>
+    <li class="page-item">
+      <a class="page-link">
+        Page {{records.number}} of {{records.paginator.num_pages}}
+      </a>
+    </li>
 
-      <li class="page-item">
-        {% if records.has_next %}
-        <a class="page-link" href="?page={{ records.next_page_number }}">Next</a>
-        {% else %}
-        <a class="page-link disabled">Next</a>
-        {% endif %}
-      </li>
-    </ul>
-    {% endif %}
+    <li class="page-item">
+      {% if records.has_next %}
+      <a class="page-link readmore-link" href="?page={{ records.next_page_number }}">Next</a>
+      {% else %}
+      <a class="page-link disabled">Next</a>
+      {% endif %}
+    </li>
+  </ul>
+  {% endif %}
 </div>
 {% endblock %}
+
+{% block js %}
+<script>
+  $('.number').each(function () {
+    $(this).prop('Counter', 0).animate({
+      Counter: $(this).text()
+    }, {
+      duration: 4000,
+      easing: 'swing',
+      step: function (now) {
+        $(this).text(Math.ceil(now));
+      }
+    });
+  });
+</script>
+{% endblock js %}
