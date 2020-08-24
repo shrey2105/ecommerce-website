@@ -101,7 +101,7 @@
 								if (!skel.vars.mobile
 								&&	!skel.breakpoint('large').active
 								&&	skel.vars.IEVersion > 9)
-									$banner.append('<video autoplay loop><source src="/static/' + video + '.mp4" type="video/mp4" /><source src="/static/' + video + '.webm" type="video/webm" /></video>');
+									$banner.append('<video autoplay="autoplay" loop="loop"><source src="https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/' + video + '.mp4" type="video/mp4" /><source src="https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/' + video + '.webm" type="video/webm" /></video>');
 
 						});
 

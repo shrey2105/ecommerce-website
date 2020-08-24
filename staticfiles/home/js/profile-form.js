@@ -28,7 +28,6 @@ $("#send_otp").click(function (event) {
     event.preventDefault();
 });
 
-
 $(document).ready(function () {
     $("#basic_profile :input").prop("disabled", true);
     $(".update_profile").click(function () {
