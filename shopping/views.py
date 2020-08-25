@@ -179,7 +179,18 @@ def search(request):
         no_slides = n // 4 + ceil((n / 4) - (n // 4))
         if len(products) > 0:
             all_products.append([products, range(1, no_slides), no_slides])
-    params = {'all_products':all_products, 'message':''}
+
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(all_products, 4)
+    try:
+        records = paginator.page(page)
+    except PageNotAnInteger:
+        records = paginator.page(1)
+    except EmptyPage:
+        records = paginator.page(paginator.num_pages)
+
+    params = {'all_products':all_products, 'records':records, 'message':''}
     if len(all_products) == 0 or len(query) <= 1:
         params = {'message':'Search Not Found, Search again...'}
     return render(request, 'shopping/search.html', params)
