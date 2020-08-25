@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'storages',
+    'clear_cache',
 ]
 
 MIDDLEWARE = [
