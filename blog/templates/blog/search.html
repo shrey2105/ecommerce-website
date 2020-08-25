@@ -1,58 +1,94 @@
 {% extends 'blog/basic.html' %}
 
-{% block title %}Search Results{% endblock %}
+{% block title %}Search Results - {{query}}{% endblock %}
 {% block css %}
+a.readmore-link:link {color:#6C757D; font-weight:800}
+a.readmore-link:visited {color:#6C757D; font-weight:800}
+a.readmore-link:hover {font-size:150%; font-weight:800}
+
 .result {display: block; clear: both; vertical-align: middle; position: relative;}
 .display-box {position: relative;width: 100%;max-width: 500px;background-color: #fff;border: 4px solid #000;padding:
 40px 20px;margin: 50px auto;line-height: 30px;display: block;clear: both;}
 .display-box p a {color: #000; font-weight: 600; text-decoration: underline;}
-.display-box h2 {color: #000;font-size: 22px;text-align: center;margin-bottom: 20px;display: block;font-weight: 600;text-transform: uppercase;font-family: lato;}
+.display-box h2 {color: #000;font-size: 22px;text-align: center;margin-bottom: 20px;display: block;font-weight:
+600;text-transform: uppercase;font-family: lato;}
 .display-box p {color: #000;font-size: 14px;text-align: center;display: block;}
 {% endblock css %}
 {% block blogactive %}active{% endblock blogactive %}
 
 {% block body %}
 <div class="container mt-3">
-{% if message|length == 0 %}
-<h2 class="results mt-4">Search Results:</h2>
+  {% if message|length == 0 %}
+  <h2 class="results mt-4">Search Results: "{{query}}"</h2>
   <div class="row mt-4">
-  {% for blogpost in all_posts %}
-  {% if blogpost.status == "Published" or blogpost.status == "Featured" %}
+    {% for record in all_posts %}
+    {% if record.status == "Published" or record.status == "Featured" %}
     <div class="col-md-6">
       <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
-          {% if blogpost.status == "Published" %}
-        <span class="badge badge-success">{{blogpost.status}}</span>
-        {% else %}
-        <span class="badge badge-info">{{blogpost.status}}</span>
-        {% endif %}
-          <strong class="d-inline-block mt-2 mb-2 text-primary">Article by: {{blogpost.author}}</strong>
-          <h3 class="mb-0">{{blogpost.title}}</h3>
-          <div class="mb-1 text-muted">{{blogpost.pub_date}}</div>
-          <p class="card-text mb-auto">{{blogpost.content_heading1|truncatechars:50}}</p>
-          <a href="blog/blogPost/{{blogpost.post_id}}" class="stretched-link mt-2">Continue reading</a>
+          {% if record.status == "Published" %}
+          <span class="badge badge-success">{{record.status}}</span>
+          {% else %}
+          <span class="badge badge-warning">{{record.status}}</span>
+          {% endif %}
+          <strong class="d-inline-block mt-2 mb-2 text-danger">Article by: {{record.author}}</strong>
+          <h3 class="mb-0">{{record.title|truncatechars:15}}</h3>
+          <div class="mb-1 text-muted">{{record.pub_date}}</div>
+          <p class="card-text mb-auto">{{record.content_heading1|truncatechars:50}}</p>
+          <a href="blogPost/{{record.post_id}}" class="stretched-link readmore-link mt-2">Continue reading</a>
         </div>
         <div class="col-auto d-none d-lg-block">
-          <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><defs><clipPath id="myRectangle"><rect width="200" height="250" fill="#55595c" /></clipPath></defs><image xlink:href="{{MEDIA_URL}}{{blogpost.thumbnail}}" height="250px" width="200px" clip-path="url(#myRectangle)"/></svg>
+          <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail">
+            <defs>
+              <clipPath id="myRectangle">
+                <rect width="200" height="250" fill="#55595c" />
+              </clipPath>
+            </defs>
+            <image xlink:href="{{MEDIA_URL}}{{record.thumbnail}}" height="250px" width="200px"
+              clip-path="url(#myRectangle)" />
+          </svg>
         </div>
       </div>
     </div>
     {% endif %}
-    {% if forloop.counter|divisibleby:2 %}
-  </div><div class="row my-2">
+    {% endfor %}
+  </div>
+
+  {% if records.has_other_pages %}
+  <ul class="pagination mt-4">
+    <li class="page-item">
+      {% if records.has_previous %}
+      <a class="page-link readmore-link" href="?page={{ records.previous_page_number }}">Previous</a>
+      {% else %}
+      <a class="page-link disabled">Previous</a>
+      {% endif %}
+    </li>
+
+    <li class="page-item">
+      <a class="page-link">
+        Page {{records.number}} of {{records.paginator.num_pages}}
+      </a>
+    </li>
+
+    <li class="page-item">
+      {% if records.has_next %}
+      <a class="page-link readmore-link" href="?page={{ records.next_page_number }}">Next</a>
+      {% else %}
+      <a class="page-link disabled">Next</a>
+      {% endif %}
+    </li>
+  </ul>
   {% endif %}
-  {% endfor %}
-</div>
-{% else %}
-<div class="result mt-4">
-        <div class="display-box">
-            <h2>Sorry!!</h2>
-            <p>No Results Found</p>
-            <p>Please check the spelling or try searching for something else</p>
-            <p>In order to search something, your search query should be correct or match</p>
-        </div>
+  {% else %}
+  <div class="result mt-4">
+    <div class="display-box">
+      <h2>Sorry!!</h2>
+      <p>No Results Found</p>
+      <p>Please check the spelling or try searching for something else</p>
+      <p>In order to search something, your search query should be correct or match</p>
     </div>
-{% endif %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
-

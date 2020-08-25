@@ -108,7 +108,8 @@ def search(request):
 		all_posts_title = BlogPost.objects.filter(title__icontains=query)
 		all_posts_content = BlogPost.objects.filter(content_heading1__icontains=query)
 		all_posts = all_posts_title.union(all_posts_content)
-	params = {'all_posts':all_posts, 'message':''}
+
+	params = {'all_posts':all_posts, 'query':query, 'message':''}
 	if len(all_posts) == 0 or len(query) <= 1:
 		params = {'message':'Search Not Found, Search again...'}
 	return render(request, "blog/search.html", params)
