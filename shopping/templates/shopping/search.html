@@ -19,21 +19,29 @@ display: block;
 }
 }
 
-.products-list .carousel-inner .carousel-item.active, .products-list .carousel-inner .carousel-item-next, .products-list
-.carousel-inner .carousel-item-prev {
+.products-list .carousel-inner .carousel-item.active,
+.products-list .carousel-inner .carousel-item-next,
+.products-list .carousel-inner .carousel-item-prev {
 display: flex;
 }
 
 /* display 3 */
 @media (min-width: 768px) {
 
-.products-list .carousel-inner .carousel-item-right.active, .products-list .carousel-inner .carousel-item-next {
+.products-list .carousel-inner .carousel-item-right.active,
+.products-list .carousel-inner .carousel-item-next {
 transform: translateX(33.333%);
 }
 
-.products-list .carousel-inner .carousel-item-left.active, .products-list .carousel-inner .carousel-item-prev {
+.products-list .carousel-inner .carousel-item-left.active,
+.products-list .carousel-inner .carousel-item-prev {
 transform: translateX(-33.333%);
 }
+}
+
+.latest-products .carousel-inner .carousel-item-right, .products-list .carousel-inner .carousel-item-right,
+.latest-products .carousel-inner .carousel-item-left, .products-list .carousel-inner .carousel-item-left {
+transform: translateX(0);
 }
 .pagination {
 justify-content: center;
@@ -59,7 +67,6 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
   <!--Slideshow starts here-->
   {% if message|length == 0 %}
   <h2 class="results mt-4">Search Results: "{{query}}"</h2>
-  <div class="container">
     <!--Slideshow starts here-->
     {% for product, range, no_slides in all_products %}
     <h4 class="my-4">Flash Sale On - <strong><em>{{product.0.category}}</em></strong></h4>
@@ -194,7 +201,6 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
       </div>
     </div>
     {% endif %}
-  </div>
 </div>
 
 {% endblock %}
