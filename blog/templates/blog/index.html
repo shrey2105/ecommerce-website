@@ -146,7 +146,7 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
           <span class="badge badge-warning">{{record.status}}</span>
           {% endif %}
           <strong class="d-inline-block mt-2 mb-2 text-danger">Article by: {{record.author}}</strong>
-          <h3 class="mb-0">{{record.title}}</h3>
+          <h3 class="mb-0">{{record.title|truncatechars:15}}</h3>
           <div class="mb-1 text-muted">{{record.pub_date}}</div>
           <p class="card-text mb-auto">{{record.content_heading1|truncatechars:50}}</p>
           <a href="blogPost/{{record.post_id}}" class="stretched-link readmore-link mt-2">Continue reading</a>
