@@ -174,7 +174,7 @@ def search(request):
     categories = {item['category'] for item in product_category}
     for category in categories:
         prod = Product.objects.filter(category = category)
-        products = [item for item in prod if searchMatch(query, item)]
+        products = [item for item in prod if searchMatch(query.lower(), item)]
         n = len(prod)
         no_slides = n // 4 + ceil((n / 4) - (n // 4))
         if len(products) > 0:
