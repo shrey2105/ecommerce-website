@@ -124,7 +124,7 @@
         <div class="alert alert-success text-center" role="alert">
             <h4 class="alert-heading">{% if response.RESPMSG == 'Txn Success' %}Your Payment is
                 Successful{% endif %}</h4>
-            <p><b>Transaction Amount: </b>Rs. {{response.TXNAMOUNT}} {{response.CURRENCY}}</p>
+            <p><b>Transaction Amount: </b>&#8377; {{response.TXNAMOUNT}} {{response.CURRENCY}}</p>
             <p><b>Status: </b>{% if response.STATUS == 'TXN_SUCCESS' %}Transaction Successful{% endif %}</p>
             <p><b>Transaction ID: </b>{{response.TXNID}}</p>
             <p><b>Date: </b>{{response.TXNDATE}}</p>

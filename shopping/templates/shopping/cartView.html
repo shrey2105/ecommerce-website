@@ -14,7 +14,6 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
-    max-width: 100%;
 }
 {% endblock %}
 {% block shopactive %}active{% endblock shopactive %}
@@ -48,14 +47,14 @@
             <tr>
                 <td></td>
                 <td></td>
-                <td><b>Total:</b> Rs. {{cart.total_price}}</td>
+                <td><b>Total:</b> &#8377; {{cart.total_price}}</td>
             </tr>
         </tfoot>
         {% for item in cart.cartitem_set.all %}
         <tr>
-            <td><img src="{{MEDIA_URL}}{{item.product.image}}" class="center" alt="..."></td>
+            <td><img src="{{MEDIA_URL}}{{item.product.image}}" height="100" class="center" alt="..."></td>
             <td><a href="/shop/productView/{{item.product.id}}"><h5 class="card-title">{{item.product}}</h5></a></td>
-            <td>Rs. {{item.product.price}}</td>
+            <td>&#8377; {{item.product.price}}</td>
             <td>{{item.quantity}}</td>
             <td><a href="{% url 'remove_from_cart' item.id %}"><img src="{% static 'shopping/img/trash.png' %}"></i></a></td>
         </tr>

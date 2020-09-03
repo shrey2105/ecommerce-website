@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from shopping.models import Product, Contact, Orders, Cart, CartItem, Order, OrdersUpdate, Buy, BuyItem, BannerImage, YoutubeLink, Comment
+from shopping.models import Product, Contact, Orders, Cart, CartItem, Order, OrdersUpdate, Buy, BuyItem, BannerImage, YoutubeLink, Comment, Wishlist, WishlistItem
 from django.contrib import messages
 from django.contrib.auth.models import User
 from math import ceil
@@ -462,6 +462,7 @@ def codProcess(request):
         if response_dict['cod']:
             try:
                 product = Product.objects.get(product_name=buy_item.product)
+                product.stock_qty = product.stock_qty - buy_item.quantity
                 product.count_sold = product.count_sold + buy_item.quantity
                 product.save()
             except Product.DoesNotExist:
@@ -487,6 +488,7 @@ def codProcess(request):
                 try:
                     product = Product.objects.filter(product_name=cartitem.product)
                     for productitem in product:
+                        productitem.stock_qty = productitem.stock_qty - cartitem.quantity
                         productitem.count_sold = productitem.count_sold + cartitem.quantity
                         productitem.save()
                 except Product.DoesNotExist:
@@ -546,6 +548,7 @@ def creditProcess(request):
 
             try:
                 product = Product.objects.get(product_name=buy_item.product)
+                product.stock_qty = product.stock_qty - buy_item.quantity
                 product.count_sold = product.count_sold + buy_item.quantity
                 product.save()
             except Product.DoesNotExist:
@@ -601,6 +604,7 @@ def creditProcess(request):
                 try:
                     product = Product.objects.filter(product_name=cartitem.product)
                     for productitem in product:
+                        productitem.stock_qty = productitem.stock_qty - cartitem.quantity
                         productitem.count_sold = productitem.count_sold + cartitem.quantity
                         productitem.save()
                 except Product.DoesNotExist:
@@ -639,6 +643,7 @@ def paymentHandle(request):
                 try:
                     product = Product.objects.filter(product_name=cartitem.product)
                     for productitem in product:
+                        productitem.stock_qty = productitem.stock_qty - cartitem.quantity
                         productitem.count_sold = productitem.count_sold + cartitem.quantity
                         productitem.save()
                 except Product.DoesNotExist:
@@ -679,6 +684,7 @@ def paymentHandleBuy(request):
         if response_dict['RESPCODE'] == '01':
             try:
                 product = Product.objects.get(product_name=buyitem.product)
+                product.stock_qty = product.stock_qty - buyitem.quantity
                 product.count_sold = product.count_sold + buyitem.quantity
                 product.save()
             except Product.DoesNotExist:
@@ -767,6 +773,47 @@ def remove_from_cart(request, id):
     request.session['items_total'] = cart.cartitem_set.count()
 
     return HttpResponseRedirect(reverse("cartView"))
+
+def add_to_wishlist(request, id):
+    if request.user.is_authenticated:
+        request.session['total_credits'] = float(request.user.profile.credit)
+        if request.user.profile.is_verified == "VF" and request.user.profile.is_email_verified == "VF":
+            try:
+                user = request.user
+                wishlist = Wishlist.objects.get(user=user)
+            except Wishlist.DoesNotExist:
+                wishlist = Wishlist()
+                wishlist.user = request.user
+                wishlist.save()
+            
+            wishlist = Wishlist.objects.get(id=wishlist.id)
+
+            try:
+                product = Product.objects.get(id=id)
+            except Product.DoesNotExist:
+                pass
+            except: 
+                pass
+
+            try:
+                wishlist_item = WishlistItem.objects.get(wishlist=wishlist, product=product)
+                wishlist_item.user = user
+                wishlist_item.save()
+                # messages.warning(request, "")
+                return HttpResponse('{"status":"not_success", "message":"Item already in your Wishlist."}')
+            except WishlistItem.DoesNotExist:
+                wishlist_item = WishlistItem.objects.create(wishlist=wishlist, product=product)
+                wishlist_item.user = user
+                wishlist_item.save()
+                # messages.success(request, "Item added to your Wishlist. You will be notified when the item will be in stock.")
+                return HttpResponse('{"status":"success", "message":"Item added to your Wishlist. You will be notified when the item will be in stock."}')
+            return HttpResponseRedirect(f"/shop/productView/{id}")
+        else:
+            return HttpResponse('{"status":"not_success", "message":"Please verify your profile to add Item to your Wishlist."}')
+    else:
+        return HttpResponse('{"status":"not_success", "message":"Please log in to add Item to your Wishlist."}')
+
+    return HttpResponseRedirect(f"/shop/productView/{id}")
         
 def add_to_cart(request, id):
     if request.user.is_authenticated:

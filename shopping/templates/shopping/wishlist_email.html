@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+<style>
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+</head>
+<body>
+    {% load static %}
+        <a class="navbar-brand" href="#"><img src="{% static 'shopping/img/home-logo.png' %}"></a>
+    <div class="container">
+        <div class="text-center">
+            <h1>Shop N Blog Wishlist Items</h1>
+            <h2>Hi {{user.username}}</h2>
+            <h3>Your Wishlist Items are back with us. Please visit us to order them again.</h3>
+            <table>
+            <tr>
+            <td><img src="{{product_image}}" class="center" height="100" alt="..."></td>&nbsp;
+            <td><h4>{{product_name}}</h4></td>
+            <td><h4>&#8377; {{product_price}}</h4></td>
+            </tr>
+            </table>
+            <h4>Regards</h4>
+            <h4>Shop N Blog Team</h4>
+    </div>
+</body>
+
+</html>

@@ -34,20 +34,21 @@ color:#FD4;
 .display-box h2 {color: #000;font-size: 22px;text-align: center;margin-bottom: 20px;display: block;font-weight:
 600;text-transform: uppercase;font-family: lato;}
 .custom-margin-top {
-    margin-top: 0.8em!important;
-    margin-left:1em!important;
+margin-top: 0.8em!important;
+margin-left:1em!important;
 }
 .center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 100%;
-  height:auto;
+display: block;
+margin-left: auto;
+margin-right: auto;
+max-width: 100%;
+height:auto;
 }
 .button-cart{
-    margin-left:auto;
-    margin-right:auto;
-    display:flex;
+margin-left:auto;
+margin-right:auto;
+display:flex;
+justify-content: center;
 }
 {% endblock css %}
 {% block shopactive %}active{% endblock shopactive %}
@@ -60,22 +61,31 @@ color:#FD4;
             <div class="row">
                 <img src="{{MEDIA_URL}}{{product.image}}" class="center my-3" height="235" alt="...">
             </div>
+            {% if product.stock_qty == 0 %}
+            <div class="row button-cart">
+                <a class="wishlist_button"><button class="btn mx-2 mr-2 mt-2"
+                        style="background-color:#dbd5d5">Wishlist&nbsp;<img
+                            src="{% static 'shopping/img/wishlist.png' %}"></button></a>
+                {% comment %} <div id="wishlist-message" class="custom-margin-top mt-2 mr-2"></div> {% endcomment %}
+            </div>
+            {% else %}
             <div class="row button-cart">
                 <a href="{% url 'buy_now' product.id %}"><button class="btn cart mx-2 mr-2 mt-2"
-                        style="background-color:#dbd5d5">Buy Now<img
+                        style="background-color:#dbd5d5">Buy Now&nbsp;<img
                             src="{% static 'shopping/img/buynow.png' %}"></button></a>
                 <form class="form pull-right" method="post" action="{% url 'add_to_cart' product.id %}">
                     {% csrf_token %}
-                    <button class="btn mx-2 mr-2 mt-2" type="submit" style="background-color:#dbd5d5">Add to Cart<img
-                            src="{% static 'shopping/img/add_to_cart.png' %}"></button>
+                    <button class="btn mx-2 mr-2 mt-2" type="submit" style="background-color:#dbd5d5">Add to
+                        Cart&nbsp;<img src="{% static 'shopping/img/add_to_cart.png' %}"></button>
                     <input class="form-control mt-2" type="number" name="qty" value='1' size="3">
                 </form>
             </div>
+            {% endif %}
         </div>
 
         <div class="col-md-8 my-3">
             <h5>{{product.product_name}}</h5>
-            <p><b>Rs. {{product.price}}</b></p>
+            <p><b>&#8377; {{product.price}}</b></p>
 
             <div>
                 <div class="review-rating">
@@ -92,13 +102,14 @@ color:#FD4;
                 {% csrf_token %}
                 <h6>Check Delivery</h6>
                 <div class="form-field">
-                <div class="row">
-                <input class="form-control pull-left mr-2 mx-3 mt-2" type="pincode" name="pincode" placeholder="Enter Pincode">
-                <button class="btn mr-2 mt-2" id="pincode-check-button" type="submit"
-                    style="background-color:#dbd5d5">Check</button>
-                    <div id="delivery-message" class="custom-margin-top mt-2 mr-2"></div>
+                    <div class="row">
+                        <input class="form-control pull-left mr-2 mx-3 mt-2" type="pincode" name="pincode"
+                            placeholder="Enter Pincode">
+                        <button class="btn mr-2 mt-2" id="pincode-check-button" type="submit"
+                            style="background-color:#dbd5d5">Check</button>
+                        <div id="delivery-message" class="custom-margin-top mt-2 mr-2"></div>
                     </div>
-                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -198,10 +209,31 @@ color:#FD4;
                     city = pincode[0]['district'];
                     state = pincode[0]['state']
                     $("#delivery-message").html(`<span style='font-size: 80%; color: #28a745;'>${msg.message} at <strong>${city}, ${state}</strong> by <strong>${msg.date}</strong></span>`);
-                } else if(msg.status == "not_success") {
+                } else if (msg.status == "not_success") {
                     $("#delivery-message").html(`<span style='font-size: 80%; color: #dc3545;'>${msg.message}</span>`);
                 } else {
                     $("#delivery-message").html(`<span style='font-size: 80%; color: #dc3545;'>Delivery Not Available</span>`);
+                }
+            }
+        });
+        event.preventDefault();
+    });
+
+    $(".wishlist_button").click(function (event) {
+        $.ajax({
+            url: "/shop/add_to_wishlist/{{product.id}}",
+            beforeSend: function () {
+                $('.button-cart').html(
+                    '<img src="https://shopnblogbucket.s3.ap-south-1.amazonaws.com/static/home/img/Loader.gif" class="mt-2" width="20" height="20"/>'
+                );
+            },
+            success: function (msg) {
+                msg = JSON.parse(msg);
+                if (msg.status == "success") {
+                    $(".button-cart").html(`<span class="mt-2" style='font-size: 100%; text-align: center; font-weight: 500; color: #28a745;'>${msg.message}</span>`);
+                }
+                else if (msg.status == "not_success") {
+                    $(".button-cart").html(`<span class="mt-2" style='font-size: 100%; text-align: center; font-weight: 500; color: #dc3545;'>${msg.message}</span>`);
                 }
             }
         });

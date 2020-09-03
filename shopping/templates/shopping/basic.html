@@ -71,25 +71,25 @@
             Cart(<span id="cart">0</span>)
         </button> {% endcomment %}
         <a href="/shop/cartView"><button type="button" class="btn btn-secondary btn-sm my-2 mr-3"><img src="{% static 'shopping/img/cart.png' %}">
-            Cart <span class="badge badge-dark">{{request.session.items_total}}</span>
+            <strong>&nbsp;Cart</strong> <span class="badge badge-dark">{{request.session.items_total}}</span>
         </button></a>
         {% if user.is_authenticated %}
       <div class="nav-item dropdown my-2 mr-3">
         <a class="nav-link dropdown-toggle btn btn-sm btn-dark" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Welcome: {{request.user}}
+           <strong>Welcome: {{request.user}}</strong>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item">Credits - <strong>(Rs.{{request.session.total_credits}})</strong></a>
+          <a class="dropdown-item">Credits - <strong>(&#8377; {{request.session.total_credits}})</strong></a>
           <a class="dropdown-item" href="/home/profile">Profile</a>
           <a class="dropdown-item" href="/shop/orderDetails">Order Details</a>
           <a class="dropdown-item" href="/shop/orderTracker">Order Tracker</a>
           <a class="dropdown-item" href="/blog/publish">Publish Blog</a>
-          <a class="dropdown-item" href="/home/signout">Logout</a>
+          <a class="dropdown-item" href="/home/signout"><img src="{% static 'home/img/logout.png' %}">&nbsp;Logout</a>
         </div>
       </div>
       {% else %}
-      <a href="/home/signin"><button type="button" id="signin" class="btn btn-sm btn-light mx-2">Log In</button>
-      <a href="/home/signup"><button type="button" id="signup" class="btn btn-sm btn-light">Sign Up</button></a>
+      <a href="/home/signin"><button type="button" id="signin" class="btn btn-sm btn-light mx-2"><img src="{% static 'home/img/login.png' %}">&nbsp;<strong>Log In</strong></button>
+      <a href="/home/signup"><button type="button" id="signup" class="btn btn-sm btn-light"><img src="{% static 'home/img/signup.png' %}">&nbsp;<strong>Sign Up</strong></button></a>
       {% endif %}
     </div>
 </nav>
@@ -169,7 +169,7 @@
                 <p>
             <i class="fa fa-home mr-3"></i> Pune, India</p>
           <p>
-            <i class="fa fa-envelope mr-3"></i>info@example.com</p>
+            <i class="fa fa-envelope mr-3"></i>shopnblog2020@gmail.com</p>
 
             </div>
             <!-- Grid column -->

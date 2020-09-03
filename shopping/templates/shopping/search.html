@@ -90,7 +90,7 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
                   <a href="/shop/productView/{{i.id}}">
                     <h5 class="card-title" id="poppr{{i.id}}">{{i.product_name|truncatechars:50}}</h5>
                   </a>
-                  <p class="card-price">Rs. <span id="popprice{{i.id}}">{{i.price}}</span></p>
+                  <p class="card-price">&#8377; <span id="popprice{{i.id}}">{{i.price}}</span></p>
                   <div class="review-rating">
                     <i class="fa fa-star{% if i.averageRating < 1 %}-o empty{% endif %}"></i>
                     <i class="fa fa-star{% if i.averageRating < 2 %}-o empty{% endif %}"></i>

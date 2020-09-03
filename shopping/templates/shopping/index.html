@@ -115,39 +115,54 @@ width: 50%;
 justify-content: center;
 }
 .center-header {
-    text-align: center;
-    color: #fff;
-    position: relative;
-    height: 200px;
-    background-position: left;
-    background-size: cover;
-    height: auto !important;
+text-align: center;
+color: #fff;
+position: relative;
+height: 200px;
+background-position: left;
+background-size: cover;
+height: auto !important;
 }
 .header-img {
-    width: 100%;
+width: 100%;
 }
 .bg-behind {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    /* background-color: #000; */
-    opacity: 0.5;
-    transition: all 0.3s ease-in-out 0s;
-    -moz-transition: all 0.3s ease-in-out 0s;
-    -o-transition: all 0.3s ease-in-out 0s;
-    -webkit-transition: all 0.3s ease-in-out 0s;
-    -ms-transition: all 0.3s ease-in-out 0s;
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+/* background-color: #000; */
+opacity: 0.5;
+transition: all 0.3s ease-in-out 0s;
+-moz-transition: all 0.3s ease-in-out 0s;
+-o-transition: all 0.3s ease-in-out 0s;
+-webkit-transition: all 0.3s ease-in-out 0s;
+-ms-transition: all 0.3s ease-in-out 0s;
 }
 a.readmore-link:link {color:#6C757D; font-weight:800}
 a.readmore-link:visited {color:#6C757D; font-weight:800}
 a.readmore-link:hover {font-size:150%; font-weight:800}
 .card {
-    border: 0px;
+border: 0px;
 }
 .card-title, .card-price, .review-rating, .card-text{
-  text-align:center;
+text-align:center;
+}
+.product-status.stock-status b {
+background: #505050;
+color: #fff;
+}
+.product-status b {
+display: table;
+margin: 0 auto;
+}
+.product-status b {
+background: #EDD0C8;
+padding: 3px 20px;
+line-height: 100%;
+font-size: 15px;
+font-weight: 400;
 }
 {% endblock %}
 {% block shopactive %}active{% endblock shopactive %}
@@ -156,12 +171,12 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
 {% load static %}
 
 <div class="container-fluid">
-{% for img in banner %}
+  {% for img in banner %}
   <div class="center-header" style="background-position:center; background-repeat: no-repeat;">
     <img src="{{MEDIA_URL}}{{img.fourth_image_url}}" alt="" class="header-img">
     <div class="bg-behind"></div>
   </div>
-{% endfor %}
+  {% endfor %}
 </div>
 
 <div class="container-fluid">
@@ -177,11 +192,16 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
             <div class="card align-items-center">
               <a href="/shop/productView/{{i.id}}"><img src="{{MEDIA_URL}}{{i.image}}" class="img-fluid text-center"
                   alt="..."></a>
+              {% if i.stock_qty == 0 %}
+              <div class="product-status stock-status"><b>Out of Stock</b></div>
+              {% elif i.stock_qty <= 10 %}
+              <div class="product-status redeeming-status"><b>Limited Quantities</b></div>
+              {% endif %}
               <div class="card card-body products">
                 <a href="/shop/productView/{{i.id}}">
                   <h5 class="card-title" id="poppr{{i.id}}">{{i.product_name|truncatechars:50}}</h5>
                 </a>
-                <p class="card-price">Rs. <span id="popprice{{i.id}}">{{i.price}}</span></p>
+                <p class="card-price">&#8377; <span id="popprice{{i.id}}">{{i.price}}</span></p>
                 <div class="review-rating">
                   <i class="fa fa-star{% if i.averageRating < 1 %}-o empty{% endif %}"></i>
                   <i class="fa fa-star{% if i.averageRating < 2 %}-o empty{% endif %}"></i>
@@ -271,11 +291,16 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
             <div class="card align-items-center">
               <a href="/shop/productView/{{i.id}}"><img src="{{MEDIA_URL}}{{i.image}}" class="img-fluid text-center"
                   alt="..."></a>
+              {% if i.stock_qty == 0 %}
+              <div class="product-status stock-status"><b>Out of Stock</b></div>
+              {% elif i.stock_qty <= 10 %}
+              <div class="product-status redeeming-status"><b>Limited Quantities</b></div>
+              {% endif %}
               <div class="card card-body products">
                 <a href="/shop/productView/{{i.id}}">
                   <h5 class="card-title" id="poppr{{i.id}}">{{i.product_name|truncatechars:50}}</h5>
                 </a>
-                <p class="card-price">Rs. <span id="popprice{{i.id}}">{{i.price}}</span></p>
+                <p class="card-price">&#8377; <span id="popprice{{i.id}}">{{i.price}}</span></p>
                 <div class="review-rating">
                   <i class="fa fa-star{% if i.averageRating < 1 %}-o empty{% endif %}"></i>
                   <i class="fa fa-star{% if i.averageRating < 2 %}-o empty{% endif %}"></i>
@@ -337,11 +362,16 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
             <div class="card align-items-center">
               <a href="/shop/productView/{{i.id}}"><img src="{{MEDIA_URL}}{{i.image}}" class="img-fluid text-center"
                   alt="..."></a>
+              {% if i.stock_qty == 0 %}
+              <div class="product-status stock-status"><b>Out of Stock</b></div>
+              {% elif i.stock_qty <= 10 %}
+              <div class="product-status redeeming-status"><b>Limited Quantities</b></div>
+              {% endif %}
               <div class="card card-body products">
                 <a href="/shop/productView/{{i.id}}">
                   <h5 class="card-title" id="poppr{{i.id}}">{{i.product_name|truncatechars:50}}</h5>
                 </a>
-                <p class="card-price">Rs. <span id="popprice{{i.id}}">{{i.price}}</span></p>
+                <p class="card-price">&#8377; <span id="popprice{{i.id}}">{{i.price}}</span></p>
                 <div class="review-rating">
                   <i class="fa fa-star{% if i.averageRating < 1 %}-o empty{% endif %}"></i>
                   <i class="fa fa-star{% if i.averageRating < 2 %}-o empty{% endif %}"></i>
@@ -445,17 +475,17 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
     }
   });
 
-$('.number').each(function () {
-    $(this).prop('Counter',0).animate({
-        Counter: $(this).text()
+  $('.number').each(function () {
+    $(this).prop('Counter', 0).animate({
+      Counter: $(this).text()
     }, {
-        duration: 4000,
-        easing: 'swing',
-        step: function (now) {
-            $(this).text(Math.ceil(now));
-        }
+      duration: 4000,
+      easing: 'swing',
+      step: function (now) {
+        $(this).text(Math.ceil(now));
+      }
     });
-});
+  });
 </script>
 <!-- <script>
   // Find out the cart items from localStorage

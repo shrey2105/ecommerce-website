@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Avg, Count
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage, send_mail
 
 # Create your models here.
 class Product(models.Model):
@@ -12,6 +14,7 @@ class Product(models.Model):
     price = models.IntegerField(default="0")
     description = models.TextField()
     pub_date = models.DateTimeField()
+    stock_qty = models.IntegerField(default=0)
     image = models.ImageField(upload_to="shopping/images")
     count_sold = models.IntegerField(default=0)
     slug = models.CharField(max_length=300, blank=True, null=True)
@@ -32,6 +35,48 @@ class Product(models.Model):
         if reviews["count"] is not None:
             cnt = int(reviews["count"])
         return cnt
+
+    def save(self, *args, **kwargs):
+        try:
+            wishlist_item = WishlistItem.objects.filter(product=self.id)
+            for item in wishlist_item:
+                email = item.user.email
+                email_subject = "Your Item is Back on Shop N Blog"
+                from_email = "Shop N Blog Support <shopnblog2020@gmail.com>"
+                message = render_to_string('shopping/wishlist_email.html', {
+                    'user': item.user,
+                    'product_name':item.product.product_name,
+                    'product_image':item.product.image.url,
+                    'product_price':item.product.price,
+                })
+                send_mail(email_subject,message,from_email,[email],fail_silently=False,html_message=message)
+                wishlist = Wishlist.objects.get(user=item.user)
+                wishlist.delete()
+        except Exception as e:
+            print(e)
+        super(Product, self).save(*args, **kwargs)
+
+class WishlistItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    wishlist = models.ForeignKey('Wishlist', on_delete=models.CASCADE, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        try:
+            return f"{self.wishlist.id}"
+        except:
+            return self.product.product_name
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Wishlist id: {self.id}"
 
 class CartItem(models.Model):
     cart = models.ForeignKey('Cart', on_delete=models.CASCADE, null=True, blank=True)
