@@ -192,9 +192,9 @@ font-weight: 700;
             <div class="card align-items-center">
               <a href="/shop/productView/{{i.id}}"><img src="{{MEDIA_URL}}{{i.image}}" class="img-fluid text-center"
                   alt="..."></a>
-              {% if i.stock_qty == 0 %}
+              {% if i.stock_qty < 1 %}
               <div class="product-status stock-status"><b>Out of Stock</b></div>
-              {% elif i.stock_qty <= 10 %}
+              {% elif i.stock_qty > 0 and i.stock_qty < 11 %}
               <div class="product-status redeeming-status"><b>Limited Quantities</b></div>
               {% endif %}
               <div class="card card-body products">
@@ -291,9 +291,9 @@ font-weight: 700;
             <div class="card align-items-center">
               <a href="/shop/productView/{{i.id}}"><img src="{{MEDIA_URL}}{{i.image}}" class="img-fluid text-center"
                   alt="..."></a>
-              {% if i.stock_qty == 0 %}
+              {% if i.stock_qty < 1 %}
               <div class="product-status stock-status"><b>Out of Stock</b></div>
-              {% elif i.stock_qty <= 10 %}
+              {% elif i.stock_qty > 0 and i.stock_qty < 11 %}
               <div class="product-status redeeming-status"><b>Limited Quantities</b></div>
               {% endif %}
               <div class="card card-body products">
@@ -362,9 +362,9 @@ font-weight: 700;
             <div class="card align-items-center">
               <a href="/shop/productView/{{i.id}}"><img src="{{MEDIA_URL}}{{i.image}}" class="img-fluid text-center"
                   alt="..."></a>
-              {% if i.stock_qty == 0 %}
+              {% if i.stock_qty < 1 %}
               <div class="product-status stock-status"><b>Out of Stock</b></div>
-              {% elif i.stock_qty <= 10 %}
+              {% elif i.stock_qty > 0 and i.stock_qty < 11 %}
               <div class="product-status redeeming-status"><b>Limited Quantities</b></div>
               {% endif %}
               <div class="card card-body products">

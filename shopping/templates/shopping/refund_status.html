@@ -1,0 +1,65 @@
+{% extends 'shopping/basic.html' %}
+
+{% block title %}Refund Status - {{order_id}}{% endblock %}
+
+{% block shopactive %}active{% endblock shopactive %}
+{% block body %}
+<div class="container">
+    <h1 class="cart-items-title mt-4">Refund Status for Order - {{order_id}}</h1><br>
+    <div class="table-responsive">
+        <h5 class="cart-details">
+            <table class="table">
+                <thead>
+                    <th></th>
+                    <th>Items</th>
+                    <th>Values</th>
+                </thead>
+                <tr>
+                    <td></td>
+                    <td>Order ID</td>
+                    <td>{{order_id}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Cancel or Return</td>
+                    {% if order.status == "Abandoned" and order.order_status == "Not Delivered" %}
+                    <td>CANCELLED</td>
+                    {% elif order.status == "Abandoned" and order.order_status == "Delivered" %}
+                    <td>RETURNED</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Txn Amount</td>
+                    <td>&#8377; {{order.final_total}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Refund Status</td>
+                    <td>{{response.body.resultInfo.resultMsg}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Amount to be Refunded</td>
+                    <td>&#8377; {{response.body.totalRefundAmount}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Refund Expected Date</td>
+                    <td>{{response.body.refundDetailInfoList.0.userCreditExpectedDate}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Refund ID</td>
+                    <td>{{response.body.refundId}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Txn ID</td>
+                    <td>{{response.body.txnId}}</td>
+                </tr>
+            </table>
+        </h5>
+    </div>
+</div>
+{% endblock body %}

@@ -32,8 +32,9 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
     <div class="result">
         <div class="display-box">
             <h2>NO ORDERS YET</h2>
-            <p>You have no ordered anything yet.</p>
-            <p>You need to order to see order details.</p>
+            <p>You have not ordered anything yet</p>
+            <p>You need to order to see order details</p>
+            <p>Keep Shopping with us</p>
             <p>Click <a href="/shop/">here</a> to continue shopping.</p>
         </div>
     </div>
@@ -42,16 +43,20 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
 
     <h1 class="order-detail-title mt-4">Order Details</h1><br>
     <div class="table-responsive">
-        <h5 class="cart-details">
+        <h4 class="cart-details">
             <table class="table">
                 <thead>
                     <th scope="col">Order ID</th>
                     <th scope="col"></th>
                     <th scope="col">Product</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Review</th>
-                    <th scope="col">Price</th>
                     <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Review</th>
+                    <th scope="col">Cancel/Return</th>
+                    <th scope="col">Refund Status</th>
+                    <th scope="col">Payment Type</th>
                 </thead>
 
                 {% for item in records %}
@@ -60,9 +65,9 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
                     <td scope="col">
                         <p>
                             {% for image in item.cartproduct_items|literal_eval %}
-                            <img src="{{image.3}}" class="center" height="40" alt="...">
+                            <img src="{{image.3}}" class="center mt-1" height="80" alt="...">
                             {% if not forloop.last %}
-                        </p>
+                        </p><br>
                         <p>
                             {% endif %}
                             {% endfor %}
@@ -79,33 +84,63 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
                             {% endfor %}
                         </p>
                     </td>
+                    <td scope="col"></td>
+                    <td scope="col"></td>
                     <td scope="col">
                         <p>
                             {% for quantity in item.cartproduct_items|literal_eval %}
                             {{quantity.1}}
                             {% if not forloop.last %}
-                        </p><br>
-                        <p>
-                            {% endif %}
-                            {% endfor %}
-                        </p>
-                    </td>
-                    <td scope="col">
-                        <p>
-                            {% for url in item.cartproduct_items|literal_eval %}
-                            <a class="review-link" href="/shop/review/{{url.2}}">Rate &amp; Review</a>
-                            {% if not forloop.last %}
-                        </p><br>
+                        </p><br><br><br>
                         <p>
                             {% endif %}
                             {% endfor %}
                         </p>
                     </td>
                     <td scope="col">&#8377; {{item.final_total}}</td>
+                    <td scope="col">
+                        <p>
+                            {% for url in item.cartproduct_items|literal_eval %}
+                            {% if item.status == "Finished" and item.order_status == "Delivered" %}
+                            <a class="review-link" href="/shop/review/{{url.2}}">Rate &amp; Review</a>
+                            {% elif item.status == "Return" and item.order_status == "Delivered" %}
+                            <a class="review-link" href="/shop/review/{{url.2}}">Rate &amp; Review</a>
+                            {% elif item.status == "Abandoned" and item.order_status == "Delivered" %}
+                            <a class="review-link" href="/shop/review/{{url.2}}">Rate &amp; Review</a>
+                            {% elif item.status == "Abandoned" and item.order_status == "Not Delivered" %}
+                            <a>Can't Review</a>
+                            {% else %}
+                            <a class="review-link">After Product Delivery</a>
+                            {% endif %}
+                            {% if not forloop.last %}
+                        </p><br>
+                        <p>
+                            {% endif %}
+                            {% endfor %}
+                        </p>
+                    </td>
+                    {% if item.status == "Abandoned" and item.order_status == "Not Delivered" %}
+                    <td scope="col">CANCELLED</td>
+                    {% elif item.status == "Abandoned" and item.order_status == "Delivered" %}
+                    <td scope="col">RETURNED</td>
+                    {% elif item.status == "Return" and item.order_status == "Delivered" %}
+                    <td scope="col">RETURN REQUESTED</td>
+                    {% elif item.status == "Finished" and item.order_status == "Delivered" %}
+                    <td scope="col"><a class="review-link" href="/shop/cancelOrder/{{item.order_id}}">Return</a></td>
+                    {% else %}
+                    <td scope="col"><a class="review-link" href="/shop/cancelOrder/{{item.order_id}}">Cancel</a></td>
+                    {% endif %}
+                    {% if item.status == "Started" or item.status == "Abandoned" %}
+                    <td scope="col"><a class="review-link" href="/shop/refundStatus/{{item.order_id}}">Check</a></td>
+                    {% else %}
+                    <td scope="col"><a>Not Avaialable</a></td>
+                    {% endif %}
+
+                    <td scope="col">{{item.payment_mode}}</td>
                 </tr>
                 {% endfor %}
             </table>
-        </h5>
+        </h4>
     </div>
     {% endif %}
 

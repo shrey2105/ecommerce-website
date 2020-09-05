@@ -129,6 +129,18 @@
             <p><b>Transaction ID: </b>{{response.TXNID}}</p>
             <p><b>Date: </b>{{response.TXNDATE}}</p>
         </div>
+        {% elif qty_empty %}
+        <div class="alert alert-danger text-center" role="alert">
+            <strong>Error !!</strong> Order Placement Unsuccessful as Item got Out of Stock. The Refund has been initiated.
+        </div>
+        <div class="result mt-4">
+            <div class="display-box">
+                <h2>Order Placement was not Successful</h2>
+                <p>If any amount is deducted, then refund will be initiated</p>
+                <p>The amount will be credited to your account within 7 working days.</p>
+                <p><strong>Note:</strong> The page will automatically redirect in <span id="count">10</span> seconds</p>
+            </div>
+        </div>
         {% else %}
         <div class="alert alert-danger text-center" role="alert">
             <strong>Error !!</strong> {{response.RESPMSG}}
@@ -169,7 +181,7 @@
                     <p>
                         <i class="fa fa-home mr-3"></i> Pune, India</p>
                     <p>
-                        <i class="fa fa-envelope mr-3"></i>shopnblog@gmail.com</p>
+                        <i class="fa fa-envelope mr-3"></i>shopnblog2020@gmail.com</p>
 
                 </div>
 
@@ -214,7 +226,13 @@
 
         }
     </script>
-    {% if buy_thanks %}
+    {% if qty_empty %}
+    <script>
+        setTimeout(function () {
+            document.location = "/shop/";
+        }, 10000);
+    </script>
+    {% elif buy_thanks %}
     <script>
         setTimeout(function () {
             document.location = "/shop/buy_item_count";

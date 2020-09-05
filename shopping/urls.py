@@ -24,4 +24,6 @@ urlpatterns = [
     path("creditProcess/", views.creditProcess, name="creditProcess"),
     path("codProcess/", views.codProcess, name="codProcess"),
     path("pincodeCheck/", views.pincodeCheck, name="pincodeCheck"),
+    path("cancelOrder/<slug:order_id>", views.cancelOrder, name="cancelOrder"),
+    path("refundStatus/<slug:order_id>", views.refundStatus, name="refundStatus"),
 ]

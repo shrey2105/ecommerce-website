@@ -8,7 +8,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from PayTM import Checksum
 from django.urls import reverse
-from .utils import orderid_generator
+from .utils import orderid_generator, refid_generator
 import ast
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
@@ -18,6 +18,7 @@ from decimal import *
 from datetime import datetime, timedelta
 import requests
 import re
+import paytmchecksum
 PINCODE_REGEX = re.compile(r'^[0-9]{6,6}$')
 msg = """
         Please note that you are not a VERIFIED USER. To verify, Click <a style='color:#000' href='{url}'><strong><em><u>Here</u></em></strong></a> to navigate to Profile Section to validate email address & mobile number and enjoy services.
@@ -333,6 +334,8 @@ def paymentMethod(request):
             if request.method == "POST":
                 payment_type = request.POST.get("payment")
 
+                new_order.payment_mode = payment_type
+                new_order.save()
                 if payment_type == "paytm":
                     # After payment, request paytm to transfer amount to our account done by customer
                     params_dict = {
@@ -393,7 +396,9 @@ def paymentMethod(request):
 
             if request.method == "POST":
                 payment_type = request.POST.get("payment")
-
+                
+                new_order.payment_mode = payment_type
+                new_order.save()
                 if payment_type == "paytm":
                     # After payment, request paytm to transfer amount to our account done by customer
                     params_dict = {
@@ -459,18 +464,29 @@ def codProcess(request):
         buy_item = BuyItem.objects.get(buy=buy)
         new_order = Order.objects.get(buy=buy)
 
-        if response_dict['cod']:
-            try:
-                product = Product.objects.get(product_name=buy_item.product)
-                product.stock_qty = product.stock_qty - buy_item.quantity
-                product.count_sold = product.count_sold + buy_item.quantity
-                product.save()
-            except Product.DoesNotExist:
-                pass
+        try:
+            product = Product.objects.get(id=buy_item.product.id)
+        except Product.DoesNotExist:
+            messages.warning(request, "This product no longer exist.")
+            return HttpResponseRedirect("/shop/")
 
-            new_order.status = "Finished"
-            new_order.save()
-            print("Order Successful")
+        if response_dict['cod']:
+            if product.stock_qty < buy_item.quantity:
+                new_order.delete()
+                print("Order Unsuccessful")
+                return render(request, 'shopping/cod_status.html', {'qty_empty':True})
+            else:
+                try:
+                    # product = Product.objects.get(product_name=buy_item.product)
+                    product.stock_qty = product.stock_qty - buy_item.quantity
+                    product.count_sold = product.count_sold + buy_item.quantity
+                    product.save()
+                except Product.DoesNotExist:
+                    pass
+
+                new_order.status = "Finished"
+                new_order.save()
+                print("Order Successful")
         
         else:
             new_order.delete()
@@ -485,14 +501,21 @@ def codProcess(request):
 
         if response_dict['cod']:
             for cartitem in cart_item:
-                try:
-                    product = Product.objects.filter(product_name=cartitem.product)
+                if  cartitem.product.stock_qty < cartitem.quantity:
+                    new_order.delete()
+                    print("Order Unsuccessful")
+                    return render(request, 'shopping/cod_status.html', {'qty_empty':True})
+                else:
+                    try:
+                        product = Product.objects.filter(product_name=cartitem.product)
+                    except Product.DoesNotExist:
+                        messages.warning(request, "This product no longer exist.")
+                        return HttpResponseRedirect("/shop/")
+                        
                     for productitem in product:
                         productitem.stock_qty = productitem.stock_qty - cartitem.quantity
                         productitem.count_sold = productitem.count_sold + cartitem.quantity
                         productitem.save()
-                except Product.DoesNotExist:
-                    pass
 
             new_order.status = "Finished"
             new_order.save()
@@ -516,48 +539,64 @@ def creditProcess(request):
         buy_item = BuyItem.objects.get(buy=buy)
         new_order = Order.objects.get(buy=buy)
 
+        try:
+            product = Product.objects.get(id=buy_item.product.id)
+        except Product.DoesNotExist:
+            messages.warning(request, "This product no longer exist.")
+            return HttpResponseRedirect("/shop/")
+
         if response_dict['payment']:
-            new_total = 0.0
-            # if don't have enough credits
-            if float(user.profile.credit) < float(buy.total_price):
-                new_total = float(buy.total_price) - float(user.profile.credit)
-                buy.total_price = new_total
-                buy.save()
-                user.profile.credit = 0.0
-                user.save()
-                request.session['total_credits'] = user.profile.credit
-                params_dict = {
-                    'MID':settings.MERCHANT_ID,
-                    'ORDER_ID':new_order.order_id,
-                    'TXN_AMOUNT':str(buy.total_price),
-                    'CUST_ID':user.email,
-                    'INDUSTRY_TYPE_ID':'Retail',
-                    'WEBSITE':settings.WEBSITE,
-                    'CHANNEL_ID':'WEB',
-                    'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandleBuy/',
-                    'MERC_UNQ_REF':str(user.id),
-                }
-                params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, settings.MERCHANT_KEY)
-                return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
+            if product.stock_qty < buy_item.quantity:
+                new_order.delete()
+                print("Order Unsuccessful")
+                return render(request, 'shopping/credit_status.html', {'qty_empty':True})
             else:
-                # if have credits
-                new_total = float(user.profile.credit) - float(buy.total_price)
-                user.profile.credit = new_total
-                user.save()
-                request.session['total_credits'] = user.profile.credit
+                new_total = 0.0
+                # if don't have enough credits
+                if float(user.profile.credit) < float(buy.total_price):
+                    new_total = float(buy.total_price) - float(user.profile.credit)
+                    new_order.payment_mode = "credits + paytm"
+                    new_order.credits_used = float(user.profile.credit)
+                    new_order.save()
+                    buy.total_price = new_total
+                    buy.save()
+                    user.profile.credit = 0.0
+                    user.save()
+                    request.session['total_credits'] = user.profile.credit
+                    params_dict = {
+                        'MID':settings.MERCHANT_ID,
+                        'ORDER_ID':new_order.order_id,
+                        'TXN_AMOUNT':str(buy.total_price),
+                        'CUST_ID':user.email,
+                        'INDUSTRY_TYPE_ID':'Retail',
+                        'WEBSITE':settings.WEBSITE,
+                        'CHANNEL_ID':'WEB',
+                        'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandleBuy/',
+                        'MERC_UNQ_REF':str(user.id),
+                    }
+                    params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, settings.MERCHANT_KEY)
+                    return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
+                else:
+                    # if have credits
+                    new_order.credits_used = float(buy.total_price)
+                    new_order.save()
+                    new_total = float(user.profile.credit) - float(buy.total_price)
+                    user.profile.credit = new_total
+                    user.save()
+                    request.session['total_credits'] = user.profile.credit
 
-            try:
-                product = Product.objects.get(product_name=buy_item.product)
-                product.stock_qty = product.stock_qty - buy_item.quantity
-                product.count_sold = product.count_sold + buy_item.quantity
-                product.save()
-            except Product.DoesNotExist:
-                pass
+                try:
+                    # product = Product.objects.get(product_name=buy_item.product)
+                    product.stock_qty = product.stock_qty - buy_item.quantity
+                    product.count_sold = product.count_sold + buy_item.quantity
+                    product.save()
+                except Product.DoesNotExist:
+                    pass
 
-            new_order.status = "Finished"
-            new_order.is_amount_paid = True
-            new_order.save()
-            print("Order Successful")
+                new_order.status = "Finished"
+                new_order.is_amount_paid = True
+                new_order.save()
+                print("Order Successful")
         
         else:
             new_order.delete()
@@ -571,10 +610,19 @@ def creditProcess(request):
         new_order = Order.objects.get(cart=cart)
 
         if response_dict['payment']:
+            for cartitem in cart_item:
+                if cartitem.product.stock_qty < cartitem.quantity:
+                    new_order.delete()
+                    print("Order Unsuccessful")
+                    return render(request, 'shopping/credit_status.html', {'qty_empty':True})
+                
             new_total = 0.0
             # if don't have enough credits
             if float(user.profile.credit) < float(cart.total_price):
                 new_total = float(cart.total_price) - float(user.profile.credit)
+                new_order.payment_mode = "credits + paytm"
+                new_order.credits_used = float(user.profile.credit)
+                new_order.save()
                 cart.total_price = new_total
                 cart.save()
                 user.profile.credit = 0.0
@@ -595,20 +643,23 @@ def creditProcess(request):
                 return render(request, 'shopping/paytm.html', {'params_dict':params_dict})
             else:
                 # if have credits
+                new_order.credits_used = float(cart.total_price)
+                new_order.save()
                 new_total = float(user.profile.credit) - float(cart.total_price)
                 user.profile.credit = new_total
                 user.save()
                 request.session['total_credits'] = user.profile.credit
-
+            
             for cartitem in cart_item:
                 try:
                     product = Product.objects.filter(product_name=cartitem.product)
-                    for productitem in product:
-                        productitem.stock_qty = productitem.stock_qty - cartitem.quantity
-                        productitem.count_sold = productitem.count_sold + cartitem.quantity
-                        productitem.save()
                 except Product.DoesNotExist:
-                    pass
+                    messages.warning(request, "This product no longer exist.")
+                    return HttpResponseRedirect("/shop/")
+                for productitem in product:
+                    productitem.stock_qty = productitem.stock_qty - cartitem.quantity
+                    productitem.count_sold = productitem.count_sold + cartitem.quantity
+                    productitem.save()
 
             new_order.status = "Finished"
             new_order.is_amount_paid = True
@@ -634,35 +685,78 @@ def paymentHandle(request):
     
     verify = Checksum.verify_checksum(response_dict, settings.MERCHANT_KEY, checksum)
     cart = Cart.objects.get(user=response_dict['MERC_UNQ_REF'])
-    cartitems = CartItem.objects.filter(cart=cart)
+    cart_item = CartItem.objects.filter(cart=cart)
     new_order = Order.objects.get(cart=cart)
 
     if verify:
         if response_dict['RESPCODE'] == '01':
-            for cartitem in cartitems:
-                try:
-                    product = Product.objects.filter(product_name=cartitem.product)
-                    for productitem in product:
-                        productitem.stock_qty = productitem.stock_qty - cartitem.quantity
-                        productitem.count_sold = productitem.count_sold + cartitem.quantity
-                        productitem.save()
-                except Product.DoesNotExist:
-                    pass
-
-            curr_date = datetime.strptime(response_dict['TXNDATE'], "%Y-%m-%d %H:%M:%S.%f")
-            new_date = curr_date.strftime("%A, %B %d, %Y %I:%M %p")
-            response_dict['TXNDATE'] = new_date
-            new_order.status = "Finished"
             new_order.is_amount_paid = True
+            new_order.transaction_id = response_dict['TXNID']
+            new_order.reference_id = refid_generator()
             new_order.save()
-            print("Order Successful")
+            for cartitem in cart_item:
+                if cartitem.product.stock_qty < cartitem.quantity:
+                    paytmParams = dict()
+                    paytmParams["body"] = {
+                        "mid"          : settings.MERCHANT_ID,
+                        "txnType"      : "REFUND",
+                        "orderId"      : new_order.order_id,
+                        "txnId"        : new_order.transaction_id,
+                        "refId"        : new_order.reference_id,
+                        "refundAmount" : str(new_order.final_total),
+                    }
+
+                    checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+
+                    paytmParams["head"] = {
+                        "signature"    : checksum
+                    }
+
+                    post_data = json.dumps(paytmParams)
+
+                    # for Staging
+                    url = "https://securegw-stage.paytm.in/refund/apply"
+
+                    # for Production
+                    # url = "https://securegw.paytm.in/refund/apply"
+
+                    response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
+                    r = response.json()
+
+                    if r['body']['resultInfo']['resultCode'] == "617" or r['body']['resultInfo']['resultCode'] == "601":
+                        new_order.status = "Abandoned"
+                        new_order.save()
+                        print("Order Unsuccessful")
+                        return render(request, 'shopping/paytm_status.html', {'qty_empty':True})
+                else:
+                    for cartitems in cart_item:
+                        try:
+                            product = Product.objects.filter(product_name=cartitems.product)
+                        except Product.DoesNotExist:
+                            messages.warning(request, "This product no longer exist.")
+                            return HttpResponseRedirect("/shop/")
+                            
+                        for productitem in product:
+                            productitem.stock_qty = productitem.stock_qty - cartitems.quantity
+                            productitem.count_sold = productitem.count_sold + cartitems.quantity
+                            productitem.save()
+
+                    curr_date = datetime.strptime(response_dict['TXNDATE'], "%Y-%m-%d %H:%M:%S.%f")
+                    new_date = curr_date.strftime("%A, %B %d, %Y %I:%M %p")
+                    response_dict['TXNDATE'] = new_date
+                    new_order.status = "Finished"
+                    new_order.save()
+                    print("Order Successful")
+                    return render(request, 'shopping/paytm_status.html', {'response':response_dict})
         else:
             new_order.delete()
             print("Order Unsuccessful Because" + response_dict['RESPMSG'])
+            return render(request, 'shopping/paytm_status.html', {'response':response_dict})
     else:
         new_order.delete()
         print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    return render(request, 'shopping/paytm_status.html', {'response':response_dict})
+        return render(request, 'shopping/paytm_status.html', {'response':response_dict})
+    return render(request, 'shopping/paytm_status.html')
 
 @csrf_exempt
 def paymentHandleBuy(request):
@@ -680,30 +774,81 @@ def paymentHandleBuy(request):
     buyitem = BuyItem.objects.get(buy=buy)
     new_order = Order.objects.get(buy=buy)
 
+    try:
+        product = Product.objects.get(id=buyitem.product.id)
+    except Product.DoesNotExist:
+        messages.warning(request, "This product no longer exist.")
+        return HttpResponseRedirect("/shop/")
+
     if verify:
         if response_dict['RESPCODE'] == '01':
-            try:
-                product = Product.objects.get(product_name=buyitem.product)
-                product.stock_qty = product.stock_qty - buyitem.quantity
-                product.count_sold = product.count_sold + buyitem.quantity
-                product.save()
-            except Product.DoesNotExist:
-                pass
-            
-            curr_date = datetime.strptime(response_dict['TXNDATE'], "%Y-%m-%d %H:%M:%S.%f")
-            new_date = curr_date.strftime("%A, %B %d, %Y %I:%M %p")
-            response_dict['TXNDATE'] = new_date
-            new_order.status = "Finished"
             new_order.is_amount_paid = True
+            new_order.transaction_id = response_dict['TXNID']
+            new_order.reference_id = refid_generator()
             new_order.save()
-            print("Order Successful")
+            if product.stock_qty < buyitem.quantity:
+                paytmParams = dict()
+                paytmParams["body"] = {
+                    "mid"          : settings.MERCHANT_ID,
+                    "txnType"      : "REFUND",
+                    "orderId"      : new_order.order_id,
+                    "txnId"        : new_order.transaction_id,
+                    "refId"        : new_order.reference_id,
+                    "refundAmount" : str(new_order.final_total),
+                }
+
+                checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+
+                paytmParams["head"] = {
+                    "signature"    : checksum
+                }
+
+                post_data = json.dumps(paytmParams)
+
+                # for Staging
+                url = "https://securegw-stage.paytm.in/refund/apply"
+
+                # for Production
+                # url = "https://securegw.paytm.in/refund/apply"
+
+                response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
+                r = response.json()
+                if r['body']['resultInfo']['resultCode'] == "617" or r['body']['resultInfo']['resultCode'] == "601":
+                    new_order.status = "Abandoned"
+                    new_order.save()
+                    buy.delete()
+                    print("Order Unsuccessful")
+                    return render(request, 'shopping/paytm_status.html', {'qty_empty':True})
+            else:
+                try:
+                    # product = Product.objects.get(product_name=buyitem.product)
+                    product.stock_qty = product.stock_qty - buyitem.quantity
+                    product.count_sold = product.count_sold + buyitem.quantity
+                    product.save()
+                except Product.DoesNotExist:
+                    pass
+                
+                curr_date = datetime.strptime(response_dict['TXNDATE'], "%Y-%m-%d %H:%M:%S.%f")
+                new_date = curr_date.strftime("%A, %B %d, %Y %I:%M %p")
+                response_dict['TXNDATE'] = new_date
+                new_order.status = "Finished"
+                new_order.is_amount_paid = True
+                new_order.transaction_id = response_dict['TXNID']
+                new_order.reference_id = refid_generator()
+                new_order.save()
+                print("Order Successful")
+                return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'buy_thanks':True})
         else:
             new_order.delete()
+            buy.delete()
             print("Order Unsuccessful Because" + response_dict['RESPMSG'])
+            return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'buy_thanks':True})
     else:
         new_order.delete()
+        buy.delete()
         print("Order Unsuccessful Because" + response_dict['RESPMSG'])
-    return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'buy_thanks':True})
+        return render(request, 'shopping/paytm_status.html', {'response':response_dict, 'buy_thanks':True})
+    return render(request, 'shopping/paytm_status.html')
 
 def orderDetails(request):
     if request.user.is_authenticated:
@@ -983,5 +1128,153 @@ def pincodeCheck(request):
             return HttpResponse('{"status": "not_success", "message":"Error! Please try after some time."}')
     return render(request, "shopping/product_view.html")
 
+def cancelOrder(request, order_id):
+    user = request.user
+    order = Order.objects.get(order_id=order_id, user=user)
+
+    if order.payment_mode == "paytm" and order.is_amount_paid == True and order.status == "Not Delivered":
+        paytmParams = dict()
+        paytmParams["body"] = {
+            "mid"          : settings.MERCHANT_ID,
+            "txnType"      : "REFUND",
+            "orderId"      : order_id,
+            "txnId"        : order.transaction_id,
+            "refId"        : order.reference_id,
+            "refundAmount" : str(order.final_total),
+        }
+
+        checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+
+        paytmParams["head"] = {
+            "signature"    : checksum
+        }
+
+        post_data = json.dumps(paytmParams)
+
+        # for Staging
+        url = "https://securegw-stage.paytm.in/refund/apply"
+
+        # for Production
+        # url = "https://securegw.paytm.in/refund/apply"
+
+        response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
+        r = response.json()
+        if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+            order.status = "Abandoned"
+            order.save()
+            params = {'cancel':True}
+    
+    elif order.payment_mode == "paytm" and order.is_amount_paid == True and order.order_status == "Delivered":
+        order.status = "Return"
+        order.save()
+        order_update = OrdersUpdate.objects.create(order_id=order_id)
+        order_update.update_description = "Order requested for Return"
+        order_update.save()
+        params = {'cancel':False}
+
+    elif order.payment_mode == "credits" and order.is_amount_paid == True and order.order_status == "Not Delivered":
+        order.status = "Abandoned"
+        order.save()
+        user.profile.credit = float(order.credits_used)
+        user.save()
+        request.session['total_credits'] = user.profile.credit
+        params = {'cancel':True}
+
+    elif order.payment_mode == "credits" and order.is_amount_paid == True and order.order_status == "Delivered":
+        order.status = "Return"
+        order.save()
+        order_update = OrdersUpdate.objects.create(order_id=order_id)
+        order_update.update_description = "Order requested for Return"
+        order_update.save()
+        params = {'cancel':False}
+    
+    elif order.payment_mode == "cod" and order.is_amount_paid == False and order.order_status == "Not Delivered":
+        order.status = "Abandoned"
+        order.save()
+        params = {'cancel':True}
+
+    elif order.payment_mode == "cod" and order.is_amount_paid == True and order.order_status == "Delivered":
+        order.status = "Return"
+        order.save()
+        order_update = OrdersUpdate.objects.create(order_id=order_id)
+        order_update.update_description = "Order requested for Return"
+        order_update.save()
+        params = {'cancel':False}
+    
+    elif order.payment_mode == "credits + paytm" and order.is_amount_paid == True and order.order_status == "Not Delivered":
+        remaining_amount = 0.0
+        user.profile.credit = float(order.credits_used)
+        remaining_amount = float(order.final_total) - float(order.credits_used)
+        paytmParams = dict()
+        paytmParams["body"] = {
+            "mid"          : settings.MERCHANT_ID,
+            "txnType"      : "REFUND",
+            "orderId"      : order_id,
+            "txnId"        : order.transaction_id,
+            "refId"        : order.reference_id,
+            "refundAmount" : str(remaining_amount),
+        }
+
+        checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+
+        paytmParams["head"] = {
+            "signature"    : checksum
+        }
+
+        post_data = json.dumps(paytmParams)
+
+        # for Staging
+        url = "https://securegw-stage.paytm.in/refund/apply"
+
+        # for Production
+        # url = "https://securegw.paytm.in/refund/apply"
+
+        response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
+        r = response.json()
+        if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+            order.status = "Abandoned"
+            order.save()
+            user.save()
+            params = {'cancel':True}
+        
+    elif order.payment_mode == "credits + paytm" and order.is_amount_paid == True and order.order_status == "Delivered":
+        order.status = "Return"
+        order.save()
+        order_update = OrdersUpdate.objects.create(order_id=order_id)
+        order_update.update_description = "Order requested for Return"
+        order_update.save()
+        params = {'cancel':False}
+    
+    params = {'order_id':order_id, 'order':order, 'cancel':''}
+    return render(request, "shopping/cancel_order.html", params)
+
+def refundStatus(request, order_id):
+
+    user = request.user
+    order = Order.objects.get(order_id=order_id, user=user)
+
+    paytmParams = dict()
+
+    paytmParams["body"] = {
+        "mid"       : settings.MERCHANT_ID,
+        "orderId"   : order_id,
+        "refId"     : order.reference_id,
+    }
+
+    checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+
+    paytmParams["head"] = {
+        "signature"	: checksum
+    }
+    post_data = json.dumps(paytmParams)
+
+    # for Staging
+    url = "https://securegw-stage.paytm.in/v2/refund/status"
+
+    # for Production
+    # url = "https://securegw.paytm.in/v2/refund/status"
+
+    response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"}).json()
+    return render(request, "shopping/refund_status.html", {'order_id':order_id, 'order':order, 'response':response})
 
 

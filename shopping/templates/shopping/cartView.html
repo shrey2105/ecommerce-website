@@ -25,8 +25,9 @@
     <div class="result">
         <div class="display-box">
             <h2>SHOPPING CART IS EMPTY</h2>
-            <p>You have no items in your shopping cart.</p>
-            <p>You need to add items to your cart.</p>
+            <p>You have no items in your shopping cart</p>
+            <p>You need to add items to your cart</p>
+            <p>Keep Shopping with us</p>
             <p>Click <a href="/shop/">Here</a> to continue shopping.</p>
         </div>
     </div>
@@ -34,17 +35,18 @@
     {% else %}
     <h1 class="cart-items-title mt-4">Cart Items</h1><br>
     <div class="table-responsive">
-    <h5 class="cart-details">
+    <h4 class="cart-details">
     <table class="table">
         <thead>
             <th></th>
             <th>Item</th>
-            <th>Price</th>
             <th>Quantity</th>
+            <th>Price</th>
             <th>Remove</th>
         </thead>
         <tfoot>
             <tr>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td><b>Total:</b> &#8377; {{cart.total_price}}</td>
@@ -54,13 +56,13 @@
         <tr>
             <td><img src="{{MEDIA_URL}}{{item.product.image}}" height="100" class="center" alt="..."></td>
             <td><a href="/shop/productView/{{item.product.id}}"><h5 class="card-title">{{item.product}}</h5></a></td>
-            <td>&#8377; {{item.product.price}}</td>
             <td>{{item.quantity}}</td>
+            <td>&#8377; {{item.product.price}}</td>
             <td><a href="{% url 'remove_from_cart' item.id %}"><img src="{% static 'shopping/img/trash.png' %}"></i></a></td>
         </tr>
         {% endfor %}
     </table>
-    </h5>
+    </h4>
     </div>
     <br>
     <hr>

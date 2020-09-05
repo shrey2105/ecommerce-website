@@ -124,10 +124,13 @@
         </div>
         <div class="alert alert-success text-center" role="alert">
             <h4 class="alert-heading">Your Order is Successfully Placed. Keep Your Cash Handy.</h4>
-            <p><b>Cash to be Paid: </b>&#8377; {{credits_debited}} INR</p>
+            <p><b>Cash to be Paid: </b>&#8377; {{credits_debited}}</p>
             <p><b>Date: </b>{{response.txn_date}}</p>
         </div>
-        {% else %}
+        {% elif qty_empty %}
+        <div class="alert alert-danger text-center" role="alert">
+            <strong>Error !!</strong> Order Placement Unsuccessful as Item got Out of Stock. Please try again later.
+        </div>
         <div class="result mt-4">
             <div class="display-box">
                 <h2>Order Placement was not Successful</h2>
@@ -136,8 +139,17 @@
                 <p><strong>Note:</strong> The page will automatically redirect in <span id="count">10</span> seconds</p>
             </div>
         </div>
+        {% else %}
         <div class="alert alert-danger text-center" role="alert">
-            Order Placement was Unsuccessful. Please try again later.
+            <strong>Error !!</strong> Order Placement was Unsuccessful. Please try again later.
+        </div>
+        <div class="result mt-4">
+            <div class="display-box">
+                <h2>Order Placement was not Successful</h2>
+                <p>Please Kindly Check</p>
+                <p>Please Visit Again</p>
+                <p><strong>Note:</strong> The page will automatically redirect in <span id="count">10</span> seconds</p>
+            </div>
         </div>
         {% endif %}
     </div>
@@ -167,7 +179,7 @@
                     <p>
                         <i class="fa fa-home mr-3"></i> Pune, India</p>
                     <p>
-                        <i class="fa fa-envelope mr-3"></i>shopnblog@gmail.com</p>
+                        <i class="fa fa-envelope mr-3"></i>shopnblog2020@gmail.com</p>
 
                 </div>
 
@@ -212,7 +224,13 @@
 
         }
     </script>
-    {% if buy_thanks %}
+    {% if qty_empty %}
+    <script>
+        setTimeout(function () {
+            document.location = "/shop/";
+        }, 10000);
+    </script>
+    {% elif buy_thanks %}
     <script>
         setTimeout(function () {
             document.location = "/shop/buy_item_count";

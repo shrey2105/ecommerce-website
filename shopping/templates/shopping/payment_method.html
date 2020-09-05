@@ -105,7 +105,7 @@ color: #777;
         <h1 class="h3 mb-3 font-weight-normal">Select Payment Method</h1>
     </div>
 
-    <h5 class="mb-3 font-weight-normal text-center"><strong>Available Credits:</strong> {{credits}}</h5>
+    <h5 class="mb-3 font-weight-normal text-center"><strong>Available Credits:</strong> &#8377; {{credits}}</h5>
     <form class="form-payment" id="payment-form" action="/shop/paymentMethod/" method="post" novalidate="">
         {% csrf_token %}
         <input type="hidden" name="buy_thanks" value="{{buy_thanks}}">

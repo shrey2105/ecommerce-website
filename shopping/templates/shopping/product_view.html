@@ -61,7 +61,7 @@ justify-content: center;
             <div class="row">
                 <img src="{{MEDIA_URL}}{{product.image}}" class="center my-3" height="235" alt="...">
             </div>
-            {% if product.stock_qty == 0 %}
+            {% if product.stock_qty < 1 %}
             <div class="row button-cart">
                 <a class="wishlist_button"><button class="btn mx-2 mr-2 mt-2"
                         style="background-color:#dbd5d5">Wishlist&nbsp;<img

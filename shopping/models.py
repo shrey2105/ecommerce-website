@@ -4,6 +4,9 @@ from django.db.models import Avg, Count
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage, send_mail
+import requests
+import json
+import paytmchecksum
 
 # Create your models here.
 class Product(models.Model):
@@ -11,10 +14,10 @@ class Product(models.Model):
     product_name = models.CharField(max_length=300)
     category = models.CharField(max_length=50, default="")
     subcategory = models.CharField(max_length=50, default="")
-    price = models.IntegerField(default="0")
+    price = models.IntegerField(default=0)
     description = models.TextField()
     pub_date = models.DateTimeField()
-    stock_qty = models.IntegerField(default=0)
+    stock_qty = models.PositiveIntegerField()
     image = models.ImageField(upload_to="shopping/images")
     count_sold = models.IntegerField(default=0)
     slug = models.CharField(max_length=300, blank=True, null=True)
@@ -139,6 +142,7 @@ class Contact(models.Model):
 STATUS_CHOICES = (
     ("Started", "Started"),
     ("Abandoned", "Abandoned"),
+    ("Return", "Return"),
     ("Finished", "Finished"),
 )
 ORDER_STATUS_CHOICES = (
@@ -154,8 +158,11 @@ class Order(models.Model):
     buy = models.ForeignKey(Buy, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=120, choices=STATUS_CHOICES, default="Started")
     order_status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default="Not Delivered")
-    sub_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
+    credits_used = models.DecimalField(default=0.00, max_digits=1000, decimal_places=2, blank=True, null=True)
     final_total = models.DecimalField(default=10.99, max_digits=1000, decimal_places=2)
+    transaction_id = models.CharField(default="0", blank=True, null=True, max_length=100)
+    reference_id = models.CharField(default="0", blank=True, null=True, max_length=50)
+    payment_mode = models.CharField(default="0", blank=True, null=True, max_length=100)
     is_amount_paid = models.BooleanField(default=False, blank=True, null=True)
     name = models.CharField(max_length=100, default="")
     email = models.CharField(max_length=100, default="")
@@ -195,7 +202,7 @@ class OrdersUpdate(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.update_description[0:]
+        return f"{self.order_id}: {self.update_description[0:]}"
 
     def save(self, *args, **kwargs):
         try:
@@ -204,6 +211,72 @@ class OrdersUpdate(models.Model):
                 order_update.order_status = "Delivered"
                 order_update.is_amount_paid = True
                 order_update.save()
+            elif self.update_description == "Returned":
+                if order_update.payment_mode == "paytm":
+                    paytmParams = dict()
+                    paytmParams["body"] = {
+                        "mid"          : settings.MERCHANT_ID,
+                        "txnType"      : "REFUND",
+                        "orderId"      : order_update.order_id,
+                        "txnId"        : order_update.transaction_id,
+                        "refId"        : order_update.reference_id,
+                        "refundAmount" : str(order_update.final_total),
+                    }
+                    checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+                    paytmParams["head"] = {
+                        "signature"    : checksum
+                    }
+                    post_data = json.dumps(paytmParams)
+                    # for Staging
+                    url = "https://securegw-stage.paytm.in/refund/apply"
+                    # for Production
+                    # url = "https://securegw.paytm.in/refund/apply"
+                    response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
+                    r = response.json()
+                    if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+                        order_update.status = "Abandoned"
+                        order_update.save()
+                
+                elif order_update.payment_mode == "credits":
+                    order_update.status = "Abandoned"
+                    order_update.save()
+                    user.profile.credit = float(order_update.credits_used)
+                    user.save()
+                    request.session['total_credits'] = user.profile.credit
+
+                elif order_update.payment_mode == "cod":
+                    order_update.status = "Abandoned"
+                    order_update.save()
+
+                elif order_update.payment_mode == "credits + paytm":
+                    remaining_amount = 0.0
+                    user = User.objects.get(pk=order_update.user.id)
+                    user.profile.credit = float(order_update.credits_used)
+                    remaining_amount = float(order_update.final_total) - float(order_update.credits_used)
+                    paytmParams = dict()
+                    paytmParams["body"] = {
+                        "mid"          : settings.MERCHANT_ID,
+                        "txnType"      : "REFUND",
+                        "orderId"      : order_update.order_id,
+                        "txnId"        : order_update.transaction_id,
+                        "refId"        : order_update.reference_id,
+                        "refundAmount" : str(remaining_amount),
+                    }
+                    checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+                    paytmParams["head"] = {
+                        "signature"    : checksum
+                    }
+                    post_data = json.dumps(paytmParams)
+                    # for Staging
+                    url = "https://securegw-stage.paytm.in/refund/apply"
+                    # for Production
+                    # url = "https://securegw.paytm.in/refund/apply"
+                    response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
+                    r = response.json()
+                    if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+                        order_update.status = "Abandoned"
+                        order_update.save()
+                        user.save()
         except Exception as e:
             print(e)
         super(OrdersUpdate, self).save(*args, **kwargs)  
