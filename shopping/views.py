@@ -346,7 +346,7 @@ def paymentMethod(request):
                         'INDUSTRY_TYPE_ID':'Retail',
                         'WEBSITE':settings.WEBSITE,
                         'CHANNEL_ID':'WEB',
-                        'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandleBuy/',
+                        'CALLBACK_URL':settings.BUY_PAYTM_CALLBACK_URL,
                         'MERC_UNQ_REF':str(user.id),
                     }
                     params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, settings.MERCHANT_KEY)
@@ -409,7 +409,7 @@ def paymentMethod(request):
                         'INDUSTRY_TYPE_ID':'Retail',
                         'WEBSITE':settings.WEBSITE,
                         'CHANNEL_ID':'WEB',
-                        'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandle/',
+                        'CALLBACK_URL':settings.CART_PAYTM_CALLBACK_URL,
                         'MERC_UNQ_REF':str(user.id),
                     }
                     params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, settings.MERCHANT_KEY)
@@ -571,7 +571,7 @@ def creditProcess(request):
                         'INDUSTRY_TYPE_ID':'Retail',
                         'WEBSITE':settings.WEBSITE,
                         'CHANNEL_ID':'WEB',
-                        'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandleBuy/',
+                        'CALLBACK_URL':settings.BUY_PAYTM_CALLBACK_URL,
                         'MERC_UNQ_REF':str(user.id),
                     }
                     params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, settings.MERCHANT_KEY)
@@ -636,7 +636,7 @@ def creditProcess(request):
                     'INDUSTRY_TYPE_ID':'Retail',
                     'WEBSITE':settings.WEBSITE,
                     'CHANNEL_ID':'WEB',
-                    'CALLBACK_URL':'http://127.0.0.1:8000/shop/paymentHandle/',
+                    'CALLBACK_URL':settings.CART_PAYTM_CALLBACK_URL,
                     'MERC_UNQ_REF':str(user.id),
                 }
                 params_dict['CHECKSUMHASH'] = Checksum.generate_checksum(params_dict, settings.MERCHANT_KEY)
@@ -715,7 +715,7 @@ def paymentHandle(request):
                     post_data = json.dumps(paytmParams)
 
                     # for Staging
-                    url = "https://securegw-stage.paytm.in/refund/apply"
+                    url = settings.REFUND_INITIATE_URL
 
                     # for Production
                     # url = "https://securegw.paytm.in/refund/apply"
@@ -806,7 +806,7 @@ def paymentHandleBuy(request):
                 post_data = json.dumps(paytmParams)
 
                 # for Staging
-                url = "https://securegw-stage.paytm.in/refund/apply"
+                url = settings.REFUND_INITIATE_URL
 
                 # for Production
                 # url = "https://securegw.paytm.in/refund/apply"
@@ -1152,7 +1152,7 @@ def cancelOrder(request, order_id):
         post_data = json.dumps(paytmParams)
 
         # for Staging
-        url = "https://securegw-stage.paytm.in/refund/apply"
+        url = settings.REFUND_INITIATE_URL
 
         # for Production
         # url = "https://securegw.paytm.in/refund/apply"
@@ -1224,7 +1224,7 @@ def cancelOrder(request, order_id):
         post_data = json.dumps(paytmParams)
 
         # for Staging
-        url = "https://securegw-stage.paytm.in/refund/apply"
+        url = settings.REFUND_INITIATE_URL
 
         # for Production
         # url = "https://securegw.paytm.in/refund/apply"
@@ -1269,7 +1269,7 @@ def refundStatus(request, order_id):
     post_data = json.dumps(paytmParams)
 
     # for Staging
-    url = "https://securegw-stage.paytm.in/v2/refund/status"
+    url = settings.REFUND_STATUS_URL
 
     # for Production
     # url = "https://securegw.paytm.in/v2/refund/status"
