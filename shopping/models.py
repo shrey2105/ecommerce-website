@@ -228,7 +228,7 @@ class OrdersUpdate(models.Model):
                     }
                     post_data = json.dumps(paytmParams)
                     # for Staging
-                    url = "https://securegw-stage.paytm.in/refund/apply"
+                    url = settings.REFUND_INITIATE_URL
                     # for Production
                     # url = "https://securegw.paytm.in/refund/apply"
                     response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
@@ -268,7 +268,7 @@ class OrdersUpdate(models.Model):
                     }
                     post_data = json.dumps(paytmParams)
                     # for Staging
-                    url = "https://securegw-stage.paytm.in/refund/apply"
+                    url = settings.REFUND_INITIATE_URL
                     # for Production
                     # url = "https://securegw.paytm.in/refund/apply"
                     response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})

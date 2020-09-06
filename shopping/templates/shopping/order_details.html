@@ -127,7 +127,7 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
                     <td scope="col">RETURN REQUESTED</td>
                     {% elif item.status == "Finished" and item.order_status == "Delivered" %}
                     <td scope="col"><a class="review-link" href="/shop/cancelOrder/{{item.order_id}}">Return</a></td>
-                    {% else %}
+                    {% elif item.status == "Finished" and item.order_status == "Not Delivered" %}
                     <td scope="col"><a class="review-link" href="/shop/cancelOrder/{{item.order_id}}">Cancel</a></td>
                     {% endif %}
                     {% if item.status == "Started" or item.status == "Abandoned" %}

@@ -1129,152 +1129,159 @@ def pincodeCheck(request):
     return render(request, "shopping/product_view.html")
 
 def cancelOrder(request, order_id):
-    user = request.user
-    order = Order.objects.get(order_id=order_id, user=user)
-
-    if order.payment_mode == "paytm" and order.is_amount_paid == True and order.status == "Not Delivered":
-        paytmParams = dict()
-        paytmParams["body"] = {
-            "mid"          : settings.MERCHANT_ID,
-            "txnType"      : "REFUND",
-            "orderId"      : order_id,
-            "txnId"        : order.transaction_id,
-            "refId"        : order.reference_id,
-            "refundAmount" : str(order.final_total),
-        }
-
-        checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
-
-        paytmParams["head"] = {
-            "signature"    : checksum
-        }
-
-        post_data = json.dumps(paytmParams)
-
-        # for Staging
-        url = settings.REFUND_INITIATE_URL
-
-        # for Production
-        # url = "https://securegw.paytm.in/refund/apply"
-
-        response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
-        r = response.json()
-        if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
-            order.status = "Abandoned"
-            order.save()
-            params = {'cancel':True}
+    if request.user.is_authenticated:
+        request.session['total_credits'] = float(request.user.profile.credit)
     
-    elif order.payment_mode == "paytm" and order.is_amount_paid == True and order.order_status == "Delivered":
-        order.status = "Return"
-        order.save()
-        order_update = OrdersUpdate.objects.create(order_id=order_id)
-        order_update.update_description = "Order requested for Return"
-        order_update.save()
-        params = {'cancel':False}
+        user = request.user
+        order = Order.objects.get(order_id=order_id, user=user)
 
-    elif order.payment_mode == "credits" and order.is_amount_paid == True and order.order_status == "Not Delivered":
-        order.status = "Abandoned"
-        order.save()
-        user.profile.credit = float(order.credits_used)
-        user.save()
-        request.session['total_credits'] = user.profile.credit
-        params = {'cancel':True}
+        if order.payment_mode == "paytm" and order.is_amount_paid == True and order.order_status == "Not Delivered":
+            paytmParams = dict()
+            paytmParams["body"] = {
+                "mid"          : settings.MERCHANT_ID,
+                "txnType"      : "REFUND",
+                "orderId"      : order_id,
+                "txnId"        : order.transaction_id,
+                "refId"        : order.reference_id,
+                "refundAmount" : str(order.final_total),
+            }
 
-    elif order.payment_mode == "credits" and order.is_amount_paid == True and order.order_status == "Delivered":
-        order.status = "Return"
-        order.save()
-        order_update = OrdersUpdate.objects.create(order_id=order_id)
-        order_update.update_description = "Order requested for Return"
-        order_update.save()
-        params = {'cancel':False}
-    
-    elif order.payment_mode == "cod" and order.is_amount_paid == False and order.order_status == "Not Delivered":
-        order.status = "Abandoned"
-        order.save()
-        params = {'cancel':True}
+            checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
 
-    elif order.payment_mode == "cod" and order.is_amount_paid == True and order.order_status == "Delivered":
-        order.status = "Return"
-        order.save()
-        order_update = OrdersUpdate.objects.create(order_id=order_id)
-        order_update.update_description = "Order requested for Return"
-        order_update.save()
-        params = {'cancel':False}
-    
-    elif order.payment_mode == "credits + paytm" and order.is_amount_paid == True and order.order_status == "Not Delivered":
-        remaining_amount = 0.0
-        user.profile.credit = float(order.credits_used)
-        remaining_amount = float(order.final_total) - float(order.credits_used)
-        paytmParams = dict()
-        paytmParams["body"] = {
-            "mid"          : settings.MERCHANT_ID,
-            "txnType"      : "REFUND",
-            "orderId"      : order_id,
-            "txnId"        : order.transaction_id,
-            "refId"        : order.reference_id,
-            "refundAmount" : str(remaining_amount),
-        }
+            paytmParams["head"] = {
+                "signature"    : checksum
+            }
 
-        checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+            post_data = json.dumps(paytmParams)
 
-        paytmParams["head"] = {
-            "signature"    : checksum
-        }
+            # for Staging
+            url = settings.REFUND_INITIATE_URL
 
-        post_data = json.dumps(paytmParams)
+            # for Production
+            # url = "https://securegw.paytm.in/refund/apply"
 
-        # for Staging
-        url = settings.REFUND_INITIATE_URL
-
-        # for Production
-        # url = "https://securegw.paytm.in/refund/apply"
-
-        response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
-        r = response.json()
-        if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
-            order.status = "Abandoned"
-            order.save()
-            user.save()
-            params = {'cancel':True}
+            response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
+            r = response.json()
+            if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+                order.status = "Abandoned"
+                order.save()
+                return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':True})
         
-    elif order.payment_mode == "credits + paytm" and order.is_amount_paid == True and order.order_status == "Delivered":
-        order.status = "Return"
-        order.save()
-        order_update = OrdersUpdate.objects.create(order_id=order_id)
-        order_update.update_description = "Order requested for Return"
-        order_update.save()
-        params = {'cancel':False}
-    
-    params = {'order_id':order_id, 'order':order, 'cancel':''}
-    return render(request, "shopping/cancel_order.html", params)
+        elif order.payment_mode == "paytm" and order.is_amount_paid == True and order.order_status == "Delivered":
+            order.status = "Return"
+            order.save()
+            order_update = OrdersUpdate.objects.create(order_id=order_id)
+            order_update.update_description = "Order requested for Return"
+            order_update.save()
+            return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':False})
+
+        elif order.payment_mode == "credits" and order.is_amount_paid == True and order.order_status == "Not Delivered":
+            order.status = "Abandoned"
+            order.save()
+            user.profile.credit = float(order.credits_used)
+            user.save()
+            request.session['total_credits'] = user.profile.credit
+            return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':True})
+
+        elif order.payment_mode == "credits" and order.is_amount_paid == True and order.order_status == "Delivered":
+            order.status = "Return"
+            order.save()
+            order_update = OrdersUpdate.objects.create(order_id=order_id)
+            order_update.update_description = "Order requested for Return"
+            order_update.save()
+            return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':False})
+        
+        elif order.payment_mode == "cod" and order.is_amount_paid == False and order.order_status == "Not Delivered":
+            order.status = "Abandoned"
+            order.save()
+            return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':True})
+
+        elif order.payment_mode == "cod" and order.is_amount_paid == True and order.order_status == "Delivered":
+            order.status = "Return"
+            order.save()
+            order_update = OrdersUpdate.objects.create(order_id=order_id)
+            order_update.update_description = "Order requested for Return"
+            order_update.save()
+            return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':False})
+        
+        elif order.payment_mode == "credits + paytm" and order.is_amount_paid == True and order.order_status == "Not Delivered":
+            remaining_amount = 0.0
+            user.profile.credit = float(order.credits_used)
+            remaining_amount = float(order.final_total) - float(order.credits_used)
+            paytmParams = dict()
+            paytmParams["body"] = {
+                "mid"          : settings.MERCHANT_ID,
+                "txnType"      : "REFUND",
+                "orderId"      : order_id,
+                "txnId"        : order.transaction_id,
+                "refId"        : order.reference_id,
+                "refundAmount" : str(remaining_amount),
+            }
+
+            checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+
+            paytmParams["head"] = {
+                "signature"    : checksum
+            }
+
+            post_data = json.dumps(paytmParams)
+
+            # for Staging
+            url = settings.REFUND_INITIATE_URL
+
+            # for Production
+            # url = "https://securegw.paytm.in/refund/apply"
+
+            response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
+            r = response.json()
+            if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+                order.status = "Abandoned"
+                order.save()
+                user.save()
+                return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':True})
+            
+        elif order.payment_mode == "credits + paytm" and order.is_amount_paid == True and order.order_status == "Delivered":
+            order.status = "Return"
+            order.save()
+            order_update = OrdersUpdate.objects.create(order_id=order_id)
+            order_update.update_description = "Order requested for Return"
+            order_update.save()
+            return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':False})
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
+    return render(request, "shopping/cancel_order.html")
 
 def refundStatus(request, order_id):
+    if request.user.is_authenticated:
+        request.session['total_credits'] = float(request.user.profile.credit)
 
-    user = request.user
-    order = Order.objects.get(order_id=order_id, user=user)
+        user = request.user
+        order = Order.objects.get(order_id=order_id, user=user)
 
-    paytmParams = dict()
+        paytmParams = dict()
 
-    paytmParams["body"] = {
-        "mid"       : settings.MERCHANT_ID,
-        "orderId"   : order_id,
-        "refId"     : order.reference_id,
-    }
+        paytmParams["body"] = {
+            "mid"       : settings.MERCHANT_ID,
+            "orderId"   : order_id,
+            "refId"     : order.reference_id,
+        }
 
-    checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
+        checksum = paytmchecksum.generateSignature(json.dumps(paytmParams["body"]), settings.MERCHANT_KEY)
 
-    paytmParams["head"] = {
-        "signature"	: checksum
-    }
-    post_data = json.dumps(paytmParams)
+        paytmParams["head"] = {
+            "signature"	: checksum
+        }
+        post_data = json.dumps(paytmParams)
 
-    # for Staging
-    url = settings.REFUND_STATUS_URL
+        # for Staging
+        url = settings.REFUND_STATUS_URL
 
-    # for Production
-    # url = "https://securegw.paytm.in/v2/refund/status"
+        # for Production
+        # url = "https://securegw.paytm.in/v2/refund/status"
 
-    response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"}).json()
+        response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"}).json()
+    else:
+        return HttpResponseRedirect("/home/cannot_access")
     return render(request, "shopping/refund_status.html", {'order_id':order_id, 'order':order, 'response':response})
 
 
