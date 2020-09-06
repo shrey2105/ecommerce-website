@@ -233,9 +233,9 @@ class OrdersUpdate(models.Model):
                     # url = "https://securegw.paytm.in/refund/apply"
                     response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
                     r = response.json()
-                    if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
-                        order_update.status = "Abandoned"
-                        order_update.save()
+                    # if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+                    order_update.status = "Abandoned"
+                    order_update.save()
                 
                 elif order_update.payment_mode == "credits":
                     order_update.status = "Abandoned"
@@ -273,10 +273,10 @@ class OrdersUpdate(models.Model):
                     # url = "https://securegw.paytm.in/refund/apply"
                     response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
                     r = response.json()
-                    if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
-                        order_update.status = "Abandoned"
-                        order_update.save()
-                        user.save()
+                    # if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+                    order_update.status = "Abandoned"
+                    order_update.save()
+                    user.save()
         except Exception as e:
             print(e)
         super(OrdersUpdate, self).save(*args, **kwargs)  

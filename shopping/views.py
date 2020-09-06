@@ -723,11 +723,11 @@ def paymentHandle(request):
                     response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
                     r = response.json()
 
-                    if r['body']['resultInfo']['resultCode'] == "617" or r['body']['resultInfo']['resultCode'] == "601":
-                        new_order.status = "Abandoned"
-                        new_order.save()
-                        print("Order Unsuccessful")
-                        return render(request, 'shopping/paytm_status.html', {'qty_empty':True})
+                    # if r['body']['resultInfo']['resultCode'] == "617" or r['body']['resultInfo']['resultCode'] == "601":
+                    new_order.status = "Abandoned"
+                    new_order.save()
+                    print("Order Unsuccessful")
+                    return render(request, 'shopping/paytm_status.html', {'qty_empty':True})
                 else:
                     for cartitems in cart_item:
                         try:
@@ -813,12 +813,12 @@ def paymentHandleBuy(request):
 
                 response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
                 r = response.json()
-                if r['body']['resultInfo']['resultCode'] == "617" or r['body']['resultInfo']['resultCode'] == "601":
-                    new_order.status = "Abandoned"
-                    new_order.save()
-                    buy.delete()
-                    print("Order Unsuccessful")
-                    return render(request, 'shopping/paytm_status.html', {'qty_empty':True})
+                # if r['body']['resultInfo']['resultCode'] == "617" or r['body']['resultInfo']['resultCode'] == "601":
+                new_order.status = "Abandoned"
+                new_order.save()
+                buy.delete()
+                print("Order Unsuccessful")
+                return render(request, 'shopping/paytm_status.html', {'qty_empty':True})
             else:
                 try:
                     # product = Product.objects.get(product_name=buyitem.product)
@@ -1162,10 +1162,10 @@ def cancelOrder(request, order_id):
 
             response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
             r = response.json()
-            if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
-                order.status = "Abandoned"
-                order.save()
-                return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':True})
+            # if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+            order.status = "Abandoned"
+            order.save()
+            return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':True})
         
         elif order.payment_mode == "paytm" and order.is_amount_paid == True and order.order_status == "Delivered":
             order.status = "Return"
@@ -1234,11 +1234,11 @@ def cancelOrder(request, order_id):
 
             response = requests.post(url, data = post_data, headers = {"Content-type": "application/json"})
             r = response.json()
-            if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
-                order.status = "Abandoned"
-                order.save()
-                user.save()
-                return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':True})
+            # if r['body']['resultInfo']['resultCode'] == "601" or r['body']['resultInfo']['resultCode'] == "617":
+            order.status = "Abandoned"
+            order.save()
+            user.save()
+            return render(request, "shopping/cancel_order.html", {'order_id':order_id, 'order':order, 'cancel':True})
             
         elif order.payment_mode == "credits + paytm" and order.is_amount_paid == True and order.order_status == "Delivered":
             order.status = "Return"
