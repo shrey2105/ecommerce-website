@@ -63,6 +63,21 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
 .display-box h2 {color: #000;font-size: 22px;text-align: center;margin-bottom: 20px;display: block;font-weight:
 600;text-transform: uppercase;font-family: lato;}
 .display-box p {color: #000;font-size: 14px;text-align: center;display: block;}
+.product-status.stock-status b {
+background: #505050;
+color: #fff;
+}
+.product-status b {
+display: table;
+margin: 0 auto;
+}
+.product-status b {
+background: #EDD0C8;
+padding: 3px 20px;
+line-height: 100%;
+font-size: 15px;
+font-weight: 700;
+}
 {% endblock %}
 {% block shopactive %}active{% endblock shopactive %}
 
@@ -86,6 +101,11 @@ a.readmore-link:hover {font-size:150%; font-weight:800}
               <div class="card align-items-center">
                 <a href="/shop/productView/{{i.id}}"><img src="{{MEDIA_URL}}{{i.image}}" class="img-fluid text-center"
                     alt="..."></a>
+              {% if i.stock_qty < 1 %}
+              <div class="product-status stock-status"><b>Out of Stock</b></div>
+              {% elif i.stock_qty > 0 and i.stock_qty < 11 %}
+              <div class="product-status redeeming-status"><b>Limited Quantities</b></div>
+              {% endif %}
                 <div class="card card-body products">
                   <a href="/shop/productView/{{i.id}}">
                     <h5 class="card-title" id="poppr{{i.id}}">{{i.product_name|truncatechars:50}}</h5>
